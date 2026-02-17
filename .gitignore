@@ -37,6 +37,9 @@ ENV/
 data/songs.json
 data/progress.json
 data/config.json
+*.db
+*.db-shm
+*.db-wal
 
 # Testing
 .pytest_cache/
@@ -47,3 +50,9 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+# Rust
+rust-backend/target/
+rust-backend/**/*.rs.bk
+rust-backend/*.pdb
+
