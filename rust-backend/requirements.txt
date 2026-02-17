@@ -1,0 +1,4 @@
+# Python dependencies for phonetic generation via PyO3
+pykakasi>=2.2.1
+hangul-romanize>=0.1.0
+epitran>=1.24
