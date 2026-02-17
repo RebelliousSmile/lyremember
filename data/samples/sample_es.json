@@ -1,0 +1,31 @@
+{
+  "title": "La Cucaracha",
+  "artist": "Traditional Mexican",
+  "language": "es",
+  "lyrics": [
+    "La cucaracha, la cucaracha",
+    "Ya no puede caminar",
+    "Porque no tiene, porque le falta",
+    "Una pata de atrás",
+    "La cucaracha, la cucaracha",
+    "Ya no quiere caminar",
+    "Porque no tiene, porque le falta",
+    "Dinero para gastar"
+  ],
+  "translations": {
+    "en": [
+      "The cockroach, the cockroach",
+      "Can no longer walk",
+      "Because it doesn't have, because it's missing",
+      "A back leg",
+      "The cockroach, the cockroach",
+      "Doesn't want to walk anymore",
+      "Because it doesn't have, because it's missing",
+      "Money to spend"
+    ]
+  },
+  "metadata": {
+    "genre": "folk",
+    "difficulty": "medium"
+  }
+}
