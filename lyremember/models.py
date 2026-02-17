@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 
@@ -16,8 +16,8 @@ class Song:
     lyrics: List[str]
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     translations: Dict[str, List[str]] = field(default_factory=dict)
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    updated_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     metadata: Dict = field(default_factory=dict)
     
     def to_dict(self) -> dict:
@@ -44,8 +44,8 @@ class Song:
             language=data['language'],
             lyrics=data['lyrics'],
             translations=data.get('translations', {}),
-            created_at=data.get('created_at', datetime.utcnow().isoformat()),
-            updated_at=data.get('updated_at', datetime.utcnow().isoformat()),
+            created_at=data.get('created_at', datetime.now(timezone.utc).isoformat()),
+            updated_at=data.get('updated_at', datetime.now(timezone.utc).isoformat()),
             metadata=data.get('metadata', {})
         )
 
@@ -61,7 +61,7 @@ class PracticeSession:
     lines_correct: int
     difficult_lines: List[int] = field(default_factory=list)
     session_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    date: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    date: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     duration_seconds: int = 0
     
     def to_dict(self) -> dict:
@@ -84,7 +84,7 @@ class PracticeSession:
         return cls(
             session_id=data.get('session_id', str(uuid.uuid4())),
             song_id=data['song_id'],
-            date=data.get('date', datetime.utcnow().isoformat()),
+            date=data.get('date', datetime.now(timezone.utc).isoformat()),
             mode=data['mode'],
             duration_seconds=data.get('duration_seconds', 0),
             score=data['score'],
