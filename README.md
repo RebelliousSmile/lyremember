@@ -1,10 +1,284 @@
 # LyRemember 🎵
 
-Application for memorizing and playing with lyrics in multiple languages.
+Application multiplateforme pour mémoriser et pratiquer des paroles de chansons dans plusieurs langues avec support phonétique et traduction automatique.
 
-## Overview
+## 🎯 Vue d'Ensemble
 
-LyRemember is an interactive command-line application designed to help you memorize song lyrics in any language. Whether you're learning a new language, preparing for a performance, or just want to remember your favorite songs, LyRemember makes memorization fun and effective through various practice modes.
+LyRemember est une application moderne qui combine:
+- **Desktop natif** (Tauri + Vue 3)
+- **Backend Rust performant** (SQLite + PyO3)
+- **Support multi-langues** (FR, EN, JP, KR)
+- **Phonétique automatique** (Kanji → Romaji, Hangul → Latin, etc.)
+- **Traduction automatique** (LibreTranslate gratuit)
+- **Practice modes** (Karaoke, Fill-blank, MCQ, Oral)
+
+## 🚀 Quick Start
+
+### Pour Tester l'Intégration Tauri
+
+```bash
+# Installer les dépendances Python
+cd rust-backend
+pip install -r requirements.txt
+
+# Installer les dépendances npm
+cd ../lyremember-app
+npm install
+
+# Lancer l'application
+npm run tauri dev
+
+# Cliquer sur "Run Integration Test" dans l'interface
+```
+
+### Architecture
+
+```
+Vue 3 Frontend (TypeScript)
+    ↓
+Tauri Commands (16 commands)
+    ↓
+Rust Backend (5 services)
+    ↓
+SQLite + PyO3 Python Bridge
+```
+
+## 📂 Structure du Projet
+
+### 1. Python CLI (Proof of Concept) - LEGACY
+
+```bash
+cd lyremember/
+pip install -r requirements.txt
+pip install -e .
+lyremember --help
+```
+
+Voir README original ci-dessous pour les commandes CLI.
+
+### 2. Rust Backend (Production) - ✅ COMPLETE
+
+```
+rust-backend/
+├── src/
+│   ├── services/          # Auth, Phonetic, Translation, Songs, Practice
+│   ├── models/            # User, Song, PracticeSession
+│   └── db/                # SQLite with auto-init
+├── Cargo.toml
+└── requirements.txt       # pykakasi, hangul-romanize, epitran
+```
+
+**Fonctionnalités:**
+- ✅ Authentication (bcrypt + JWT)
+- ✅ SQLite persistence (4 tables)
+- ✅ PyO3 pour phonétique JP/KR/FR/EN
+- ✅ LibreTranslate pour traduction auto
+- ✅ CRUD Songs avec auto-génération
+- ✅ Practice session tracking + stats
+
+**Documentation:** [rust-backend/README.md](rust-backend/README.md)
+
+### 3. Tauri Application (Production) - ✅ COMPLETE
+
+```
+lyremember-app/
+├── src/                   # Frontend Vue 3 + TypeScript
+│   ├── App.vue           # Integration test UI
+│   └── lib/
+│       └── tauri-api.ts  # TypeScript API (16 commands)
+│
+└── src-tauri/            # Backend Tauri
+    ├── src/
+    │   ├── commands.rs   # 16 Tauri commands
+    │   └── lib.rs        # Database initialization
+    └── Cargo.toml        # Depends on rust-backend
+```
+
+**Fonctionnalités:**
+- ✅ 16 Tauri commands (type-safe)
+- ✅ TypeScript API complète
+- ✅ Integration test UI
+- ✅ Database auto-created in app data dir
+- ✅ Ready for Vue Router + Pinia
+
+**Documentation:** [lyremember-app/README.md](lyremember-app/README.md)
+
+## 📚 Documentation Complète
+
+### Planning & Décisions
+- [FINAL_DECISIONS.md](FINAL_DECISIONS.md) - Résumé de toutes les décisions techniques
+- [USER_STORIES_V2.md](USER_STORIES_V2.md) - 29 user stories détaillées (8 epics, 105 story points)
+- [TECH_CHOICES.md](TECH_CHOICES.md) - Comparaison des technologies (PWA, Tauri, Flutter, etc.)
+
+### Architecture & Technique
+- [TAURI_INTEGRATION_COMPLETE.md](TAURI_INTEGRATION_COMPLETE.md) - 📖 **START HERE** - Guide complet intégration
+- [VUE_TAURI_GUIDE.md](VUE_TAURI_GUIDE.md) - Guide Vue + Tauri avec exemples
+- [ARCHITECTURE_EXPLAINED.md](ARCHITECTURE_EXPLAINED.md) - Un codebase, plusieurs plateformes
+- [TAURI_FRONTEND_LINK.md](TAURI_FRONTEND_LINK.md) - Comment Tauri et Vue interagissent
+- [TAURI_BACKEND_CLARIFICATION.md](TAURI_BACKEND_CLARIFICATION.md) - Rôle de Tauri vs votre code
+
+### Stratégies
+- [TRANSLATION_PHONETIC_STRATEGY.md](TRANSLATION_PHONETIC_STRATEGY.md) - Stratégie "Generate Once, Store Forever"
+- [UI_LIBRARIES.md](UI_LIBRARIES.md) - Comparaison Shadcn-vue, Material, etc.
+- [RUST_OPTION.md](RUST_OPTION.md) - Analyse Rust/Tauri vs alternatives
+
+### Implementation
+- [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) - Guide step-by-step création projet
+- [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Résumé de l'implémentation backend
+
+## ✨ Fonctionnalités Principales
+
+### 1. Multi-Langues avec Phonétique
+- **Japonais**: 千本桜 → senbonzakura (via pykakasi)
+- **Coréen**: 한글 → hangul (via hangul-romanize)
+- **Français/Anglais**: texte → IPA (via epitran)
+
+### 2. Traduction Automatique
+- Traduction EN automatique lors de l'ajout de chanson
+- Stockée dans SQLite → **usage offline**
+- LibreTranslate API (gratuit)
+
+### 3. Practice Modes
+- **Karaoke**: Défilement auto ligne par ligne
+- **Fill-blank**: Phrases à trous (style "N'oubliez pas les paroles")
+- **MCQ**: Propositions multiples
+- **Oral**: Reconnaissance vocale (à venir)
+
+### 4. Progress Tracking
+- Sessions de pratique enregistrées
+- Statistiques par utilisateur
+- Niveau de maîtrise par chanson
+- Recommandations personnalisées
+
+## 🧪 Test d'Intégration
+
+L'application inclut un test d'intégration complet:
+
+```bash
+cd lyremember-app
+npm run tauri dev
+# Click "Run Integration Test"
+```
+
+**Tests:**
+1. ✅ Health check (backend connecté)
+2. ✅ User registration (bcrypt + SQLite)
+3. ✅ User login (JWT tokens)
+4. ✅ Song creation avec phonétique JP (PyO3 + pykakasi)
+5. ✅ Auto-translation EN (LibreTranslate)
+6. ✅ Add to repertoire (many-to-many)
+7. ✅ Practice session tracking
+8. ✅ User statistics aggregation
+
+## 🎯 Roadmap
+
+### Phase 1: ✅ COMPLETE - Backend & Integration
+- [x] Backend Rust complet (2,400 lignes)
+- [x] 16 Tauri commands type-safe
+- [x] TypeScript API (200 lignes)
+- [x] Integration test UI
+- [x] Database auto-initialization
+- [x] Documentation exhaustive
+
+### Phase 2: Core UI (2-3 jours)
+- [ ] Vue Router + multi-page navigation
+- [ ] Pinia stores (state management)
+- [ ] Login/Register views
+- [ ] Dashboard view
+- [ ] Song List view
+
+### Phase 3: Practice Modes UI (3-4 jours)
+- [ ] Karaoke mode component
+- [ ] Fill-blank mode component
+- [ ] MCQ mode component
+- [ ] Progress visualization
+
+### Phase 4: Advanced Features (2-3 jours)
+- [ ] Genius API search & import
+- [ ] Dark mode toggle
+- [ ] i18n (FR/EN/KR/JP interface)
+- [ ] Settings page
+
+### Phase 5: Polish (1-2 jours)
+- [ ] Icons & branding
+- [ ] Animations & transitions
+- [ ] Keyboard shortcuts
+- [ ] Error handling UI
+
+## 💻 API Examples
+
+```typescript
+import * as api from './lib/tauri-api';
+
+// Register & Login
+const user = await api.register('username', 'email', 'password');
+const token = await api.login('username', 'password');
+
+// Create song with auto phonetic + translation
+const song = await api.createSong(
+  '千本桜',           // Title (Japanese)
+  '初音ミク',         // Artist
+  'jp',               // Language
+  ['千本桜', '夜ニ紛レ'],  // Lyrics
+  true                // Auto-translate to EN
+);
+// → phonetic_lyrics: ['senbonzakura', 'yoru ni magire']
+// → translations: { en: ['Thousand Cherry Blossoms', ...] }
+
+// Add to repertoire
+await api.addToRepertoire(user.id, song.id);
+
+// Practice!
+await api.createPracticeSession(
+  user.id, song.id, 'karaoke', 85.5, 10, 8, 120
+);
+
+// Get stats
+const stats = await api.getUserStats(user.id);
+// → { total_sessions: 1, average_score: 85.5, ... }
+```
+
+## 📊 Stack Technique
+
+**Frontend:**
+- Vue 3 (Composition API + TypeScript)
+- Vite (build tool + HMR)
+- Tailwind CSS (à configurer)
+- Shadcn-vue (à installer)
+
+**Desktop:**
+- Tauri 2.0 (native windows)
+- WebView (OS native)
+- 16 Tauri commands
+
+**Backend:**
+- Rust (lyremember_backend library)
+- SQLite (rusqlite) - Auto-created in app data
+- PyO3 (Rust ↔ Python bridge)
+- bcrypt + JWT (authentication)
+
+**Phonetic:**
+- pykakasi (Japanese)
+- hangul-romanize (Korean)
+- epitran (French/English IPA)
+
+**Translation:**
+- LibreTranslate API (free, 5 req/min)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+MIT License - See LICENSE file for details
+
+---
+
+## Legacy Python CLI Documentation
+
+> **Note**: Le CLI Python ci-dessous est un proof of concept.
+> **Pour production**, utiliser l'application Tauri (lyremember-app/).
 
 ## Features
 
