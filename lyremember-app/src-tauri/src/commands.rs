@@ -1,6 +1,5 @@
 use lyremember_backend::models::*;
 use lyremember_backend::services::*;
-use lyremember_backend::db::init_database;
 use lyremember_backend::Result;
 use rusqlite::Connection;
 use std::sync::Mutex;
