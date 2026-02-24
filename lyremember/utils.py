@@ -20,22 +20,22 @@ def check_answer(user_answer: str, correct_answer: str, fuzzy_threshold: float =
     """
     Check if user answer matches correct answer.
     Uses fuzzy matching to allow minor typos.
-
+    
     Args:
         user_answer: The answer provided by user
         correct_answer: The correct answer
         fuzzy_threshold: Similarity threshold (0-1) for accepting answer
-
+    
     Returns:
         True if answer is correct (or close enough)
     """
     user_norm = normalize_text(user_answer)
     correct_norm = normalize_text(correct_answer)
-
+    
     # Exact match
     if user_norm == correct_norm:
         return True
-
+    
     # Fuzzy match using Levenshtein ratio
     similarity = Levenshtein.ratio(user_norm, correct_norm)
     return similarity >= fuzzy_threshold
@@ -57,30 +57,30 @@ def split_words(line: str) -> List[str]:
 def hide_words(line: str, hide_percentage: float = 0.3) -> Tuple[str, List[str]]:
     """
     Hide random words in a line.
-
+    
     Args:
         line: The line to process
         hide_percentage: Percentage of words to hide (0-1)
-
+    
     Returns:
         Tuple of (modified_line, hidden_words)
     """
     import random
-
+    
     words = split_words(line)
     if not words:
         return line, []
-
+    
     # Determine how many words to hide
     num_to_hide = max(1, int(len(words) * hide_percentage))
-
+    
     # Select random word indices to hide
     indices_to_hide = random.sample(range(len(words)), min(num_to_hide, len(words)))
     indices_to_hide.sort()
-
+    
     hidden_words = []
     modified_words = []
-
+    
     for i, word in enumerate(words):
         if i in indices_to_hide:
             hidden_words.append(word)
@@ -88,7 +88,7 @@ def hide_words(line: str, hide_percentage: float = 0.3) -> Tuple[str, List[str]]
             modified_words.append('_' * max(3, len(re.sub(r'[^\w]', '', word))))
         else:
             modified_words.append(word)
-
+    
     return ' '.join(modified_words), hidden_words
 
 

@@ -1,0 +1,23 @@
+{
+  "title": "Frère Jacques",
+  "artist": "Traditional French",
+  "language": "fr",
+  "lyrics": [
+    "Frère Jacques, Frère Jacques",
+    "Dormez-vous? Dormez-vous?",
+    "Sonnez les matines, sonnez les matines",
+    "Ding, dang, dong. Ding, dang, dong"
+  ],
+  "translations": {
+    "en": [
+      "Brother John, Brother John",
+      "Are you sleeping? Are you sleeping?",
+      "Morning bells are ringing, morning bells are ringing",
+      "Ding, dang, dong. Ding, dang, dong"
+    ]
+  },
+  "metadata": {
+    "genre": "children",
+    "difficulty": "easy"
+  }
+}
