@@ -1,4 +1,3 @@
-"""LyRemember - Memorize lyrics in multiple languages."""
+"""LyRemember - Application for memorizing lyrics in multiple languages."""
 
-__version__ = '0.1.0'
-__author__ = 'LyRemember Team'
+__version__ = "0.1.0"
