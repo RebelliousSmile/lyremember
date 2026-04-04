@@ -1,0 +1,36 @@
+name: CI Python
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lyremember/**'
+      - 'tests/**'
+      - 'requirements.txt'
+      - '.github/workflows/ci-python.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'lyremember/**'
+      - 'tests/**'
+      - 'requirements.txt'
+      - '.github/workflows/ci-python.yml'
+
+jobs:
+  test:
+    name: Python Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest
+
+      - name: Run tests
+        run: python -m pytest tests/ -v
