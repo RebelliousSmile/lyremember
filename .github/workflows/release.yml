@@ -51,17 +51,26 @@ jobs:
         working-directory: lyremember-app
         run: npx tauri android init
 
-      - name: Build Android APK (debug signed)
+      - name: Build Android APK (debug)
         working-directory: lyremember-app
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.12077973
         run: npx tauri android build --apk --debug
 
-      - name: Find APK
+      - name: Find and rename APK
         id: find-apk
         run: |
-          APK_PATH=$(find lyremember-app/src-tauri/gen/android -name "*.apk" -type f | head -1)
-          echo "apk_path=$APK_PATH" >> "$GITHUB_OUTPUT"
+          echo "=== All APKs found ==="
+          find lyremember-app/src-tauri/gen/android -name "*.apk" -type f
+          echo "======================"
+          # Prefer debug APK, fallback to any APK
+          APK_PATH=$(find lyremember-app/src-tauri/gen/android -path "*/debug/*.apk" -type f | head -1)
+          if [ -z "$APK_PATH" ]; then
+            APK_PATH=$(find lyremember-app/src-tauri/gen/android -name "*.apk" -type f | head -1)
+          fi
+          # Copy with a clean name
+          cp "$APK_PATH" LyRemember-${{ github.ref_name }}.apk
+          echo "apk_path=LyRemember-${{ github.ref_name }}.apk" >> "$GITHUB_OUTPUT"
           echo "Found APK: $APK_PATH"
 
       - name: Create release and upload APK
