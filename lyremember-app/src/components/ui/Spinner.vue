@@ -5,7 +5,7 @@
       :class="[sizeClass, colorClass]"
     ></div>
     <p v-if="label" class="text-sm text-gray-500 dark:text-gray-400">{{ label }}</p>
-    <span class="sr-only">Loading</span>
+    <span class="sr-only">{{ $t('common.loading') }}</span>
   </div>
 </template>
 

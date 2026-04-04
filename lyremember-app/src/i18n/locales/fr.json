@@ -173,5 +173,11 @@
     "goToPractice": "Aller à la pratique",
     "goToSettings": "Aller aux paramètres",
     "close": "Fermer"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "dashboard": "Tableau de bord",
+    "goBack": "Retour"
   }
 }

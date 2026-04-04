@@ -173,5 +173,11 @@
     "goToPractice": "Go to Practice",
     "goToSettings": "Go to Settings",
     "close": "Close"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "dashboard": "Dashboard",
+    "goBack": "Go Back"
   }
 }
