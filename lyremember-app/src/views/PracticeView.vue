@@ -131,20 +131,18 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { PlayCircle, Music, TrendingUp, PenLine, List, Mic, Plus } from 'lucide-vue-next';
 import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
 import Button from '../components/ui/Button.vue';
 import { useSongsStore } from '../stores/songs';
-import { useAuthStore } from '../stores/auth';
-import { getUserStats, type UserStats } from '../lib/tauri-api';
+import { useUserStats } from '../composables/useUserStats';
 
 const router = useRouter();
 const songsStore = useSongsStore();
-const authStore = useAuthStore();
-const userStats = ref<UserStats | null>(null);
+const { userStats } = useUserStats();
 
 function startPractice(songId: string, mode: string) {
   router.push({ path: `/songs/${songId}`, query: { mode } });
@@ -155,13 +153,6 @@ onMounted(async () => {
     await songsStore.fetchUserSongs();
   } catch (err) {
     console.error('Failed to fetch songs:', err);
-  }
-  if (authStore.user) {
-    try {
-      userStats.value = await getUserStats(authStore.user.id);
-    } catch (err) {
-      console.error('Failed to fetch user stats:', err);
-    }
   }
 });
 </script>

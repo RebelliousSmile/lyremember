@@ -114,19 +114,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import { Music, PlayCircle, TrendingUp, Plus, ChevronRight } from 'lucide-vue-next';
 import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
 import Button from '../components/ui/Button.vue';
 import { useSongsStore } from '../stores/songs';
-import { useAuthStore } from '../stores/auth';
-import { getUserStats, type UserStats } from '../lib/tauri-api';
+import { useUserStats } from '../composables/useUserStats';
 
 const songsStore = useSongsStore();
-const authStore = useAuthStore();
-
-const userStats = ref<UserStats | null>(null);
+const { userStats } = useUserStats();
 
 const recentSongs = computed(() => songsStore.songs.slice(0, 5));
 const totalSessions = computed(() => userStats.value?.total_sessions ?? 0);
@@ -140,13 +137,6 @@ onMounted(async () => {
     await songsStore.fetchUserSongs();
   } catch (err) {
     console.error('Failed to fetch songs:', err);
-  }
-  if (authStore.user) {
-    try {
-      userStats.value = await getUserStats(authStore.user.id);
-    } catch (err) {
-      console.error('Failed to fetch user stats:', err);
-    }
   }
 });
 </script>

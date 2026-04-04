@@ -88,16 +88,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
 import { useAuthStore } from '../stores/auth';
 import { useSongsStore } from '../stores/songs';
-import { getUserStats, type UserStats } from '../lib/tauri-api';
+import { useUserStats } from '../composables/useUserStats';
 
 const authStore = useAuthStore();
 const songsStore = useSongsStore();
-const userStats = ref<UserStats | null>(null);
+const { userStats } = useUserStats();
 
 function formatDate(date: string | undefined) {
   if (!date) return 'N/A';
@@ -116,13 +116,6 @@ onMounted(async () => {
     await songsStore.fetchUserSongs();
   } catch (err) {
     console.error('Failed to fetch songs:', err);
-  }
-  if (authStore.user) {
-    try {
-      userStats.value = await getUserStats(authStore.user.id);
-    } catch (err) {
-      console.error('Failed to fetch user stats:', err);
-    }
   }
 });
 </script>
