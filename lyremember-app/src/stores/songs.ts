@@ -123,11 +123,14 @@ export const useSongsStore = defineStore('songs', () => {
       throw new Error('User not authenticated');
     }
 
+    loading.value = true;
     try {
       await api.addToRepertoire(authStore.user.id, songId);
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to add to repertoire';
       throw err;
+    } finally {
+      loading.value = false;
     }
   }
 

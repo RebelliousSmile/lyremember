@@ -45,7 +45,7 @@ pub async fn cmd_login(
 }
 
 #[tauri::command]
-pub async fn cmd_verify_token(token: String) -> Result<User, String> {
+pub async fn cmd_verify_token(token: String) -> Result<String, String> {
     auth::verify_token(&token)
         .map_err(|e| format!("Token verification failed: {}", e))
 }

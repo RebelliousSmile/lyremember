@@ -28,7 +28,6 @@ const mockUser = {
   id: 'user-123',
   username: 'testuser',
   email: 'test@example.com',
-  password_hash: '',
   genius_token: null,
   created_at: '2024-01-01T00:00:00Z',
 }
