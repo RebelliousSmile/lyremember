@@ -138,7 +138,7 @@ const revealStage = ref(0);
 const selfAssessed = ref(false);
 const correctCount = ref(0);
 const finished = ref(false);
-const startTime = Date.now();
+let startTime = Date.now();
 
 const progress = computed(() =>
   Math.round(((currentIndex.value + (finished.value ? 1 : 0)) / props.song.lyrics.length) * 100)
@@ -180,5 +180,6 @@ function restart() {
   selfAssessed.value = false;
   correctCount.value = 0;
   finished.value = false;
+  startTime = Date.now();
 }
 </script>

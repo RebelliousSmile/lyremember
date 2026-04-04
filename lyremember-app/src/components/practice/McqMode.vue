@@ -32,7 +32,7 @@
       <div class="grid grid-cols-1 gap-3">
         <button
           v-for="(choice, i) in choices"
-          :key="i"
+          :key="`q${currentIndex}-${i}`"
           @click="selectAnswer(i)"
           :disabled="answered"
           class="p-4 rounded-lg border-2 text-left transition-all duration-200"
@@ -99,7 +99,7 @@ const correctCount = ref(0);
 const answered = ref(false);
 const selectedIndex = ref(-1);
 const finished = ref(false);
-const startTime = Date.now();
+let startTime = Date.now();
 
 // Determine question type based on available data
 const questionType = computed<'translation' | 'phonetic'>(() => {
@@ -116,25 +116,33 @@ const questionText = computed(() => {
 
 function generateChoices(): { choices: string[]; correctIndex: number } {
   const correctLine = props.song.lyrics[currentIndex.value];
-  const otherLines = props.song.lyrics.filter((_, i) => i !== currentIndex.value);
+  // Deduplicate other lines to avoid identical choices
+  const otherLines = [...new Set(props.song.lyrics.filter((_, i) => i !== currentIndex.value))]
+    .filter(line => line !== correctLine);
 
-  // Pick 3 random distractors
+  // Pick up to 3 random distractors
   const shuffled = [...otherLines].sort(() => Math.random() - 0.5);
   const distractors = shuffled.slice(0, 3);
 
-  // If not enough distractors, pad with variations
+  // If not enough unique lines, generate word-scrambled variants
+  const words = correctLine.split(/\s+/);
+  let variantIdx = 0;
   while (distractors.length < 3) {
-    distractors.push(distractors[distractors.length - 1] ?? correctLine + '...');
+    const scrambled = [...words].sort(() => Math.random() - 0.5).join(' ');
+    const variant = scrambled !== correctLine ? scrambled : `${correctLine} (${++variantIdx})`;
+    if (!distractors.includes(variant)) {
+      distractors.push(variant);
+    }
+    variantIdx++;
+    if (variantIdx > 10) break; // Safety valve
   }
 
-  const all = [...distractors, correctLine];
-  // Shuffle
-  for (let i = all.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [all[i], all[j]] = [all[j], all[i]];
-  }
+  // Place correct answer at a random position using explicit index tracking
+  const correctIdx = Math.floor(Math.random() * (distractors.length + 1));
+  const all = [...distractors];
+  all.splice(correctIdx, 0, correctLine);
 
-  return { choices: all, correctIndex: all.indexOf(correctLine) };
+  return { choices: all, correctIndex: correctIdx };
 }
 
 let generated = generateChoices();
@@ -227,6 +235,7 @@ function restart() {
   answered.value = false;
   selectedIndex.value = -1;
   finished.value = false;
+  startTime = Date.now();
   const gen = generateChoices();
   choices.value = gen.choices;
   correctChoiceIndex.value = gen.correctIndex;

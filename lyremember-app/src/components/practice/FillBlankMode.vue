@@ -100,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import { Check, ChevronRight, Lightbulb, RotateCcw } from 'lucide-vue-next';
 import Button from '../ui/Button.vue';
 import type { Song } from '../../types';
@@ -126,7 +126,7 @@ const answeredCount = ref(0);
 const userInputs = ref<string[]>([]);
 const activeInput = ref<HTMLInputElement | null>(null);
 const currentBlankIndex = ref(0);
-const startTime = Date.now();
+let startTime = Date.now();
 
 function tokenizeLine(line: string): Token[] {
   const words = line.split(/\s+/).filter(Boolean);
@@ -244,11 +244,9 @@ function restart() {
   finished.value = false;
   correctCount.value = 0;
   answeredCount.value = 0;
+  startTime = Date.now();
   initLine();
 }
 
-watch(currentIndex, () => {}, { immediate: true });
-
-// Initialize first line
-nextTick(() => activeInput.value?.focus());
+onMounted(() => initLine());
 </script>

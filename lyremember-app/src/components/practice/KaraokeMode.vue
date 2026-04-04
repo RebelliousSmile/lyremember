@@ -114,7 +114,7 @@ const speed = ref(2500);
 const finished = ref(false);
 const activeLine = ref<HTMLElement | null>(null);
 const lyricsContainer = ref<HTMLElement | null>(null);
-const startTime = Date.now();
+let startTime = Date.now();
 
 let timer: ReturnType<typeof setInterval> | null = null;
 
@@ -177,6 +177,7 @@ function restart() {
   stopPlay();
   currentIndex.value = 0;
   finished.value = false;
+  startTime = Date.now();
   scrollToActive();
 }
 
