@@ -141,6 +141,40 @@ SQLite (local)  |  Python libs (via PyO3)  |  LibreTranslate API
 - **Tauri:** `lyremember-app/src-tauri/tauri.conf.json` - identifier `com.runner.lyremember-app`
 - **Rust backend:** `rust-backend/Cargo.toml` - rusqlite (bundled), pyo3, reqwest, bcrypt, jwt
 
+## Development Principles
+
+This project follows these core principles strictly. All contributions must adhere to them.
+
+### TDD - Test-Driven Development
+- **Write tests first**, then implementation code. Red → Green → Refactor.
+- Every new feature or bug fix must have corresponding tests before the code is written.
+- Rust: use `#[cfg(test)]` modules with `#[test]` functions. Use `tempfile` for DB tests.
+- Vue/TypeScript: write unit tests for stores, composables, and utility functions.
+- Never consider a feature complete without passing tests.
+- Run `cargo test` (backend) before committing Rust changes.
+
+### DRY - Don't Repeat Yourself
+- Extract shared logic into reusable functions, modules, or composables.
+- Rust: use shared service functions in `services/` rather than duplicating logic across commands.
+- Vue: use composables for shared reactive logic, and reusable components in `components/ui/`.
+- TypeScript types live in `types/index.ts` — do not redeclare the same interfaces elsewhere.
+- Tauri API wrappers live in `lib/tauri-api.ts` — all invoke calls go through this single file.
+- If you see the same code in 2+ places, refactor it into a shared abstraction.
+
+### SOLID
+- **S - Single Responsibility:** Each module/file/function does one thing. Services handle business logic, models hold data, DB handles persistence, commands handle Tauri bridging.
+- **O - Open/Closed:** Extend behavior through new modules/services rather than modifying existing ones. Add new practice modes by creating new service functions, not by bloating existing ones.
+- **L - Liskov Substitution:** Respect trait contracts. If a function accepts a trait, any implementation must behave correctly.
+- **I - Interface Segregation:** Keep traits and type interfaces focused. Don't force types to implement methods they don't need.
+- **D - Dependency Inversion:** High-level modules (commands, views) depend on abstractions (services, stores), not on low-level details (raw SQL, direct HTTP calls).
+
+### KISS - Keep It Simple, Stupid
+- Prefer the simplest solution that works. No premature optimization or over-engineering.
+- Avoid unnecessary abstractions — a direct function call is better than an over-engineered pattern.
+- Clear, readable code over clever code. Name things explicitly.
+- If a feature can be implemented in 20 lines, don't write 100.
+- Flat is better than nested — minimize deep callback chains and nesting levels.
+
 ## Things to Watch Out For
 
 - **PyO3 dependency:** Phonetic service requires Python 3 with pykakasi, hangul-romanize, and epitran installed. May fail if Python environment is not set up.
