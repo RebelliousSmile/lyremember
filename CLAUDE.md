@@ -175,6 +175,211 @@ This project follows these core principles strictly. All contributions must adhe
 - If a feature can be implemented in 20 lines, don't write 100.
 - Flat is better than nested — minimize deep callback chains and nesting levels.
 
+## Master Deployment Plan
+
+### Phase 1 — Foundation & CI/CD (v0.1.x) ✅ En cours
+
+**Objectif :** Stabiliser le socle existant et mettre en place l'infrastructure de qualite.
+
+#### 1A. Pipeline CI/CD (GitHub Actions)
+- [ ] Workflow `ci.yml` : sur chaque push/PR
+  - `cargo fmt --check` + `cargo clippy` (lint Rust)
+  - `cargo test` (tests unitaires backend)
+  - `npm run build` dans `lyremember-app/` (type-check + build Vue)
+- [ ] Workflow `build.yml` : build Tauri multi-plateforme
+  - Matrix : `ubuntu-latest`, `macos-latest`, `windows-latest`
+  - Utiliser `tauri-apps/tauri-action` pour les builds
+  - Artefacts uploadés sur chaque PR (pas de release)
+- [ ] Cache : `actions/cache` pour `target/`, `node_modules/`, pip packages
+
+#### 1B. Tests de base
+- [ ] Tests unitaires Rust : services auth, songs, practice (avec `tempfile` pour SQLite)
+- [ ] Tests d'integration Rust : flux complet register → login → create song → practice
+- [ ] Validation TypeScript : `vue-tsc --noEmit` dans le CI
+
+#### 1C. Qualite de code
+- [ ] Ajouter `rustfmt.toml` (configuration formatage)
+- [ ] Ajouter ESLint + Prettier pour Vue/TypeScript
+- [ ] Pre-commit hooks via `husky` : lint + format avant chaque commit
+
+**Livrable :** Pipeline verte, tests passent, code formatte automatiquement.
+
+---
+
+### Phase 2 — Core UI Complete (v0.2.0)
+
+**Objectif :** Interface utilisateur fonctionnelle pour toutes les operations de base.
+
+#### 2A. Vues principales
+- [ ] **LoginView / RegisterView** : formulaires complets, validation, gestion erreurs
+- [ ] **DashboardView** : statistiques utilisateur, chansons recentes, progression
+- [ ] **SongsView** : liste des chansons avec recherche/filtre par langue/artiste
+- [ ] **AddSongView** : formulaire d'ajout avec preview phonetique et traduction
+- [ ] **SongDetailView** : affichage lyrics + phonetique + traductions cote a cote
+- [ ] **ProfileView** : settings utilisateur, stats globales
+
+#### 2B. Composants UI
+- [ ] Design system Tailwind : couleurs, typographie, espacements coherents
+- [ ] Composants reusables : Modal, Toast/Notification, Loading spinner, Empty state
+- [ ] Layout responsive : sidebar collapsible, navigation mobile-friendly
+- [ ] Dark mode fonctionnel (toggle dans le store `ui.ts`)
+
+#### 2C. Tests frontend
+- [ ] Tests unitaires Pinia stores (Vitest)
+- [ ] Tests composants avec `@vue/test-utils`
+- [ ] Ajouter `vitest` au CI pipeline
+
+**Livrable :** App navigable, toutes les vues fonctionnelles, design coherent.
+
+---
+
+### Phase 3 — Practice Modes (v0.3.0)
+
+**Objectif :** Modes d'entrainement interactifs — coeur de la valeur produit.
+
+#### 3A. Mode Karaoke
+- [ ] Affichage progressif des lyrics (ligne par ligne, scroll automatique)
+- [ ] Toggle phonetique / traduction en overlay
+- [ ] Timer et progression visuelle
+
+#### 3B. Mode Fill-in-the-Blank
+- [ ] Algorithme de selection de mots a masquer (frequence, difficulte)
+- [ ] Input interactif avec validation temps-reel
+- [ ] Score et feedback par ligne
+
+#### 3C. Mode QCM (Multiple Choice)
+- [ ] Generation de distracteurs (mots proches, meme chanson)
+- [ ] Interface cartes avec feedback immediat
+- [ ] Progression adaptative (difficulte croissante)
+
+#### 3D. Statistiques de pratique
+- [ ] Vue `PracticeStatsView` : graphiques de progression (chart.js ou equivalent leger)
+- [ ] Historique des sessions par chanson
+- [ ] Systeme de streaks / objectifs quotidiens
+
+#### 3E. Tests
+- [ ] Tests unitaires : algorithmes de scoring, generation de blanks, distracteurs
+- [ ] Tests d'integration : flux complet d'une session de pratique
+- [ ] Tests E2E avec WebDriver (optionnel, via `tauri-driver`)
+
+**Livrable :** 3 modes de pratique jouables, tracking de progression.
+
+---
+
+### Phase 4 — Features Avancees (v0.4.0)
+
+**Objectif :** Enrichir l'experience avec des fonctionnalites secondaires.
+
+#### 4A. Import Genius API
+- [ ] Integration Genius API dans le backend Rust (recherche + lyrics)
+- [ ] Vue recherche Genius dans l'UI : search → preview → import
+- [ ] Gestion du token API utilisateur (settings)
+
+#### 4B. Internationalisation (i18n)
+- [ ] Setup `vue-i18n` avec fichiers de traduction FR / EN / JP / KR
+- [ ] Toutes les strings UI externalisees
+- [ ] Switcher de langue dans les settings
+
+#### 4C. UX avancee
+- [ ] Keyboard shortcuts globaux (navigation, play/pause, next line)
+- [ ] Animations/transitions entre vues (Vue Transition)
+- [ ] Systeme de notifications in-app (Toast)
+- [ ] Mode oral : integration SpeechRecognition (si PyAudio disponible)
+
+#### 4D. Tests
+- [ ] Tests i18n : verification que toutes les cles existent dans chaque locale
+- [ ] Tests Genius API : mocks des appels HTTP
+- [ ] Tests accessibilite (a11y) basiques
+
+**Livrable :** App riche en fonctionnalites, multilingue, raccourcis clavier.
+
+---
+
+### Phase 5 — Pre-release & Polish (v0.9.0)
+
+**Objectif :** Qualite production, packaging, documentation utilisateur.
+
+#### 5A. Packaging multi-plateforme
+- [ ] Configuration Tauri bundle :
+  - **Linux** : `.deb`, `.AppImage`
+  - **macOS** : `.dmg` (+ codesigning si Apple Developer account)
+  - **Windows** : `.msi`, `.exe` (+ codesigning si certificat)
+- [ ] Bundling Python runtime : embarquer pykakasi/hangul-romanize avec `PyOxidizer` ou sidecar Python
+- [ ] Icones et branding finaux pour chaque plateforme
+- [ ] Splash screen au demarrage
+
+#### 5B. Gestion des dependances externes
+- [ ] **PyO3/Python** : strategie de fallback si Python absent (phonetique desactivee, message clair)
+- [ ] **LibreTranslate** : option d'instance locale bundlee OU fallback gracieux si API indisponible
+- [ ] Auto-update : configurer `tauri-plugin-updater` avec endpoint GitHub Releases
+
+#### 5C. Performance & securite
+- [ ] Audit securite : CSP Tauri, sanitize inputs, pas de secrets dans le frontend
+- [ ] Optimisation bundle Vite : code-splitting, lazy loading des vues
+- [ ] Profilage memoire Rust (pas de memory leaks sur les sessions longues)
+- [ ] SQLite : index sur les colonnes de recherche frequentes
+
+#### 5D. Documentation
+- [ ] README utilisateur : installation, premier lancement, guide rapide
+- [ ] CONTRIBUTING.md : guide de contribution
+- [ ] Changelog genere automatiquement (`git-cliff` ou `conventional-changelog`)
+
+**Livrable :** Binaires prets a distribuer, documentation complete, zero bug critique.
+
+---
+
+### Phase 6 — Release & Distribution (v1.0.0)
+
+**Objectif :** Premiere version publique stable.
+
+#### 6A. Release pipeline
+- [ ] Workflow `release.yml` (GitHub Actions) :
+  - Declenche sur tag `v*`
+  - Build Tauri multi-plateforme (matrix 3 OS)
+  - Upload des binaires en GitHub Release
+  - Generer changelog automatique
+- [ ] Versioning : Semantic Versioning (`MAJOR.MINOR.PATCH`)
+- [ ] Branches : `main` = stable, `develop` = integration, feature branches
+
+#### 6B. Distribution
+- [ ] **GitHub Releases** : binaires pour les 3 plateformes
+- [ ] **Auto-update** : Tauri updater pointe sur GitHub Releases API
+- [ ] (Optionnel futur) Homebrew tap (macOS), AUR (Arch Linux), winget (Windows)
+
+#### 6C. Post-release monitoring
+- [ ] Sentry ou equivalent pour crash reporting (optionnel, respecter la vie privee)
+- [ ] GitHub Issues templates : bug report, feature request
+- [ ] Metriques d'usage anonymes (opt-in uniquement)
+- [ ] Canal feedback : GitHub Discussions ou Discord
+
+#### 6D. Cycle de maintenance
+- [ ] Hotfix : `v1.0.x` pour bugs critiques (branch depuis tag, cherry-pick)
+- [ ] Minor : `v1.x.0` pour nouvelles features (depuis `develop`)
+- [ ] Dependabot active pour les mises a jour de securite (Cargo + npm)
+
+**Livrable :** v1.0.0 publiee, pipeline de release automatique, canal de feedback actif.
+
+---
+
+### Recapitulatif des versions
+
+| Phase | Version | Focus | Critere de succes |
+|-------|---------|-------|-------------------|
+| 1 | v0.1.x | CI/CD + tests + lint | Pipeline verte, tests passent |
+| 2 | v0.2.0 | Core UI complet | Toutes les vues fonctionnelles |
+| 3 | v0.3.0 | Modes de pratique | 3 modes jouables avec scoring |
+| 4 | v0.4.0 | Features avancees | i18n, Genius, raccourcis |
+| 5 | v0.9.0 | Polish & packaging | Binaires multi-plateforme |
+| 6 | v1.0.0 | Release publique | Distribution + auto-update |
+
+### Ordre des priorites par phase
+
+Chaque phase doit etre **complete et testee** avant de passer a la suivante. A l'interieur d'une phase, l'ordre recommande est :
+1. Tests d'abord (TDD)
+2. Implementation
+3. Review + refactor
+4. Merge dans `develop`
+
 ## Things to Watch Out For
 
 - **PyO3 dependency:** Phonetic service requires Python 3 with pykakasi, hangul-romanize, and epitran installed. May fail if Python environment is not set up.
