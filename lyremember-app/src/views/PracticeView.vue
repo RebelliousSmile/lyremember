@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 class="text-3xl font-bold text-[#F5F0EB]">
           {{ $t('practice.title') }}
         </h1>
       </div>
@@ -12,8 +12,8 @@
         <Card>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('practice.totalSessions') }}</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">
+              <p class="text-sm text-[#8A82A0]">{{ $t('practice.totalSessions') }}</p>
+              <p class="text-2xl font-bold text-[#F5F0EB]">
                 {{ userStats?.total_sessions ?? 0 }}
               </p>
             </div>
@@ -23,19 +23,19 @@
         <Card>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('practice.songsPracticed') }}</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">
+              <p class="text-sm text-[#8A82A0]">{{ $t('practice.songsPracticed') }}</p>
+              <p class="text-2xl font-bold text-[#F5F0EB]">
                 {{ userStats?.songs_practiced ?? 0 }}
               </p>
             </div>
-            <Music :size="32" class="text-indigo-600 dark:text-indigo-400" />
+            <Music :size="32" class="text-gold" />
           </div>
         </Card>
         <Card>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('practice.averageScore') }}</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">
+              <p class="text-sm text-[#8A82A0]">{{ $t('practice.averageScore') }}</p>
+              <p class="text-2xl font-bold text-[#F5F0EB]">
                 {{ userStats && userStats.total_sessions > 0 ? Math.round(userStats.average_score) + '%' : '-' }}
               </p>
             </div>
@@ -56,7 +56,7 @@
 
         <div v-else-if="songsStore.songs.length === 0" class="text-center py-8">
           <Music :size="48" class="mx-auto text-gray-400 mb-2" />
-          <p class="text-gray-600 dark:text-gray-400">{{ $t('practice.noSongsInRepertoire') }}</p>
+          <p class="text-[#8A82A0]">{{ $t('practice.noSongsInRepertoire') }}</p>
           <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">
             {{ $t('practice.addSongsFirst') }}
           </p>
@@ -70,14 +70,14 @@
           <div
             v-for="song in songsStore.songs"
             :key="song.id"
-            class="p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 transition-colors"
+            class="p-4 rounded-lg border border-deep-border hover:border-gold transition-colors"
           >
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-gray-900 dark:text-white">{{ song.title }}</h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400">{{ song.artist }}</p>
+                <h3 class="font-semibold text-[#F5F0EB]">{{ song.title }}</h3>
+                <p class="text-sm text-[#8A82A0]">{{ song.artist }}</p>
               </div>
-              <span class="px-2 py-1 text-xs rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300">
+              <span class="px-2 py-1 text-xs rounded-full bg-gold/10 text-gold">
                 {{ song.language.toUpperCase() }}
               </span>
             </div>

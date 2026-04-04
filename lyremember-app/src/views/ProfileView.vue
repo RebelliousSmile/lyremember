@@ -1,7 +1,7 @@
 <template>
   <MainLayout>
     <div class="max-w-2xl mx-auto space-y-6">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      <h1 class="text-3xl font-bold text-[#F5F0EB]">
         {{ $t('profile.title') }}
       </h1>
 
@@ -12,28 +12,28 @@
 
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label class="block text-sm font-medium text-[#B8B0D0] mb-1">
               {{ $t('profile.username') }}
             </label>
-            <p class="text-lg text-gray-900 dark:text-white">
+            <p class="text-lg text-[#F5F0EB]">
               {{ authStore.user?.username }}
             </p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label class="block text-sm font-medium text-[#B8B0D0] mb-1">
               {{ $t('profile.email') }}
             </label>
-            <p class="text-lg text-gray-900 dark:text-white">
+            <p class="text-lg text-[#F5F0EB]">
               {{ authStore.user?.email }}
             </p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label class="block text-sm font-medium text-[#B8B0D0] mb-1">
               {{ $t('profile.memberSince') }}
             </label>
-            <p class="text-lg text-gray-900 dark:text-white">
+            <p class="text-lg text-[#F5F0EB]">
               {{ formatDate(authStore.user?.created_at) }}
             </p>
           </div>
@@ -46,38 +46,38 @@
         </template>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <p class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+          <div class="text-center p-4 bg-deep-card-hover rounded-lg">
+            <p class="text-3xl font-bold text-gold">
               {{ songsStore.totalSongs }}
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p class="text-sm text-[#8A82A0] mt-1">
               {{ $t('profile.totalSongs') }}
             </p>
           </div>
 
-          <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div class="text-center p-4 bg-deep-card-hover rounded-lg">
             <p class="text-3xl font-bold text-green-600 dark:text-green-400">
               {{ userStats?.total_sessions ?? 0 }}
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p class="text-sm text-[#8A82A0] mt-1">
               {{ $t('profile.practiceSessions') }}
             </p>
           </div>
 
-          <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div class="text-center p-4 bg-deep-card-hover rounded-lg">
             <p class="text-3xl font-bold text-purple-600 dark:text-purple-400">
               {{ userStats && userStats.total_sessions > 0 ? Math.round(userStats.average_score) + '%' : '-' }}
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p class="text-sm text-[#8A82A0] mt-1">
               {{ $t('profile.averageScore') }}
             </p>
           </div>
 
-          <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div class="text-center p-4 bg-deep-card-hover rounded-lg">
             <p class="text-3xl font-bold text-orange-600 dark:text-orange-400">
               {{ userStats ? formatDuration(userStats.total_practice_time) : '0m' }}
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p class="text-sm text-[#8A82A0] mt-1">
               {{ $t('profile.practiceTime') }}
             </p>
           </div>

@@ -2,13 +2,13 @@
   <div class="space-y-6">
     <!-- Progress -->
     <div class="flex items-center gap-4">
-      <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+      <div class="flex-1 bg-deep-card-hover rounded-full h-2">
         <div
           class="bg-green-600 dark:bg-green-400 h-2 rounded-full transition-all duration-500"
           :style="{ width: `${progress}%` }"
         ></div>
       </div>
-      <span class="text-sm text-gray-600 dark:text-gray-400">
+      <span class="text-sm text-[#8A82A0]">
         {{ currentIndex + 1 }} / {{ song.lyrics.length }}
       </span>
       <span class="text-sm font-semibold" :class="scoreColor">
@@ -19,15 +19,15 @@
     <!-- Current line -->
     <div v-if="!finished" class="space-y-4">
       <!-- Phonetic hint -->
-      <p v-if="song.phonetic_lyrics?.[currentIndex]" class="text-sm italic text-gray-500 dark:text-gray-400">
+      <p v-if="song.phonetic_lyrics?.[currentIndex]" class="text-sm italic text-[#8A82A0]">
         {{ song.phonetic_lyrics[currentIndex] }}
       </p>
 
       <!-- Line with blanks -->
-      <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl">
+      <div class="p-6 bg-deep-card rounded-xl">
         <p class="text-xl leading-relaxed">
           <template v-for="(token, i) in currentTokens" :key="i">
-            <span v-if="!token.hidden" class="text-gray-900 dark:text-white">{{ token.text }} </span>
+            <span v-if="!token.hidden" class="text-[#F5F0EB]">{{ token.text }} </span>
             <span
               v-else-if="token.revealed"
               class="font-bold"
@@ -42,9 +42,9 @@
                 type="text"
                 v-model="userInputs[token.blankIndex]"
                 :placeholder="'_'.repeat(Math.max(3, token.text.length))"
-                class="w-32 px-2 py-1 border-b-2 border-indigo-400 bg-transparent text-center
-                       text-lg font-medium focus:outline-none focus:border-indigo-600
-                       dark:text-white dark:border-indigo-500"
+                class="w-32 px-2 py-1 border-b-2 border-gold bg-transparent text-center
+                       text-lg font-medium focus:outline-none focus:border-gold-dark
+                       text-[#F5F0EB]"
                 @keydown.enter="checkBlank(token.blankIndex)"
               />
               {{ ' ' }}
@@ -54,7 +54,7 @@
       </div>
 
       <!-- Translation hint -->
-      <p v-if="showHint && song.translations?.en?.[currentIndex]" class="text-sm text-gray-500 dark:text-gray-400">
+      <p v-if="showHint && song.translations?.en?.[currentIndex]" class="text-sm text-[#8A82A0]">
         💡 {{ song.translations.en[currentIndex] }}
       </p>
 
@@ -80,10 +80,10 @@
     <!-- End screen -->
     <div v-else class="text-center py-6 space-y-4">
       <div class="text-6xl mb-2">{{ scoreMedal }}</div>
-      <p class="text-xl font-semibold text-gray-900 dark:text-white">
+      <p class="text-xl font-semibold text-[#F5F0EB]">
         Score: {{ Math.round(scorePercent) }}%
       </p>
-      <p class="text-gray-600 dark:text-gray-400">
+      <p class="text-[#8A82A0]">
         {{ correctCount }} correct out of {{ answeredCount }} blanks
       </p>
       <div class="flex justify-center gap-3">

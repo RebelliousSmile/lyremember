@@ -2,27 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles */
+/* Custom styles - LyRemember dark gold theme */
 :root {
-  --primary: #3b82f6;
-  --primary-dark: #2563eb;
-  --secondary: #8b5cf6;
-  --success: #10b981;
+  --primary: #F2A93B;
+  --primary-dark: #D4911F;
+  --secondary: #7B6FA0;
+  --success: #30A46C;
   --danger: #ef4444;
-  --warning: #f59e0b;
-  --background: #ffffff;
-  --surface: #f3f4f6;
-  --text: #111827;
-  --text-secondary: #6b7280;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #111827;
-    --surface: #1f2937;
-    --text: #f9fafb;
-    --text-secondary: #d1d5db;
-  }
+  --warning: #F2A93B;
+  --background: #0D0B1A;
+  --surface: #1A1528;
+  --text: #F5F0EB;
+  --text-secondary: #B8B0D0;
+  --text-muted: #8A82A0;
+  --border: #2A2440;
 }
 
 body {

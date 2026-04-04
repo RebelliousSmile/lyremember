@@ -43,14 +43,15 @@ defineEmits<{
 }
 
 .input-label {
-  @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
+  @apply block text-sm font-medium mb-1;
+  color: #B8B0D0;
 }
 
 .input {
-  @apply w-full px-3 py-2 border border-gray-300 rounded-lg;
-  @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent;
-  @apply disabled:bg-gray-100 disabled:cursor-not-allowed;
-  @apply dark:bg-gray-800 dark:border-gray-600 dark:text-white;
+  @apply w-full px-3 py-2 border border-deep-border rounded-lg;
+  @apply focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply bg-deep-surface text-[#F5F0EB];
   @apply transition-colors duration-200;
 }
 

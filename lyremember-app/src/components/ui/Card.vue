@@ -20,11 +20,11 @@ defineProps<{
 
 <style scoped>
 .card {
-  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden;
+  @apply bg-deep-card rounded-lg shadow-md overflow-hidden border border-deep-border;
 }
 
 .card-header {
-  @apply px-6 py-4 border-b border-gray-200 dark:border-gray-700;
+  @apply px-6 py-4 border-b border-deep-border;
 }
 
 .card-body {
@@ -32,6 +32,6 @@ defineProps<{
 }
 
 .card-footer {
-  @apply px-6 py-4 border-t border-gray-200 dark:border-gray-700;
+  @apply px-6 py-4 border-t border-deep-border;
 }
 </style>

@@ -5,7 +5,7 @@
         <Button variant="ghost" @click="$router.back()">
           <ArrowLeft :size="20" />
         </Button>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 class="text-3xl font-bold text-[#F5F0EB]">
           {{ $t('addSong.title') }}
         </h1>
       </div>
@@ -31,13 +31,13 @@
           />
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label class="block text-sm font-medium text-[#B8B0D0] mb-1">
               {{ $t('addSong.language') }} <span class="text-red-500">*</span>
             </label>
             <select
               v-model="form.language"
               required
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              class="w-full px-3 py-2 border border-deep-border rounded-lg bg-deep-card"
             >
               <option value="">{{ $t('addSong.selectLanguage') }}</option>
               <option value="fr">{{ $t('songs.french') }}</option>
@@ -48,7 +48,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label class="block text-sm font-medium text-[#B8B0D0] mb-1">
               {{ $t('addSong.lyrics') }} <span class="text-red-500">*</span>
             </label>
             <textarea
@@ -56,16 +56,16 @@
               rows="10"
               required
               :placeholder="$t('addSong.lyricsPlaceholder')"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 font-mono text-sm"
+              class="w-full px-3 py-2 border border-deep-border rounded-lg bg-deep-card font-mono text-sm"
             />
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-sm text-[#8A82A0]">
               {{ $t('addSong.lyricsHint') }}
             </p>
           </div>
 
           <div class="flex items-center gap-2">
             <input v-model="form.autoTranslate" type="checkbox" id="autoTranslate" class="rounded" />
-            <label for="autoTranslate" class="text-sm text-gray-700 dark:text-gray-300">
+            <label for="autoTranslate" class="text-sm text-[#B8B0D0]">
               {{ $t('addSong.autoTranslate') }}
             </label>
           </div>

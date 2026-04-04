@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-900 dark:to-purple-900 p-4">
+  <div class="min-h-screen flex items-center justify-center bg-deep p-4">
     <Card className="w-full max-w-md">
       <template #header>
         <h2 class="text-2xl font-bold text-center">{{ $t('auth.loginTitle') }}</h2>
@@ -29,9 +29,9 @@
         </Button>
 
         <div class="relative flex items-center my-2">
-          <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
-          <span class="mx-3 text-sm text-gray-500 dark:text-gray-400">{{ $t('auth.or') }}</span>
-          <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+          <div class="flex-grow border-t border-deep-border"></div>
+          <span class="mx-3 text-sm text-[#8A82A0]">{{ $t('auth.or') }}</span>
+          <div class="flex-grow border-t border-deep-border"></div>
         </div>
 
         <Button
@@ -45,9 +45,9 @@
           {{ $t('auth.continueAsGuest') }}
         </Button>
 
-        <p class="text-center text-sm text-gray-600 dark:text-gray-400">
+        <p class="text-center text-sm text-[#8A82A0]">
           {{ $t('auth.noAccount') }}
-          <router-link to="/register" class="text-indigo-600 dark:text-indigo-400 hover:underline">
+          <router-link to="/register" class="text-gold hover:underline">
             {{ $t('auth.register') }}
           </router-link>
         </p>

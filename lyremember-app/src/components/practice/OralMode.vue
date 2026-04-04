@@ -2,36 +2,36 @@
   <div class="space-y-6">
     <!-- Progress -->
     <div class="flex items-center gap-4">
-      <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+      <div class="flex-1 bg-deep-card-hover rounded-full h-2">
         <div
           class="bg-orange-500 dark:bg-orange-400 h-2 rounded-full transition-all duration-500"
           :style="{ width: `${progress}%` }"
         ></div>
       </div>
-      <span class="text-sm text-gray-600 dark:text-gray-400">
+      <span class="text-sm text-[#8A82A0]">
         {{ currentIndex + 1 }} / {{ song.lyrics.length }}
       </span>
     </div>
 
     <div v-if="!finished" class="space-y-6">
       <!-- Translation prompt -->
-      <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl text-center space-y-2">
-        <p class="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+      <div class="p-6 bg-deep-card rounded-xl text-center space-y-2">
+        <p class="text-sm text-[#8A82A0] uppercase tracking-wide">
           Try to say this in {{ song.language.toUpperCase() }}:
         </p>
-        <p v-if="song.translations?.en?.[currentIndex]" class="text-xl font-semibold text-gray-900 dark:text-white">
+        <p v-if="song.translations?.en?.[currentIndex]" class="text-xl font-semibold text-[#F5F0EB]">
           {{ song.translations.en[currentIndex] }}
         </p>
-        <p v-else class="text-lg text-gray-600 dark:text-gray-300 italic">
+        <p v-else class="text-lg text-[#B8B0D0] italic">
           Read line {{ currentIndex + 1 }} aloud
         </p>
       </div>
 
       <!-- Reveal stages -->
-      <div class="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 space-y-4">
+      <div class="p-6 bg-deep rounded-xl border border-deep-border space-y-4">
         <!-- Stage 0: Hidden -->
         <div v-if="revealStage === 0" class="text-center py-4">
-          <p class="text-gray-400 dark:text-gray-500 text-lg">Try saying the line first, then reveal hints below</p>
+          <p class="text-[#8A82A0] text-lg">Try saying the line first, then reveal hints below</p>
         </div>
 
         <!-- Stage 1: Phonetic -->

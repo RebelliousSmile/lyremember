@@ -40,7 +40,7 @@ const navItems = computed(() => [
 
 <style scoped>
 .sidebar {
-  @apply w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700;
+  @apply w-64 bg-deep-card border-r border-deep-border;
   @apply transition-transform duration-300;
   @apply hidden md:block;
 }
@@ -55,14 +55,14 @@ const navItems = computed(() => [
 
 .nav-item {
   @apply flex items-center gap-3 px-4 py-3 rounded-lg;
-  @apply text-gray-700 dark:text-gray-300;
-  @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+  color: #B8B0D0;
+  @apply hover:bg-deep-card-hover;
   @apply transition-colors duration-200;
 }
 
 .nav-item-active {
-  @apply bg-indigo-50 dark:bg-indigo-900/20;
-  @apply text-indigo-600 dark:text-indigo-400;
+  background: rgba(242, 169, 59, 0.1);
+  color: #F2A93B;
   @apply font-medium;
 }
 </style>

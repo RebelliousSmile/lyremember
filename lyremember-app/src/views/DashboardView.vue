@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 class="text-3xl font-bold text-[#F5F0EB]">
           {{ $t('dashboard.title') }}
         </h1>
       </div>
@@ -11,20 +11,20 @@
         <Card>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('dashboard.totalSongs') }}</p>
-              <p class="text-3xl font-bold text-gray-900 dark:text-white">
+              <p class="text-sm text-[#8A82A0]">{{ $t('dashboard.totalSongs') }}</p>
+              <p class="text-3xl font-bold text-[#F5F0EB]">
                 {{ songsStore.totalSongs }}
               </p>
             </div>
-            <Music :size="40" class="text-indigo-600 dark:text-indigo-400" />
+            <Music :size="40" class="text-gold" />
           </div>
         </Card>
 
         <Card>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('dashboard.practiceSessions') }}</p>
-              <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ totalSessions }}</p>
+              <p class="text-sm text-[#8A82A0]">{{ $t('dashboard.practiceSessions') }}</p>
+              <p class="text-3xl font-bold text-[#F5F0EB]">{{ totalSessions }}</p>
             </div>
             <PlayCircle :size="40" class="text-green-600 dark:text-green-400" />
           </div>
@@ -33,8 +33,8 @@
         <Card>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('dashboard.averageScore') }}</p>
-              <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ averageScore }}</p>
+              <p class="text-sm text-[#8A82A0]">{{ $t('dashboard.averageScore') }}</p>
+              <p class="text-3xl font-bold text-[#F5F0EB]">{{ averageScore }}</p>
             </div>
             <TrendingUp :size="40" class="text-purple-600 dark:text-purple-400" />
           </div>
@@ -72,7 +72,7 @@
 
         <div v-else-if="songsStore.songs.length === 0" class="text-center py-8">
           <Music :size="48" class="mx-auto text-gray-400 mb-2" />
-          <p class="text-gray-600 dark:text-gray-400">{{ $t('dashboard.noSongsYet') }}</p>
+          <p class="text-[#8A82A0]">{{ $t('dashboard.noSongsYet') }}</p>
           <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">
             {{ $t('dashboard.addFirstSong') }}
           </p>
@@ -83,12 +83,12 @@
             v-for="song in recentSongs"
             :key="song.id"
             :to="`/songs/${song.id}`"
-            class="block p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            class="block p-4 rounded-lg hover:bg-deep-card-hover transition-colors"
           >
             <div class="flex items-center justify-between">
               <div>
-                <h3 class="font-semibold text-gray-900 dark:text-white">{{ song.title }}</h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400">
+                <h3 class="font-semibold text-[#F5F0EB]">{{ song.title }}</h3>
+                <p class="text-sm text-[#8A82A0]">
                   {{ song.artist }} - {{ song.language.toUpperCase() }}
                 </p>
               </div>

@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 class="text-3xl font-bold text-[#F5F0EB]">
           {{ $t('songs.title') }}
         </h1>
         <Button variant="primary" @click="$router.push('/songs/add')">
@@ -28,7 +28,7 @@
           <select
             v-model="songsStore.selectedLanguage"
             @change="(e) => songsStore.setSelectedLanguage((e.target as HTMLSelectElement).value)"
-            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            class="px-4 py-2 border border-deep-border rounded-lg bg-deep-card"
           >
             <option value="all">{{ $t('songs.allLanguages') }}</option>
             <option value="fr">{{ $t('songs.french') }}</option>
@@ -45,7 +45,7 @@
 
       <div v-else-if="songsStore.filteredSongs.length === 0" class="text-center py-12">
         <Music :size="64" class="mx-auto text-gray-400 mb-4" />
-        <p class="text-xl text-gray-600 dark:text-gray-400 mb-2">
+        <p class="text-xl text-[#8A82A0] mb-2">
           {{ songsStore.searchQuery ? $t('songs.noSongs') : $t('songs.noSongsYet') }}
         </p>
         <p class="text-gray-500 dark:text-gray-500 mb-4">
@@ -67,24 +67,24 @@
           <div class="space-y-3">
             <div class="flex items-start justify-between">
               <div class="flex-1">
-                <h3 class="font-semibold text-lg text-gray-900 dark:text-white line-clamp-2">
+                <h3 class="font-semibold text-lg text-[#F5F0EB] line-clamp-2">
                   {{ song.title }}
                 </h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400">
+                <p class="text-sm text-[#8A82A0]">
                   {{ song.artist }}
                 </p>
               </div>
-              <span class="px-2 py-1 text-xs font-medium rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300">
+              <span class="px-2 py-1 text-xs font-medium rounded-full bg-gold/10 text-gold">
                 {{ song.language.toUpperCase() }}
               </span>
             </div>
 
-            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+            <div class="flex items-center gap-2 text-sm text-[#8A82A0]">
               <Hash :size="16" />
               {{ $t('songs.lines', { count: song.lyrics.length }) }}
             </div>
 
-            <div class="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex gap-2 pt-2 border-t border-deep-border">
               <span
                 v-if="song.phonetic_lyrics"
                 class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"

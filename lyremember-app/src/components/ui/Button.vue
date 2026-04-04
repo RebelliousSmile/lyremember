@@ -39,15 +39,14 @@ defineEmits<{
 }
 
 .btn-primary {
-  @apply bg-indigo-600 text-white hover:bg-indigo-700;
-  @apply focus:ring-indigo-500;
-  @apply dark:bg-indigo-500 dark:hover:bg-indigo-600;
+  @apply bg-gold text-deep hover:bg-gold-light font-semibold;
+  @apply focus:ring-gold;
 }
 
 .btn-secondary {
-  @apply bg-gray-200 text-gray-900 hover:bg-gray-300;
-  @apply focus:ring-gray-400;
-  @apply dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600;
+  @apply bg-deep-card-hover border border-deep-border hover:bg-deep-card;
+  @apply focus:ring-violet-accent;
+  color: #B8B0D0;
 }
 
 .btn-danger {
@@ -56,9 +55,9 @@ defineEmits<{
 }
 
 .btn-ghost {
-  @apply bg-transparent text-gray-700 hover:bg-gray-100;
-  @apply focus:ring-gray-300;
-  @apply dark:text-gray-300 dark:hover:bg-gray-800;
+  @apply bg-transparent hover:bg-deep-card-hover;
+  @apply focus:ring-deep-border;
+  color: #B8B0D0;
 }
 
 .btn-sm {

@@ -9,14 +9,14 @@
           <ArrowLeft :size="20" />
         </Button>
         <div class="flex-1">
-          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 class="text-3xl font-bold text-[#F5F0EB]">
             {{ song?.title }}
           </h1>
-          <p class="text-gray-600 dark:text-gray-400">
+          <p class="text-[#8A82A0]">
             {{ song?.artist }}
           </p>
         </div>
-        <span class="px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300">
+        <span class="px-3 py-1 rounded-full bg-gold/10 text-gold">
           {{ song?.language.toUpperCase() }}
         </span>
       </div>
@@ -76,7 +76,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <!-- Original Lyrics -->
               <div>
-                <h3 class="font-semibold text-sm text-gray-600 dark:text-gray-400 mb-3">
+                <h3 class="font-semibold text-sm text-[#8A82A0] mb-3">
                   {{ $t('songDetail.original') }} ({{ song.language.toUpperCase() }})
                 </h3>
                 <div class="space-y-2">
@@ -92,14 +92,14 @@
 
               <!-- Phonetic -->
               <div v-if="song.phonetic_lyrics">
-                <h3 class="font-semibold text-sm text-gray-600 dark:text-gray-400 mb-3">
+                <h3 class="font-semibold text-sm text-[#8A82A0] mb-3">
                   {{ $t('songDetail.phonetic') }}
                 </h3>
                 <div class="space-y-2">
                   <p
                     v-for="(line, index) in song.phonetic_lyrics"
                     :key="`phonetic-${index}`"
-                    class="text-lg leading-relaxed text-gray-600 dark:text-gray-400 italic"
+                    class="text-lg leading-relaxed text-[#8A82A0] italic"
                   >
                     {{ line }}
                   </p>
@@ -108,14 +108,14 @@
 
               <!-- Translation -->
               <div v-if="song.translations && song.translations.en">
-                <h3 class="font-semibold text-sm text-gray-600 dark:text-gray-400 mb-3">
+                <h3 class="font-semibold text-sm text-[#8A82A0] mb-3">
                   {{ $t('songDetail.englishTranslation') }}
                 </h3>
                 <div class="space-y-2">
                   <p
                     v-for="(line, index) in song.translations.en"
                     :key="`translation-${index}`"
-                    class="text-lg leading-relaxed text-gray-600 dark:text-gray-400"
+                    class="text-lg leading-relaxed text-[#8A82A0]"
                   >
                     {{ line }}
                   </p>
