@@ -1,5 +1,8 @@
 # LyRemember 🎵
 
+> **Statut : Prototype / Early Development (v0.1.0)**
+> Ce projet est en phase de prototypage actif. L'architecture backend et l'integration Tauri sont fonctionnelles, mais l'interface utilisateur et les modes de pratique sont encore en cours de developpement. Les APIs et la structure du code peuvent changer sans preavis.
+
 Application multiplateforme pour mémoriser et pratiquer des paroles de chansons dans plusieurs langues avec support phonétique et traduction automatique.
 
 ## 🎯 Vue d'Ensemble
