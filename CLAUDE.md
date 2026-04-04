@@ -380,10 +380,72 @@ Chaque phase doit etre **complete et testee** avant de passer a la suivante. A l
 3. Review + refactor
 4. Merge dans `develop`
 
+---
+
+### Bugs et dettes techniques a corriger en priorite
+
+Ces problemes ont ete identifies par analyse du code et doivent etre resolus **avant** de commencer de nouvelles features :
+
+1. **`get_user_sessions` signature mismatch** — `commands.rs` accepte `limit: Option<i32>` mais `practice.rs:get_user_sessions()` ne prend pas de parametre `limit`. Aligner les deux.
+2. **Blocking HTTP dans async** — `translation.rs` utilise `reqwest::blocking::Client` mais est appele depuis un `async fn` Tauri command. Migrer vers `reqwest::Client` async ou wrapper avec `tokio::task::spawn_blocking`.
+3. **LibreTranslate URL hardcodee** — `translation.rs` ligne 7 hardcode `LIBRETRANSLATE_URL`. Extraire dans un `config.rs` qui lit les settings depuis le repertoire app data.
+4. **App identifier placeholder** — `tauri.conf.json` utilise `com.runner.lyremember-app`. Remplacer par un vrai identifiant (ex: `com.lyremember.app`).
+
+### Strategie PyO3 pour la distribution
+
+Le bridging Python via PyO3 est le **principal obstacle de deploiement**. Trois options :
+
+| Option | Description | Complexite | Recommandation |
+|--------|-------------|------------|----------------|
+| **A (Recommandee)** | Fallback pure-Rust : `wana_kana` (JP romaji), lookup table (KR), feature flag `python-phonetics` | Faible | Elimine la dependance Python |
+| B | Bundler Python avec `pyembed`/`PyOxidizer` | Elevee | +30-50 MB par binaire, cross-compile complexe |
+| C | Python en sidecar Tauri | Moyenne | Fragile selon les OS, necessite Python installe |
+
+**Action concrete (Option A) :** Dans `rust-backend/Cargo.toml`, rendre PyO3 optionnel :
+```toml
+[features]
+default = []
+python-phonetics = ["pyo3"]
+
+[dependencies]
+pyo3 = { version = "0.20", features = ["auto-initialize"], optional = true }
+```
+
+### Versioning et synchronisation
+
+La version doit etre synchronisee dans **4 fichiers** a chaque release :
+1. `lyremember-app/package.json` (`"version"`)
+2. `lyremember-app/src-tauri/tauri.conf.json` (`"version"`)
+3. `lyremember-app/src-tauri/Cargo.toml` (`version`)
+4. `rust-backend/Cargo.toml` (`version`)
+
+**Format :** Semantic Versioning `MAJOR.MINOR.PATCH`
+**Commits :** Adopter Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`)
+**Changelog :** Genere avec `git-cliff` au format [Keep a Changelog](https://keepachangelog.com)
+
+### Branching strategy
+
+- `main` — toujours releasable
+- `develop` — branche d'integration
+- `feature/*` — branches de fonctionnalite (ex: `feature/practice-karaoke`)
+- `release/vX.Y.Z` — branches de release (pour hotfixes si necessaire)
+
+### CI/CD Secrets a configurer (quand pret)
+
+| Secret | Usage | Quand |
+|--------|-------|-------|
+| `APPLE_CERTIFICATE` + `APPLE_CERTIFICATE_PASSWORD` | Code signing macOS | Phase 5 |
+| `APPLE_ID` + `APPLE_PASSWORD` + `APPLE_TEAM_ID` | Notarization macOS | Phase 5 |
+| `WINDOWS_CERTIFICATE` | Code signing Windows (optionnel) | Phase 5 |
+| `TAURI_SIGNING_PRIVATE_KEY` | Auto-updater Tauri | Phase 6 |
+
+Pour le developpement, **skip le code signing** — les apps non-signees fonctionnent pour tester.
+
 ## Things to Watch Out For
 
-- **PyO3 dependency:** Phonetic service requires Python 3 with pykakasi, hangul-romanize, and epitran installed. May fail if Python environment is not set up.
-- **LibreTranslate:** Translation service calls an external API; needs network access and a running LibreTranslate instance.
+- **PyO3 dependency:** Phonetic service requires Python 3 with pykakasi, hangul-romanize, and epitran installed. May fail if Python environment is not set up. See "Strategie PyO3" above.
+- **LibreTranslate:** Translation service calls an external API; needs network access and a running LibreTranslate instance. No fallback if API is down.
 - **DB location:** SQLite database lives in the OS app data directory (`~/.config/lyremember-app/lyremember.db` on Linux).
-- **No CI/CD yet:** No automated pipelines; build and test locally.
+- **No CI/CD yet:** No automated pipelines; build and test locally. See Phase 1A.
 - **Legacy Python CLI:** The `lyremember/` directory is a proof-of-concept CLI. The production app is in `lyremember-app/` + `rust-backend/`.
+- **Blocking-in-async:** `translation.rs` uses blocking reqwest inside async Tauri commands. Fix before adding more async operations.
