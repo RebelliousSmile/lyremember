@@ -81,7 +81,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { Menu, Moon, Sun, User, ChevronDown, LogOut, Settings } from 'lucide-vue-next';
+import { Menu, User, ChevronDown, LogOut, Settings } from 'lucide-vue-next';
 import { useAuthStore } from '../../stores/auth';
 import { useUiStore } from '../../stores/ui';
 

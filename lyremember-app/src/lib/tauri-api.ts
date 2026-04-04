@@ -81,7 +81,6 @@ export async function createSong(
   artist: string,
   language: string,
   lyrics: string[],
-  autoTranslate?: boolean
 ): Promise<Song> {
   return await invoke('cmd_create_song', {
     title,

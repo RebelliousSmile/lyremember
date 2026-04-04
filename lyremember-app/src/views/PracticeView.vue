@@ -153,9 +153,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { PlayCircle, Music, TrendingUp, PenLine, List, Mic, Plus } from 'lucide-vue-next';
+import { PlayCircle, Music, PenLine, List, Mic, Plus } from 'lucide-vue-next';
 import MainLayout from '../components/layout/MainLayout.vue';
-import Card from '../components/ui/Card.vue';
 import Button from '../components/ui/Button.vue';
 import Spinner from '../components/ui/Spinner.vue';
 import { useSongsStore } from '../stores/songs';
@@ -171,7 +170,7 @@ function toggleSong(songId: string) {
   selectedSongId.value = selectedSongId.value === songId ? null : songId;
 }
 
-function getMasteryPercent(songId: string): number {
+function getMasteryPercent(_songId: string): number {
   // Placeholder: derive from userStats or return 0
   return 0;
 }

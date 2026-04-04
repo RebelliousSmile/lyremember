@@ -195,7 +195,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { ArrowLeft, PlayCircle, PenLine, List, Mic, X, MoreHorizontal } from 'lucide-vue-next';
+import { PlayCircle, PenLine, List, Mic, X, MoreHorizontal } from 'lucide-vue-next';
 import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
 import Button from '../components/ui/Button.vue';

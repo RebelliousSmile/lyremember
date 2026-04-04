@@ -102,12 +102,11 @@ export const useSongsStore = defineStore('songs', () => {
     artist: string,
     language: string,
     lyrics: string[],
-    autoTranslate: boolean = true
   ) {
     loading.value = true;
     error.value = null;
     try {
-      const song = await api.createSong(title, artist, language, lyrics, autoTranslate);
+      const song = await api.createSong(title, artist, language, lyrics);
       songs.value.push(song);
       return song;
     } catch (err) {

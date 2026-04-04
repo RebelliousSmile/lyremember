@@ -153,7 +153,6 @@ async function handleSubmit() {
       form.value.artist,
       form.value.language,
       lyricsArray,
-      form.value.autoTranslate
     );
 
     if (authStore.user) {
