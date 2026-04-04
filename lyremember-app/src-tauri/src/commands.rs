@@ -1,6 +1,6 @@
 use lyremember_backend::models::*;
+use lyremember_backend::rusqlite::Connection;
 use lyremember_backend::services::*;
-use rusqlite::Connection;
 use serde::Serialize;
 use std::sync::Mutex;
 use tauri::State;
@@ -16,7 +16,7 @@ pub struct LoginResponse {
 }
 
 /// Helper to lock the database connection
-fn lock_db(state: &State<'_, DbState>) -> Result<std::sync::MutexGuard<'_, Connection>, String> {
+fn lock_db<'a>(state: &'a State<'a, DbState>) -> Result<std::sync::MutexGuard<'a, Connection>, String> {
     state.0.lock().map_err(|e: std::sync::PoisonError<_>| e.to_string())
 }
 
@@ -69,11 +69,10 @@ pub fn cmd_create_song(
     artist: String,
     language: String,
     lyrics: Vec<String>,
-    auto_translate: Option<bool>,
     state: State<'_, DbState>,
 ) -> Result<Song, String> {
     let conn = lock_db(&state)?;
-    let data = CreateSongData { title, artist, language, lyrics, auto_translate };
+    let data = CreateSongData { title, artist, language, lyrics };
     songs::create_song(&conn, data).map_err(|e| format!("Failed to create song: {}", e))
 }
 
