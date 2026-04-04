@@ -48,7 +48,7 @@
         <p class="text-xl text-[#8A82A0] mb-2">
           {{ songsStore.searchQuery ? $t('songs.noSongs') : $t('songs.noSongsYet') }}
         </p>
-        <p class="text-gray-500 dark:text-gray-500 mb-4">
+        <p class="text-[#8A82A0] mb-4">
           {{ songsStore.searchQuery ? $t('songs.tryDifferentSearch') : $t('songs.addFirstSongHint') }}
         </p>
         <Button v-if="!songsStore.searchQuery" variant="primary" @click="$router.push('/songs/add')">

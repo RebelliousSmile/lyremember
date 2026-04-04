@@ -84,7 +84,7 @@
             <p v-if="tokenSaved" class="text-sm text-green-600 dark:text-green-400">
               {{ $t('settings.tokenSaved') }}
             </p>
-            <p class="text-xs text-gray-400 dark:text-gray-500">
+            <p class="text-xs text-[#8A82A0]">
               {{ $t('settings.geniusHelp') }}
             </p>
           </div>

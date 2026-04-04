@@ -57,7 +57,7 @@
         <div v-else-if="songsStore.songs.length === 0" class="text-center py-8">
           <Music :size="48" class="mx-auto text-gray-400 mb-2" />
           <p class="text-[#8A82A0]">{{ $t('practice.noSongsInRepertoire') }}</p>
-          <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">
+          <p class="text-sm text-[#8A82A0] mt-1">
             {{ $t('practice.addSongsFirst') }}
           </p>
           <Button variant="primary" className="mt-4" @click="$router.push('/songs/add')">

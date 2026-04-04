@@ -69,7 +69,7 @@
           Translation
         </label>
         <div class="flex items-center gap-2">
-          <span class="text-xs text-gray-500">Speed</span>
+          <span class="text-xs text-[#8A82A0]">Speed</span>
           <select v-model.number="speed" class="text-sm rounded border-deep-border bg-deep-card-hover px-2 py-1">
             <option :value="4000">Slow</option>
             <option :value="2500">Normal</option>
