@@ -3,23 +3,20 @@
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          My Songs
+          {{ $t('songs.title') }}
         </h1>
-        <Button
-          variant="primary"
-          @click="$router.push('/songs/add')"
-        >
+        <Button variant="primary" @click="$router.push('/songs/add')">
           <Plus :size="20" />
-          Add Song
+          {{ $t('songs.addSong') }}
         </Button>
       </div>
-      
+
       <Card>
         <div class="flex flex-col md:flex-row gap-4">
           <div class="flex-1">
             <Input
               v-model="songsStore.searchQuery"
-              placeholder="Search songs by title or artist..."
+              :placeholder="$t('songs.searchPlaceholder')"
               @input="songsStore.setSearchQuery($event.target.value)"
             >
               <template #prefix>
@@ -27,43 +24,39 @@
               </template>
             </Input>
           </div>
-          
+
           <select
             v-model="songsStore.selectedLanguage"
             @change="(e) => songsStore.setSelectedLanguage((e.target as HTMLSelectElement).value)"
             class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
           >
-            <option value="all">All Languages</option>
-            <option value="fr">French</option>
-            <option value="en">English</option>
-            <option value="jp">Japanese</option>
-            <option value="kr">Korean</option>
+            <option value="all">{{ $t('songs.allLanguages') }}</option>
+            <option value="fr">{{ $t('songs.french') }}</option>
+            <option value="en">{{ $t('songs.english') }}</option>
+            <option value="jp">{{ $t('songs.japanese') }}</option>
+            <option value="kr">{{ $t('songs.korean') }}</option>
           </select>
         </div>
       </Card>
-      
+
       <div v-if="songsStore.loading" class="text-center py-12">
-        <p class="text-gray-500 dark:text-gray-400">Loading songs...</p>
+        <p class="text-gray-500 dark:text-gray-400">{{ $t('common.loading') }}</p>
       </div>
-      
+
       <div v-else-if="songsStore.filteredSongs.length === 0" class="text-center py-12">
         <Music :size="64" class="mx-auto text-gray-400 mb-4" />
         <p class="text-xl text-gray-600 dark:text-gray-400 mb-2">
-          {{ songsStore.searchQuery ? 'No songs found' : 'No songs yet' }}
+          {{ songsStore.searchQuery ? $t('songs.noSongs') : $t('songs.noSongsYet') }}
         </p>
         <p class="text-gray-500 dark:text-gray-500 mb-4">
-          {{ songsStore.searchQuery ? 'Try a different search' : 'Add your first song to get started!' }}
+          {{ songsStore.searchQuery ? $t('songs.tryDifferentSearch') : $t('songs.addFirstSongHint') }}
         </p>
-        <Button
-          v-if="!songsStore.searchQuery"
-          variant="primary"
-          @click="$router.push('/songs/add')"
-        >
+        <Button v-if="!songsStore.searchQuery" variant="primary" @click="$router.push('/songs/add')">
           <Plus :size="20" />
-          Add Your First Song
+          {{ $t('songs.addFirstSong') }}
         </Button>
       </div>
-      
+
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card
           v-for="song in songsStore.filteredSongs"
@@ -85,26 +78,26 @@
                 {{ song.language.toUpperCase() }}
               </span>
             </div>
-            
+
             <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <Hash :size="16" />
-              {{ song.lyrics.length }} lines
+              {{ $t('songs.lines', { count: song.lyrics.length }) }}
             </div>
-            
+
             <div class="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
               <span
                 v-if="song.phonetic_lyrics"
                 class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"
               >
                 <Check :size="12" />
-                Phonetic
+                {{ $t('songs.phonetic') }}
               </span>
               <span
                 v-if="song.translations"
                 class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300"
               >
                 <Check :size="12" />
-                Translation
+                {{ $t('songs.translation') }}
               </span>
             </div>
           </div>

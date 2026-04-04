@@ -157,6 +157,7 @@ const searchDone = ref(false);
 const searchResults = ref<{ id: string; title: string; artist: string }[]>([]);
 
 function changeLocale(code: string) {
+  if (!supportedLocales.some(l => l.code === code)) return;
   locale.value = code as SupportedLocale;
   localStorage.setItem('locale', code);
 }
