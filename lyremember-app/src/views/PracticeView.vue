@@ -27,39 +27,41 @@
         />
       </div>
 
-      <!-- Practice mode content -->
-      <div v-if="!practiceStore.finished">
-        <KaraokeMode
-          v-if="practiceStore.mode === 'karaoke'"
-          :song="practiceStore.song!"
-          :current-line="currentLine"
-          @answer="practiceStore.answerLine"
-        />
-        <FillBlankMode
-          v-else-if="practiceStore.mode === 'fill-blank'"
-          :song="practiceStore.song!"
-          :current-line="currentLine"
-          @answer="practiceStore.answerLine"
-        />
-        <MCQMode
-          v-else-if="practiceStore.mode === 'mcq'"
-          :song="practiceStore.song!"
-          :current-line="currentLine"
-          @answer="practiceStore.answerLine"
-        />
-      </div>
+      <template v-if="practiceStore.song && practiceStore.state && practiceStore.mode">
+        <!-- Practice mode content -->
+        <div v-if="!practiceStore.finished">
+          <KaraokeMode
+            v-if="practiceStore.mode === 'karaoke'"
+            :song="practiceStore.song"
+            :current-line="currentLine"
+            @answer="practiceStore.answerLine"
+          />
+          <FillBlankMode
+            v-else-if="practiceStore.mode === 'fill-blank'"
+            :song="practiceStore.song"
+            :current-line="currentLine"
+            @answer="practiceStore.answerLine"
+          />
+          <MCQMode
+            v-else-if="practiceStore.mode === 'mcq'"
+            :song="practiceStore.song"
+            :current-line="currentLine"
+            @answer="practiceStore.answerLine"
+          />
+        </div>
 
-      <!-- Result screen -->
-      <PracticeResult
-        v-else
-        :score="practiceStore.score"
-        :correct="practiceStore.state!.correctLines"
-        :total="practiceStore.state!.totalLines"
-        :mode="practiceStore.mode!"
-        :song-title="practiceStore.song!.title"
-        @retry="retry"
-        @back="goToSong"
-      />
+        <!-- Result screen -->
+        <PracticeResult
+          v-else
+          :score="practiceStore.score"
+          :correct="practiceStore.state.correctLines"
+          :total="practiceStore.state.totalLines"
+          :mode="practiceStore.mode"
+          :song-title="practiceStore.song.title"
+          @retry="retry"
+          @back="goToSong"
+        />
+      </template>
     </div>
   </MainLayout>
 </template>
@@ -74,7 +76,7 @@ import KaraokeMode from '../components/practice/KaraokeMode.vue';
 import FillBlankMode from '../components/practice/FillBlankMode.vue';
 import MCQMode from '../components/practice/MCQMode.vue';
 import PracticeResult from '../components/practice/PracticeResult.vue';
-import { usePracticeStore } from '../stores/practice';
+import { usePracticeStore, MODE_LABELS } from '../stores/practice';
 import { useSongsStore } from '../stores/songs';
 import { useToast } from '../composables/useToast';
 import type { PracticeMode } from '../stores/practice';
@@ -84,12 +86,6 @@ const router = useRouter();
 const practiceStore = usePracticeStore();
 const songsStore = useSongsStore();
 const toast = useToast();
-
-const MODE_LABELS: Record<PracticeMode, string> = {
-  'karaoke': 'Karaoke',
-  'fill-blank': 'Fill-in-the-Blank',
-  'mcq': 'Multiple Choice',
-};
 
 const currentLine = computed(() => (practiceStore.state?.currentLine ?? 0) + 1);
 const totalLines = computed(() => practiceStore.state?.totalLines ?? 0);
@@ -120,7 +116,9 @@ onMounted(async () => {
 
 onUnmounted(() => {
   if (practiceStore.finished) {
-    practiceStore.saveSession().catch(() => {});
+    practiceStore.saveSession().catch(() => {
+      toast.error('Could not save practice session');
+    });
   }
 });
 

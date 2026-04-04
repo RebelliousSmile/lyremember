@@ -19,8 +19,14 @@
         </p>
       </div>
 
+      <!-- Single-word line: auto-pass -->
+      <div v-if="isSingleWord" class="text-center">
+        <p class="text-gray-500 dark:text-gray-400 mb-3">Single-word line — auto-pass</p>
+        <Button variant="secondary" @click="emit('answer', true)">Next line</Button>
+      </div>
+
       <!-- Input -->
-      <div v-if="feedback === null" class="flex gap-3 max-w-md mx-auto">
+      <div v-else-if="feedback === null" class="flex gap-3 max-w-md mx-auto">
         <input
           ref="inputRef"
           v-model="userInput"
@@ -69,8 +75,7 @@ const currentLyric = computed(() => props.song.lyrics[props.currentLine - 1] || 
 
 const hiddenWordIndex = computed(() => {
   const words = currentLyric.value.split(/\s+/);
-  if (words.length === 0) return 0;
-  // Pick a word deterministically based on line index (not random, for reproducibility)
+  if (words.length <= 1) return -1; // Single-word lines: auto-pass
   return ((props.currentLine * 7) + 3) % words.length;
 });
 
@@ -79,7 +84,12 @@ const hiddenWord = computed(() => {
   return words[hiddenWordIndex.value] || '';
 });
 
+const isSingleWord = computed(() => hiddenWordIndex.value === -1);
+
 const lineParts = computed(() => {
+  if (isSingleWord.value) {
+    return [{ type: 'text' as const, value: currentLyric.value }];
+  }
   const words = currentLyric.value.split(/\s+/);
   const parts: { type: 'text' | 'blank'; value: string }[] = [];
   words.forEach((word, i) => {

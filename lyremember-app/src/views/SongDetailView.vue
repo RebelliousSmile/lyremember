@@ -119,11 +119,13 @@ import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
 import Button from '../components/ui/Button.vue';
 import { useSongsStore } from '../stores/songs';
+import { useToast } from '../composables/useToast';
 import type { Song } from '../types';
 
 const route = useRoute();
 const router = useRouter();
 const songsStore = useSongsStore();
+const toast = useToast();
 
 function startPractice(mode: string) {
   router.push(`/practice/${route.params.id}/${mode}`);
@@ -136,8 +138,8 @@ onMounted(async () => {
   try {
     const songId = String(route.params.id);
     song.value = await songsStore.fetchSong(songId);
-  } catch (err) {
-    console.error('Failed to fetch song:', err);
+  } catch {
+    toast.error('Failed to load song');
   } finally {
     loading.value = false;
   }

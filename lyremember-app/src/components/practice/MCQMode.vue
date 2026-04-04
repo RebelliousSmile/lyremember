@@ -56,25 +56,35 @@ const previousLine = computed(() => {
 const options = computed(() => {
   const lyrics = props.song.lyrics;
   const correct = correctLine.value;
-  const distractors: string[] = [];
+  const distractorSet = new Set<string>();
 
-  // Pick distractors from other lines
-  for (let i = 0; i < lyrics.length && distractors.length < 3; i++) {
+  // Pick unique distractors from other lines
+  for (let i = 0; i < lyrics.length && distractorSet.size < 3; i++) {
     if (i !== props.currentLine - 1 && lyrics[i] !== correct) {
-      distractors.push(lyrics[i]);
+      distractorSet.add(lyrics[i]);
     }
   }
 
-  // If not enough distractors, pad with modified versions
-  while (distractors.length < 3) {
-    distractors.push(correct.split('').reverse().join(''));
+  // If not enough, generate word-shuffled variations
+  const words = correct.split(' ');
+  let variant = 0;
+  while (distractorSet.size < 3) {
+    variant++;
+    if (words.length > 1) {
+      // Rotate words by variant positions
+      const rotated = [...words.slice(variant % words.length), ...words.slice(0, variant % words.length)].join(' ');
+      if (rotated !== correct) distractorSet.add(rotated);
+      else distractorSet.add(`${correct} (${variant})`);
+    } else {
+      distractorSet.add(`${correct} (${variant})`);
+    }
   }
 
-  // Shuffle: insert correct answer at deterministic position
+  // Insert correct answer at deterministic position
+  const distArray = Array.from(distractorSet).slice(0, 3);
   const position = (props.currentLine * 3 + 1) % 4;
-  const result = [...distractors.slice(0, 3)];
-  result.splice(position, 0, correct);
-  return result.slice(0, 4);
+  distArray.splice(position, 0, correct);
+  return distArray.slice(0, 4);
 });
 
 const correctIndex = computed(() => options.value.indexOf(correctLine.value));

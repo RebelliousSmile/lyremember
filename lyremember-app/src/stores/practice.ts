@@ -6,6 +6,12 @@ import type { Song, PracticeSession } from '../types';
 
 export type PracticeMode = 'karaoke' | 'fill-blank' | 'mcq';
 
+export const MODE_LABELS: Record<PracticeMode, string> = {
+  'karaoke': 'Karaoke',
+  'fill-blank': 'Fill-in-the-Blank',
+  'mcq': 'Multiple Choice',
+};
+
 export interface PracticeState {
   currentLine: number;
   totalLines: number;

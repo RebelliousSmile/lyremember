@@ -28,7 +28,7 @@ export interface CreateSongForm {
   autoTranslate: boolean;
 }
 
-export type PracticeMode = 'karaoke' | 'fill-blank' | 'mcq' | 'oral';
+export type { PracticeMode } from '../stores/practice';
 
 export interface RouteGuardContext {
   requiresAuth: boolean;

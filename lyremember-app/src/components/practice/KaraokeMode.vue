@@ -68,7 +68,7 @@ const showAnswer = ref(false);
 const showPhonetic = ref(false);
 
 const previousLines = computed(() =>
-  props.song.lyrics.slice(Math.max(0, props.currentLine - 3), props.currentLine - 1)
+  props.song.lyrics.slice(Math.max(0, props.currentLine - 4), props.currentLine - 1)
 );
 
 watch(() => props.currentLine, () => {

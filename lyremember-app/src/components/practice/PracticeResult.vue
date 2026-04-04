@@ -31,12 +31,14 @@ import { computed } from 'vue';
 import { ArrowLeft, RotateCcw } from 'lucide-vue-next';
 import Card from '../ui/Card.vue';
 import Button from '../ui/Button.vue';
+import { MODE_LABELS } from '../../stores/practice';
+import type { PracticeMode } from '../../stores/practice';
 
 const props = defineProps<{
   score: number;
   correct: number;
   total: number;
-  mode: string;
+  mode: PracticeMode;
   songTitle: string;
 }>();
 
@@ -44,12 +46,6 @@ defineEmits<{
   retry: [];
   back: [];
 }>();
-
-const MODE_LABELS: Record<string, string> = {
-  'karaoke': 'Karaoke',
-  'fill-blank': 'Fill-in-the-Blank',
-  'mcq': 'Multiple Choice',
-};
 
 const modeLabel = computed(() => MODE_LABELS[props.mode] ?? props.mode);
 
