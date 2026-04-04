@@ -84,13 +84,16 @@ jobs:
             - **`.apk`** — Install directly on your device
 
             ### Installation depuis Termux
-            `termux-open` ne peut pas ouvrir les APK directement.
+            Telechargez l'APK puis ouvrez-le depuis votre gestionnaire de fichiers :
             ```bash
             termux-setup-storage
             curl -LO https://github.com/RebelliousSmile/lyremember/releases/download/${{ github.ref_name }}/LyRemember-${{ github.ref_name }}.apk
             cp LyRemember-${{ github.ref_name }}.apk ~/storage/downloads/
-            termux-open --content-type application/vnd.android.package-archive ~/storage/downloads/LyRemember-${{ github.ref_name }}.apk
             ```
+            Puis ouvrez **Downloads/LyRemember-${{ github.ref_name }}.apk** depuis votre gestionnaire de fichiers.
+
+            > **Note** : `termux-open` ne peut pas installer d'APK sur la version Google Play de Termux
+            > (permission bloquee). Utilisez la version F-Droid de Termux ou votre gestionnaire de fichiers.
 
             _Desktop builds (Windows, Linux, macOS) coming soon._
           files: ${{ steps.find-apk.outputs.apk_name }}
