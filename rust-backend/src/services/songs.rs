@@ -49,10 +49,10 @@ pub fn create_song(conn: &Connection, data: CreateSongData) -> Result<Song> {
 fn save_song(conn: &Connection, song: &Song) -> Result<()> {
     let lyrics_json = serde_json::to_string(&song.lyrics)?;
     let phonetic_json = song.phonetic_lyrics.as_ref()
-        .map(|p| serde_json::to_string(p))
+        .map(serde_json::to_string)
         .transpose()?;
     let translations_json = song.translations.as_ref()
-        .map(|t| serde_json::to_string(t))
+        .map(serde_json::to_string)
         .transpose()?;
     
     conn.execute(
@@ -223,10 +223,10 @@ pub fn update_song(conn: &Connection, song_id: &str, data: UpdateSongData) -> Re
     // Update in database
     let lyrics_json = serde_json::to_string(&song.lyrics)?;
     let phonetic_json = song.phonetic_lyrics.as_ref()
-        .map(|p| serde_json::to_string(p))
+        .map(serde_json::to_string)
         .transpose()?;
     let translations_json = song.translations.as_ref()
-        .map(|t| serde_json::to_string(t))
+        .map(serde_json::to_string)
         .transpose()?;
     
     conn.execute(
