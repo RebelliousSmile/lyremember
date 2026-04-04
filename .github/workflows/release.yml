@@ -56,7 +56,7 @@ jobs:
           PYO3_PYTHON: ${{ runner.os == 'Windows' && 'python' || 'python3' }}
         with:
           projectPath: lyremember-app
-          args: -- --features python
+          args: --features python
           tagName: ${{ github.ref_name }}
           releaseName: 'LyRemember ${{ github.ref_name }}'
           releaseBody: |
