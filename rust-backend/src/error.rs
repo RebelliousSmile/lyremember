@@ -42,6 +42,26 @@ pub enum Error {
     Other(String),
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_error_display() {
+        let err = Error::Auth("bad token".to_string());
+        assert_eq!(format!("{}", err), "Authentication error: bad token");
+
+        let err = Error::NotFound("song".to_string());
+        assert_eq!(format!("{}", err), "Not found: song");
+
+        let err = Error::Translation("timeout".to_string());
+        assert_eq!(format!("{}", err), "Translation error: timeout");
+
+        let err = Error::Phonetic("unsupported".to_string());
+        assert_eq!(format!("{}", err), "Phonetic generation error: unsupported");
+    }
+}
+
 #[cfg(feature = "python")]
 impl From<pyo3::PyErr> for Error {
     fn from(err: pyo3::PyErr) -> Self {

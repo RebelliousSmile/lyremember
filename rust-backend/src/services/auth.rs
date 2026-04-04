@@ -494,4 +494,39 @@ mod tests {
         assert!(token_data.claims.exp > now);
         assert!(token_data.claims.exp <= now + 30 * 24 * 3600 + 60); // allow 60s tolerance
     }
+
+    #[test]
+    fn test_login_as_guest_creates_guest_user() {
+        let (_tmp, conn) = setup_db();
+        let (user, token) = login_as_guest(&conn).unwrap();
+
+        assert_eq!(user.username, "guest");
+        assert_eq!(user.email, "guest@local");
+        assert!(!user.id.is_empty());
+        assert!(!token.is_empty());
+
+        // Verify token works
+        let user_id = verify_token(&token).unwrap();
+        assert_eq!(user_id, user.id);
+    }
+
+    #[test]
+    fn test_login_as_guest_reuses_existing_guest() {
+        let (_tmp, conn) = setup_db();
+        let (user1, _) = login_as_guest(&conn).unwrap();
+        let (user2, _) = login_as_guest(&conn).unwrap();
+
+        assert_eq!(user1.id, user2.id);
+        assert_eq!(user1.username, user2.username);
+    }
+
+    #[test]
+    fn test_login_as_guest_does_not_conflict_with_regular_users() {
+        let (_tmp, conn) = setup_db();
+        register_test_user(&conn);
+        let (guest, _) = login_as_guest(&conn).unwrap();
+
+        assert_ne!(guest.username, "testuser");
+        assert_eq!(guest.username, "guest");
+    }
 }

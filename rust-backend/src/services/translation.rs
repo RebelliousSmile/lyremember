@@ -184,12 +184,34 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_translate_empty_lines() {
-        // Mock test - actual API calls would require network
-        let text = vec![String::new(), String::new()];
-        // Would need to mock the HTTP client for proper testing
-        // For now, just verify the function signature
-        assert_eq!(text.len(), 2);
+    fn test_translate_empty_lines_only() {
+        // Empty lines should be returned as-is without calling the API
+        let text = vec![String::new(), "  ".to_string(), String::new()];
+        let result = translate_with_libretranslate(text, "en", "fr", "http://127.0.0.1:1/fake");
+        // Should succeed because empty/whitespace lines skip the API call
+        assert!(result.is_ok());
+        let translations = result.unwrap();
+        assert_eq!(translations.len(), 3);
+        assert_eq!(translations[0], "");
+        assert_eq!(translations[1], "");
+        assert_eq!(translations[2], "");
+    }
+
+    #[test]
+    fn test_translate_with_unreachable_api() {
+        let text = vec!["Hello".to_string()];
+        let result = translate_with_libretranslate(text, "en", "fr", "http://127.0.0.1:1/fake");
+        assert!(result.is_err());
+        let err_msg = format!("{}", result.unwrap_err());
+        assert!(err_msg.contains("Request failed") || err_msg.contains("Translation"));
+    }
+
+    #[test]
+    fn test_translate_empty_input() {
+        let text: Vec<String> = vec![];
+        let result = translate_with_libretranslate(text, "en", "fr", "http://127.0.0.1:1/fake");
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 0);
     }
 
     #[test]
