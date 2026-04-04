@@ -63,15 +63,14 @@ jobs:
           echo "=== All APKs found ==="
           find lyremember-app/src-tauri/gen/android -name "*.apk" -type f
           echo "======================"
-          # Prefer debug APK, fallback to any APK
           APK_PATH=$(find lyremember-app/src-tauri/gen/android -path "*/debug/*.apk" -type f | head -1)
           if [ -z "$APK_PATH" ]; then
             APK_PATH=$(find lyremember-app/src-tauri/gen/android -name "*.apk" -type f | head -1)
           fi
-          # Copy with a clean name
-          cp "$APK_PATH" LyRemember-${{ github.ref_name }}.apk
-          echo "apk_path=LyRemember-${{ github.ref_name }}.apk" >> "$GITHUB_OUTPUT"
-          echo "Found APK: $APK_PATH"
+          CLEAN_NAME="LyRemember-${{ github.ref_name }}.apk"
+          mv "$APK_PATH" "$CLEAN_NAME"
+          echo "apk_name=$CLEAN_NAME" >> "$GITHUB_OUTPUT"
+          echo "Renamed $APK_PATH -> $CLEAN_NAME"
 
       - name: Create release and upload APK
         uses: softprops/action-gh-release@v2
@@ -84,7 +83,19 @@ jobs:
             ### Android
             - **`.apk`** — Install directly on your device
 
+            ### Installation depuis Termux
+            Telechargez l'APK puis ouvrez-le depuis votre gestionnaire de fichiers :
+            ```bash
+            termux-setup-storage
+            curl -LO https://github.com/RebelliousSmile/lyremember/releases/download/${{ github.ref_name }}/LyRemember-${{ github.ref_name }}.apk
+            cp LyRemember-${{ github.ref_name }}.apk ~/storage/downloads/
+            ```
+            Puis ouvrez **Downloads/LyRemember-${{ github.ref_name }}.apk** depuis votre gestionnaire de fichiers.
+
+            > **Note** : `termux-open` ne peut pas installer d'APK sur la version Google Play de Termux
+            > (permission bloquee). Utilisez la version F-Droid de Termux ou votre gestionnaire de fichiers.
+
             _Desktop builds (Windows, Linux, macOS) coming soon._
-          files: ${{ steps.find-apk.outputs.apk_path }}
+          files: ${{ steps.find-apk.outputs.apk_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
