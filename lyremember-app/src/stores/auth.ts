@@ -55,6 +55,23 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function loginAsGuest() {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await api.loginAsGuest();
+      token.value = response.token;
+      user.value = response.user;
+      localStorage.setItem('auth_token', response.token);
+      return response.user;
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Guest login failed';
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   async function logout() {
     user.value = null;
     token.value = null;
@@ -100,6 +117,7 @@ export const useAuthStore = defineStore('auth', () => {
     // Actions
     register,
     login,
+    loginAsGuest,
     logout,
     checkAuth,
     clearError,

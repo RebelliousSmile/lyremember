@@ -135,6 +135,44 @@ pub fn verify_token(token: &str) -> Result<String> {
     Ok(token_data.claims.sub)
 }
 
+/// Login as guest: create or retrieve a local guest account
+pub fn login_as_guest(conn: &Connection) -> Result<(User, String)> {
+    let guest_username = "guest";
+
+    // Check if guest user already exists
+    let existing: Option<User> = conn.prepare(
+        "SELECT id, username, email, password_hash, genius_token, created_at
+         FROM users WHERE username = ?1"
+    )?.query_row([guest_username], |row| {
+        Ok(User {
+            id: row.get(0)?,
+            username: row.get(1)?,
+            email: row.get(2)?,
+            password_hash: row.get(3)?,
+            genius_token: row.get(4)?,
+            created_at: row.get(5)?,
+        })
+    }).ok();
+
+    let user = match existing {
+        Some(u) => u,
+        None => {
+            let password_hash = hash("guest-local-account", DEFAULT_COST)
+                .map_err(|e| Error::Auth(format!("Failed to hash password: {}", e)))?;
+            let user = User::new(guest_username.to_string(), "guest@local".to_string(), password_hash);
+            conn.execute(
+                "INSERT INTO users (id, username, email, password_hash, genius_token, created_at)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+                rusqlite::params![&user.id, &user.username, &user.email, &user.password_hash, &user.genius_token, &user.created_at],
+            )?;
+            user
+        }
+    };
+
+    let token = generate_token(&user)?;
+    Ok((user, token))
+}
+
 /// Get user by ID
 pub fn get_user_by_id(conn: &Connection, user_id: &str) -> Result<User> {
     let mut stmt = conn.prepare(

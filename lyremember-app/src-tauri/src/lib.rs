@@ -38,6 +38,7 @@ pub fn run() {
             // Auth commands
             cmd_register,
             cmd_login,
+            cmd_login_as_guest,
             cmd_verify_token,
             cmd_get_user,
             // Songs commands

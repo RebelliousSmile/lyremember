@@ -61,6 +61,16 @@ pub fn cmd_get_user(
     auth::get_user_by_id(&conn, &user_id).map_err(|e| format!("Failed to get user: {}", e))
 }
 
+#[tauri::command]
+pub fn cmd_login_as_guest(
+    state: State<'_, DbState>,
+) -> Result<LoginResponse, String> {
+    let conn = lock_db(&state)?;
+    let (user, token) = auth::login_as_guest(&conn)
+        .map_err(|e| format!("Guest login failed: {}", e))?;
+    Ok(LoginResponse { user, token })
+}
+
 // ==================== SONGS COMMANDS ====================
 
 #[tauri::command]

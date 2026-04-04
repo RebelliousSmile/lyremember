@@ -30,7 +30,9 @@
     "registerTitle": "Create your account",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "or": "or",
+    "continueAsGuest": "Continue without account"
   },
   "dashboard": {
     "title": "Dashboard",

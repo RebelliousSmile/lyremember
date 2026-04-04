@@ -28,6 +28,23 @@
           {{ $t('auth.login') }}
         </Button>
 
+        <div class="relative flex items-center my-2">
+          <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+          <span class="mx-3 text-sm text-gray-500 dark:text-gray-400">{{ $t('auth.or') }}</span>
+          <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+        </div>
+
+        <Button
+          type="button"
+          variant="secondary"
+          size="lg"
+          className="w-full"
+          :loading="guestLoading"
+          @click="handleGuestLogin"
+        >
+          {{ $t('auth.continueAsGuest') }}
+        </Button>
+
         <p class="text-center text-sm text-gray-600 dark:text-gray-400">
           {{ $t('auth.noAccount') }}
           <router-link to="/register" class="text-indigo-600 dark:text-indigo-400 hover:underline">
@@ -58,6 +75,7 @@ const form = ref<LoginForm>({
 });
 
 const showError = ref(false);
+const guestLoading = ref(false);
 
 watch(() => authStore.error, (error) => {
   showError.value = !!error;
@@ -69,6 +87,18 @@ async function handleSubmit() {
     router.push('/dashboard');
   } catch (err) {
     console.error('Login failed:', err);
+  }
+}
+
+async function handleGuestLogin() {
+  guestLoading.value = true;
+  try {
+    await authStore.loginAsGuest();
+    router.push('/dashboard');
+  } catch (err) {
+    console.error('Guest login failed:', err);
+  } finally {
+    guestLoading.value = false;
   }
 }
 </script>

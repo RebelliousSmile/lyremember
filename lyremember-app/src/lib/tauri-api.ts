@@ -62,6 +62,10 @@ export async function login(username: string, password: string): Promise<string>
   return await invoke('cmd_login', { username, password });
 }
 
+export async function loginAsGuest(): Promise<{ user: User; token: string }> {
+  return await invoke('cmd_login_as_guest');
+}
+
 export async function verifyToken(token: string): Promise<User> {
   return await invoke('cmd_verify_token', { token });
 }
