@@ -91,22 +91,18 @@
             <h2 class="text-xl font-semibold">Practice Modes</h2>
           </template>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Button variant="primary" size="lg" className="w-full">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Button variant="primary" size="lg" className="w-full" @click="startPractice('karaoke')">
               <PlayCircle :size="20" />
-              Karaoke Mode
+              Karaoke
             </Button>
-            <Button variant="secondary" size="lg" className="w-full">
+            <Button variant="secondary" size="lg" className="w-full" @click="startPractice('fill-blank')">
               <Music :size="20" />
               Fill-in-the-Blank
             </Button>
-            <Button variant="secondary" size="lg" className="w-full">
+            <Button variant="secondary" size="lg" className="w-full" @click="startPractice('mcq')">
               <List :size="20" />
               Multiple Choice
-            </Button>
-            <Button variant="secondary" size="lg" className="w-full">
-              <Mic :size="20" />
-              Oral Practice
             </Button>
           </div>
         </Card>
@@ -117,8 +113,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { ArrowLeft, PlayCircle, Music, List, Mic } from 'lucide-vue-next';
+import { useRoute, useRouter } from 'vue-router';
+import { ArrowLeft, PlayCircle, Music, List } from 'lucide-vue-next';
 import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
 import Button from '../components/ui/Button.vue';
@@ -126,7 +122,12 @@ import { useSongsStore } from '../stores/songs';
 import type { Song } from '../types';
 
 const route = useRoute();
+const router = useRouter();
 const songsStore = useSongsStore();
+
+function startPractice(mode: string) {
+  router.push(`/practice/${route.params.id}/${mode}`);
+}
 
 const song = ref<Song | null>(null);
 const loading = ref(true);
