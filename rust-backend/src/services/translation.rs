@@ -1,10 +1,9 @@
 //! Translation service using LibreTranslate API
 
-use crate::{Error, Result};
+use crate::{config, Error, Result};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
-const LIBRETRANSLATE_URL: &str = "https://libretranslate.com/translate";
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
 
 #[derive(Debug, Serialize)]
@@ -35,7 +34,8 @@ pub fn translate_text(
     source_lang: &str,
     target_lang: &str,
 ) -> Result<Vec<String>> {
-    translate_with_libretranslate(text, source_lang, target_lang, LIBRETRANSLATE_URL)
+    let url = config::libretranslate_url();
+    translate_with_libretranslate(text, source_lang, target_lang, &url)
 }
 
 /// Translate text using LibreTranslate API (with custom endpoint)
@@ -154,8 +154,9 @@ pub fn translate_batch(
             format: "text".to_string(),
         };
         
+        let api_url = config::libretranslate_url();
         let response = client
-            .post(LIBRETRANSLATE_URL)
+            .post(&api_url)
             .json(&request)
             .send()
             .map_err(|e| Error::Translation(format!("Request failed: {}", e)))?;

@@ -38,16 +38,26 @@ pub fn create_session(conn: &Connection, data: CreateSessionData) -> Result<Prac
     Ok(session)
 }
 
-/// Get sessions for a user
-pub fn get_user_sessions(conn: &Connection, user_id: &str) -> Result<Vec<PracticeSession>> {
-    let mut stmt = conn.prepare(
-        "SELECT id, user_id, song_id, mode, score, lines_practiced, lines_correct,
-                duration_seconds, created_at
-         FROM practice_sessions
-         WHERE user_id = ?1
-         ORDER BY created_at DESC"
-    )?;
-    
+/// Get sessions for a user, optionally limited
+pub fn get_user_sessions(conn: &Connection, user_id: &str, limit: Option<i32>) -> Result<Vec<PracticeSession>> {
+    let query = match limit {
+        Some(n) => format!(
+            "SELECT id, user_id, song_id, mode, score, lines_practiced, lines_correct,
+                    duration_seconds, created_at
+             FROM practice_sessions
+             WHERE user_id = ?1
+             ORDER BY created_at DESC
+             LIMIT {}", n
+        ),
+        None => "SELECT id, user_id, song_id, mode, score, lines_practiced, lines_correct,
+                        duration_seconds, created_at
+                 FROM practice_sessions
+                 WHERE user_id = ?1
+                 ORDER BY created_at DESC".to_string(),
+    };
+
+    let mut stmt = conn.prepare(&query)?;
+
     let sessions = stmt.query_map([user_id], |row| {
         Ok(PracticeSession {
             id: row.get(0)?,
@@ -61,7 +71,7 @@ pub fn get_user_sessions(conn: &Connection, user_id: &str) -> Result<Vec<Practic
             created_at: row.get(8)?,
         })
     })?.collect::<rusqlite::Result<Vec<_>>>()?;
-    
+
     Ok(sessions)
 }
 
@@ -188,7 +198,7 @@ mod tests {
         assert_eq!(session.score, 85.5);
         
         // Get user sessions
-        let sessions = get_user_sessions(&conn, &user.id).unwrap();
+        let sessions = get_user_sessions(&conn, &user.id, None).unwrap();
         assert_eq!(sessions.len(), 1);
     }
 

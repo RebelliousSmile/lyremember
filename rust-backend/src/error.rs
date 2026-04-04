@@ -42,6 +42,7 @@ pub enum Error {
     Other(String),
 }
 
+#[cfg(feature = "python-phonetics")]
 impl From<pyo3::PyErr> for Error {
     fn from(err: pyo3::PyErr) -> Self {
         Error::Python(err.to_string())

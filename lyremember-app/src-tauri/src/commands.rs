@@ -230,10 +230,14 @@ pub async fn cmd_translate_text(
     text: String,
     source_lang: String,
     target_lang: String,
-) -> Result<String, String> {
-    translation::translate_text(&text, &source_lang, &target_lang)
-        .await
-        .map_err(|e| format!("Translation failed: {}", e))
+) -> Result<Vec<String>, String> {
+    let lines = vec![text];
+    tokio::task::spawn_blocking(move || {
+        translation::translate_text(lines, &source_lang, &target_lang)
+    })
+    .await
+    .map_err(|e| format!("Task join error: {}", e))?
+    .map_err(|e| format!("Translation failed: {}", e))
 }
 
 #[tauri::command]
@@ -241,8 +245,12 @@ pub async fn cmd_generate_phonetic(
     text: Vec<String>,
     language: String,
 ) -> Result<Vec<String>, String> {
-    phonetic::generate_phonetic(&text, &language)
-        .map_err(|e| format!("Phonetic generation failed: {}", e))
+    tokio::task::spawn_blocking(move || {
+        phonetic::generate_phonetic(text, &language)
+    })
+    .await
+    .map_err(|e| format!("Task join error: {}", e))?
+    .map_err(|e| format!("Phonetic generation failed: {}", e))
 }
 
 #[tauri::command]

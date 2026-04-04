@@ -4,14 +4,53 @@ use crate::Result;
 use rusqlite::Connection;
 use std::path::Path;
 
-/// Initialize the database with schema
+/// Current schema version
+const SCHEMA_VERSION: i32 = 1;
+
+/// Initialize the database with schema and run migrations
 pub fn init_database<P: AsRef<Path>>(path: P) -> Result<Connection> {
     let conn = Connection::open(path)?;
-    
-    // Create tables
+
+    // Create schema_version table if it doesn't exist
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS schema_version (
+            version INTEGER NOT NULL
+        )",
+        [],
+    )?;
+
+    // Get current version (0 if fresh database)
+    let current_version: i32 = conn
+        .query_row("SELECT COALESCE(MAX(version), 0) FROM schema_version", [], |row| row.get(0))
+        .unwrap_or(0);
+
+    // Create base tables (idempotent with IF NOT EXISTS)
     create_tables(&conn)?;
-    
+
+    // Run migrations
+    run_migrations(&conn, current_version)?;
+
     Ok(conn)
+}
+
+/// Run all migrations from current_version to SCHEMA_VERSION
+fn run_migrations(conn: &Connection, current_version: i32) -> Result<()> {
+    if current_version >= SCHEMA_VERSION {
+        return Ok(());
+    }
+
+    // Migration 0 → 1: initial schema (tables already created by create_tables)
+    if current_version < 1 {
+        // Base schema is handled by create_tables(). Future migrations go here:
+        // if current_version < 2 { migrate_to_v2(conn)?; }
+        // if current_version < 3 { migrate_to_v3(conn)?; }
+    }
+
+    // Record the new version
+    conn.execute("DELETE FROM schema_version", [])?;
+    conn.execute("INSERT INTO schema_version (version) VALUES (?1)", [SCHEMA_VERSION])?;
+
+    Ok(())
 }
 
 /// Get a database connection (helper for opening existing database)

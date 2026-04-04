@@ -5,6 +5,10 @@ edition = "2021"
 authors = ["LyRemember Contributors"]
 description = "Backend for LyRemember - Lyrics memorization app"
 
+[features]
+default = []
+python-phonetics = ["pyo3"]
+
 [dependencies]
 # Database
 rusqlite = { version = "0.30", features = ["bundled"] }
@@ -23,8 +27,11 @@ tokio = { version = "1", features = ["full"] }
 bcrypt = "0.15"
 jsonwebtoken = "9.2"
 
-# Python bridge for phonetics
-pyo3 = { version = "0.20", features = ["auto-initialize"] }
+# Python bridge for phonetics (optional)
+pyo3 = { version = "0.20", features = ["auto-initialize"], optional = true }
+
+# Pure-Rust phonetics
+wana_kana = "4.0"
 
 # Utilities
 uuid = { version = "1.0", features = ["v4", "serde"] }

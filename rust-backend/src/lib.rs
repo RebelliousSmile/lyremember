@@ -3,6 +3,7 @@
 //! Core backend functionality for LyRemember lyrics memorization app.
 //! Provides database management, authentication, translation, and phonetic services.
 
+pub mod config;
 pub mod db;
 pub mod error;
 pub mod models;
