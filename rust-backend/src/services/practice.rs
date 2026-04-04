@@ -40,25 +40,18 @@ pub fn create_session(conn: &Connection, data: CreateSessionData) -> Result<Prac
 
 /// Get sessions for a user, optionally limited
 pub fn get_user_sessions(conn: &Connection, user_id: &str, limit: Option<i32>) -> Result<Vec<PracticeSession>> {
-    let query = match limit {
-        Some(n) => format!(
-            "SELECT id, user_id, song_id, mode, score, lines_practiced, lines_correct,
-                    duration_seconds, created_at
-             FROM practice_sessions
-             WHERE user_id = ?1
-             ORDER BY created_at DESC
-             LIMIT {}", n
-        ),
-        None => "SELECT id, user_id, song_id, mode, score, lines_practiced, lines_correct,
-                        duration_seconds, created_at
-                 FROM practice_sessions
-                 WHERE user_id = ?1
-                 ORDER BY created_at DESC".to_string(),
-    };
+    let effective_limit = limit.unwrap_or(-1); // SQLite: -1 = no limit
 
-    let mut stmt = conn.prepare(&query)?;
+    let mut stmt = conn.prepare(
+        "SELECT id, user_id, song_id, mode, score, lines_practiced, lines_correct,
+                duration_seconds, created_at
+         FROM practice_sessions
+         WHERE user_id = ?1
+         ORDER BY created_at DESC
+         LIMIT ?2"
+    )?;
 
-    let sessions = stmt.query_map([user_id], |row| {
+    let sessions = stmt.query_map(rusqlite::params![user_id, effective_limit], |row| {
         Ok(PracticeSession {
             id: row.get(0)?,
             user_id: row.get(1)?,
@@ -103,7 +96,7 @@ pub fn get_song_sessions(conn: &Connection, song_id: &str) -> Result<Vec<Practic
 }
 
 /// Get statistics for a user
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct UserStats {
     pub total_sessions: i32,
     pub total_practice_time: i32,
@@ -181,8 +174,8 @@ mod tests {
             artist: "Artist".to_string(),
             language: "en".to_string(),
             lyrics: vec!["Line 1".to_string()],
-        }).unwrap();
-        
+        }).unwrap().song;
+
         // Create session
         let session_data = CreateSessionData {
             user_id: user.id.clone(),
@@ -219,8 +212,8 @@ mod tests {
             artist: "Artist".to_string(),
             language: "en".to_string(),
             lyrics: vec!["Line 1".to_string()],
-        }).unwrap();
-        
+        }).unwrap().song;
+
         // Create multiple sessions
         for i in 1..=3 {
             let session_data = CreateSessionData {

@@ -23,7 +23,6 @@ pub async fn cmd_register(
         username,
         email,
         password,
-        genius_token: None,
     };
     
     auth::register(&conn, data)
@@ -38,10 +37,11 @@ pub async fn cmd_login(
 ) -> Result<String, String> {
     let conn = state.0.lock().map_err(|e| e.to_string())?;
     
-    let data = LoginData { username, password };
-    
-    auth::login(&conn, data)
-        .map_err(|e| format!("Login failed: {}", e))
+    let credentials = LoginCredentials { username, password };
+
+    let (_, token) = auth::login(&conn, credentials)
+        .map_err(|e| format!("Login failed: {}", e))?;
+    Ok(token)
 }
 
 #[tauri::command]
@@ -69,19 +69,17 @@ pub async fn cmd_create_song(
     artist: String,
     language: String,
     lyrics: Vec<String>,
-    auto_translate: Option<bool>,
     state: State<'_, DbState>,
-) -> Result<Song, String> {
+) -> Result<songs::CreateSongResult, String> {
     let conn = state.0.lock().map_err(|e| e.to_string())?;
-    
+
     let data = CreateSongData {
         title,
         artist,
         language,
         lyrics,
-        auto_translate,
     };
-    
+
     songs::create_song(&conn, data)
         .map_err(|e| format!("Failed to create song: {}", e))
 }
@@ -141,10 +139,14 @@ pub async fn cmd_update_song(
     let data = UpdateSongData {
         title,
         artist,
+        language: None,
         lyrics,
+        phonetic_lyrics: None,
+        translations: None,
     };
-    
+
     songs::update_song(&conn, &song_id, data)
+        .map(|_| ())
         .map_err(|e| format!("Failed to update song: {}", e))
 }
 
@@ -216,9 +218,9 @@ pub async fn cmd_get_song_mastery(
     user_id: String,
     song_id: String,
     state: State<'_, DbState>,
-) -> Result<SongMastery, String> {
+) -> Result<f64, String> {
     let conn = state.0.lock().map_err(|e| e.to_string())?;
-    
+
     practice::get_song_mastery(&conn, &user_id, &song_id)
         .map_err(|e| format!("Failed to get song mastery: {}", e))
 }
@@ -230,14 +232,15 @@ pub async fn cmd_translate_text(
     text: String,
     source_lang: String,
     target_lang: String,
-) -> Result<Vec<String>, String> {
+) -> Result<String, String> {
     let lines = vec![text];
-    tokio::task::spawn_blocking(move || {
+    let translations = tokio::task::spawn_blocking(move || {
         translation::translate_text(lines, &source_lang, &target_lang)
     })
     .await
     .map_err(|e| format!("Task join error: {}", e))?
-    .map_err(|e| format!("Translation failed: {}", e))
+    .map_err(|e| format!("Translation failed: {}", e))?;
+    Ok(translations.into_iter().next().unwrap_or_default())
 }
 
 #[tauri::command]

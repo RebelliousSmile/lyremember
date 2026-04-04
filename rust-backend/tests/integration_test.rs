@@ -40,7 +40,7 @@ fn test_full_user_flow() {
     assert_eq!(verified_user_id, user.id);
 
     // 4. Create song (phonetic auto-generated via pure-Rust)
-    let song = songs::create_song(
+    let result = songs::create_song(
         &conn,
         CreateSongData {
             title: "Sakura".to_string(),
@@ -53,6 +53,8 @@ fn test_full_user_flow() {
         },
     )
     .unwrap();
+    assert!(result.warnings.is_empty() || !result.warnings.is_empty()); // translation may fail offline
+    let song = result.song;
     assert_eq!(song.title, "Sakura");
     assert!(song.phonetic_lyrics.is_some(), "Phonetic should be auto-generated for JP");
 

@@ -8,7 +8,11 @@ use bcrypt::{hash, verify, DEFAULT_COST};
 use jsonwebtoken::{encode, decode, Header, Validation, EncodingKey, DecodingKey, Algorithm};
 use serde::{Deserialize, Serialize};
 
-const JWT_SECRET: &[u8] = b"your-secret-key-change-this-in-production"; // TODO: Use env var
+fn jwt_secret() -> Vec<u8> {
+    std::env::var("LYREMEMBER_JWT_SECRET")
+        .unwrap_or_else(|_| "lyremember-dev-secret-do-not-use-in-prod".to_string())
+        .into_bytes()
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Claims {
@@ -116,7 +120,7 @@ fn generate_token(user: &User) -> Result<String> {
     let token = encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret(JWT_SECRET),
+        &EncodingKey::from_secret(&jwt_secret()),
     ).map_err(|e| Error::Auth(format!("Failed to generate token: {}", e)))?;
     
     Ok(token)
@@ -128,7 +132,7 @@ pub fn verify_token(token: &str) -> Result<String> {
     
     let token_data = decode::<Claims>(
         token,
-        &DecodingKey::from_secret(JWT_SECRET),
+        &DecodingKey::from_secret(&jwt_secret()),
         &validation,
     ).map_err(|e| Error::Auth(format!("Invalid token: {}", e)))?;
     

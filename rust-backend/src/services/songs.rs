@@ -7,10 +7,18 @@ use crate::services::{phonetic, translation};
 use rusqlite::Connection;
 use std::collections::HashMap;
 
+/// Result of creating a song, including non-fatal warnings
+#[derive(Debug, serde::Serialize)]
+pub struct CreateSongResult {
+    pub song: Song,
+    pub warnings: Vec<String>,
+}
+
 /// Create a new song with automatic translation and phonetic generation
-pub fn create_song(conn: &Connection, data: CreateSongData) -> Result<Song> {
+pub fn create_song(conn: &Connection, data: CreateSongData) -> Result<CreateSongResult> {
     let mut song = Song::new(data.title, data.artist, data.language, data.lyrics.clone());
-    
+    let mut warnings = Vec::new();
+
     // Auto-generate phonetic if language supports it
     if matches!(song.language.as_str(), "jp" | "kr" | "fr" | "en") {
         match phonetic::generate_phonetic(data.lyrics.clone(), &song.language) {
@@ -18,12 +26,11 @@ pub fn create_song(conn: &Connection, data: CreateSongData) -> Result<Song> {
                 song.phonetic_lyrics = Some(phonetic_lyrics);
             }
             Err(e) => {
-                eprintln!("Warning: Failed to generate phonetic: {}", e);
-                // Continue without phonetics
+                warnings.push(format!("Phonetic generation failed: {}", e));
             }
         }
     }
-    
+
     // Auto-translate to English if original language is not English
     if song.language != "en" {
         match translation::translate_text(data.lyrics.clone(), &song.language, "en") {
@@ -33,20 +40,19 @@ pub fn create_song(conn: &Connection, data: CreateSongData) -> Result<Song> {
                 song.translations = Some(translations);
             }
             Err(e) => {
-                eprintln!("Warning: Failed to translate: {}", e);
-                // Continue without translation
+                warnings.push(format!("Translation failed: {}", e));
             }
         }
     }
-    
+
     // Insert into database
     save_song(conn, &song)?;
-    
-    Ok(song)
+
+    Ok(CreateSongResult { song, warnings })
 }
 
-/// Save song to database
-fn save_song(conn: &Connection, song: &Song) -> Result<()> {
+/// Serialize song JSON fields for DB storage
+fn serialize_song_json(song: &Song) -> Result<(String, Option<String>, Option<String>)> {
     let lyrics_json = serde_json::to_string(&song.lyrics)?;
     let phonetic_json = song.phonetic_lyrics.as_ref()
         .map(|p| serde_json::to_string(p))
@@ -54,6 +60,33 @@ fn save_song(conn: &Connection, song: &Song) -> Result<()> {
     let translations_json = song.translations.as_ref()
         .map(|t| serde_json::to_string(t))
         .transpose()?;
+    Ok((lyrics_json, phonetic_json, translations_json))
+}
+
+/// Parse a Song from a SQL row
+fn parse_song_row(row: &rusqlite::Row) -> rusqlite::Result<Song> {
+    let lyrics_json: String = row.get(4)?;
+    let phonetic_json: Option<String> = row.get(5)?;
+    let translations_json: Option<String> = row.get(6)?;
+
+    Ok(Song {
+        id: row.get(0)?,
+        title: row.get(1)?,
+        artist: row.get(2)?,
+        language: row.get(3)?,
+        lyrics: serde_json::from_str(&lyrics_json).unwrap_or_default(),
+        phonetic_lyrics: phonetic_json.and_then(|j| serde_json::from_str(&j).ok()),
+        translations: translations_json.and_then(|j| serde_json::from_str(&j).ok()),
+        genius_id: row.get(7)?,
+        genius_url: row.get(8)?,
+        created_at: row.get(9)?,
+        updated_at: row.get(10)?,
+    })
+}
+
+/// Save song to database
+fn save_song(conn: &Connection, song: &Song) -> Result<()> {
+    let (lyrics_json, phonetic_json, translations_json) = serialize_song_json(song)?;
     
     conn.execute(
         "INSERT INTO songs 
@@ -86,27 +119,8 @@ pub fn get_song(conn: &Connection, song_id: &str) -> Result<Song> {
          FROM songs WHERE id = ?1"
     )?;
     
-    let song = stmt.query_row([song_id], |row| {
-        let lyrics_json: String = row.get(4)?;
-        let phonetic_json: Option<String> = row.get(5)?;
-        let translations_json: Option<String> = row.get(6)?;
-        
-        Ok(Song {
-            id: row.get(0)?,
-            title: row.get(1)?,
-            artist: row.get(2)?,
-            language: row.get(3)?,
-            lyrics: serde_json::from_str(&lyrics_json).unwrap_or_default(),
-            phonetic_lyrics: phonetic_json
-                .and_then(|j| serde_json::from_str(&j).ok()),
-            translations: translations_json
-                .and_then(|j| serde_json::from_str(&j).ok()),
-            genius_id: row.get(7)?,
-            genius_url: row.get(8)?,
-            created_at: row.get(9)?,
-            updated_at: row.get(10)?,
-        })
-    }).map_err(|_| Error::NotFound("Song not found".to_string()))?;
+    let song = stmt.query_row([song_id], parse_song_row)
+        .map_err(|_| Error::NotFound("Song not found".to_string()))?;
     
     Ok(song)
 }
@@ -120,27 +134,8 @@ pub fn get_all_songs(conn: &Connection) -> Result<Vec<Song>> {
          ORDER BY created_at DESC"
     )?;
     
-    let songs = stmt.query_map([], |row| {
-        let lyrics_json: String = row.get(4)?;
-        let phonetic_json: Option<String> = row.get(5)?;
-        let translations_json: Option<String> = row.get(6)?;
-        
-        Ok(Song {
-            id: row.get(0)?,
-            title: row.get(1)?,
-            artist: row.get(2)?,
-            language: row.get(3)?,
-            lyrics: serde_json::from_str(&lyrics_json).unwrap_or_default(),
-            phonetic_lyrics: phonetic_json
-                .and_then(|j| serde_json::from_str(&j).ok()),
-            translations: translations_json
-                .and_then(|j| serde_json::from_str(&j).ok()),
-            genius_id: row.get(7)?,
-            genius_url: row.get(8)?,
-            created_at: row.get(9)?,
-            updated_at: row.get(10)?,
-        })
-    })?.collect::<rusqlite::Result<Vec<_>>>()?;
+    let songs = stmt.query_map([], parse_song_row)?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
     
     Ok(songs)
 }
@@ -156,27 +151,8 @@ pub fn get_user_songs(conn: &Connection, user_id: &str) -> Result<Vec<Song>> {
          ORDER BY us.added_at DESC"
     )?;
     
-    let songs = stmt.query_map([user_id], |row| {
-        let lyrics_json: String = row.get(4)?;
-        let phonetic_json: Option<String> = row.get(5)?;
-        let translations_json: Option<String> = row.get(6)?;
-        
-        Ok(Song {
-            id: row.get(0)?,
-            title: row.get(1)?,
-            artist: row.get(2)?,
-            language: row.get(3)?,
-            lyrics: serde_json::from_str(&lyrics_json).unwrap_or_default(),
-            phonetic_lyrics: phonetic_json
-                .and_then(|j| serde_json::from_str(&j).ok()),
-            translations: translations_json
-                .and_then(|j| serde_json::from_str(&j).ok()),
-            genius_id: row.get(7)?,
-            genius_url: row.get(8)?,
-            created_at: row.get(9)?,
-            updated_at: row.get(10)?,
-        })
-    })?.collect::<rusqlite::Result<Vec<_>>>()?;
+    let songs = stmt.query_map([user_id], parse_song_row)?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
     
     Ok(songs)
 }
@@ -221,13 +197,7 @@ pub fn update_song(conn: &Connection, song_id: &str, data: UpdateSongData) -> Re
     song.updated_at = chrono::Utc::now().to_rfc3339();
     
     // Update in database
-    let lyrics_json = serde_json::to_string(&song.lyrics)?;
-    let phonetic_json = song.phonetic_lyrics.as_ref()
-        .map(|p| serde_json::to_string(p))
-        .transpose()?;
-    let translations_json = song.translations.as_ref()
-        .map(|t| serde_json::to_string(t))
-        .transpose()?;
+    let (lyrics_json, phonetic_json, translations_json) = serialize_song_json(&song)?;
     
     conn.execute(
         "UPDATE songs 
@@ -278,7 +248,7 @@ mod tests {
             lyrics: vec!["Line 1".to_string(), "Line 2".to_string()],
         };
         
-        let song = create_song(&conn, data).unwrap();
+        let song = create_song(&conn, data).unwrap().song;
         assert_eq!(song.title, "Test Song");
         
         let retrieved = get_song(&conn, &song.id).unwrap();
@@ -318,7 +288,7 @@ mod tests {
             lyrics: vec!["Line".to_string()],
         };
         
-        let song = create_song(&conn, data).unwrap();
+        let song = create_song(&conn, data).unwrap().song;
         delete_song(&conn, &song.id).unwrap();
         
         let result = get_song(&conn, &song.id);

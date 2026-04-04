@@ -48,7 +48,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ],
     };
     
-    let song = create_song(&conn, song_data)?;
+    let result = create_song(&conn, song_data)?;
+    let song = result.song;
     println!("\n✅ Song created: {} by {}", song.title, song.artist);
     
     if let Some(phonetic) = &song.phonetic_lyrics {
