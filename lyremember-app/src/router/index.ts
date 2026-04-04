@@ -9,6 +9,7 @@ const DashboardView = () => import('../views/DashboardView.vue');
 const SongsView = () => import('../views/SongsView.vue');
 const SongDetailView = () => import('../views/SongDetailView.vue');
 const AddSongView = () => import('../views/AddSongView.vue');
+const PracticeView = () => import('../views/PracticeView.vue');
 const ProfileView = () => import('../views/ProfileView.vue');
 
 const routes: RouteRecordRaw[] = [
@@ -50,6 +51,12 @@ const routes: RouteRecordRaw[] = [
     path: '/songs/add',
     name: 'add-song',
     component: AddSongView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/practice',
+    name: 'practice',
+    component: PracticeView,
     meta: { requiresAuth: true },
   },
   {

@@ -24,7 +24,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 dark:text-gray-400">Practice Sessions</p>
-              <p class="text-3xl font-bold text-gray-900 dark:text-white">0</p>
+              <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ totalSessions }}</p>
             </div>
             <PlayCircle :size="40" class="text-green-600 dark:text-green-400" />
           </div>
@@ -34,7 +34,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 dark:text-gray-400">Average Score</p>
-              <p class="text-3xl font-bold text-gray-900 dark:text-white">-</p>
+              <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ averageScore }}</p>
             </div>
             <TrendingUp :size="40" class="text-purple-600 dark:text-purple-400" />
           </div>
@@ -114,22 +114,39 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { Music, PlayCircle, TrendingUp, Plus, ChevronRight } from 'lucide-vue-next';
 import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
 import Button from '../components/ui/Button.vue';
 import { useSongsStore } from '../stores/songs';
+import { useAuthStore } from '../stores/auth';
+import { getUserStats, type UserStats } from '../lib/tauri-api';
 
 const songsStore = useSongsStore();
+const authStore = useAuthStore();
+
+const userStats = ref<UserStats | null>(null);
 
 const recentSongs = computed(() => songsStore.songs.slice(0, 5));
+const totalSessions = computed(() => userStats.value?.total_sessions ?? 0);
+const averageScore = computed(() => {
+  if (!userStats.value || userStats.value.total_sessions === 0) return '-';
+  return `${Math.round(userStats.value.average_score)}%`;
+});
 
 onMounted(async () => {
   try {
     await songsStore.fetchUserSongs();
   } catch (err) {
     console.error('Failed to fetch songs:', err);
+  }
+  if (authStore.user) {
+    try {
+      userStats.value = await getUserStats(authStore.user.id);
+    } catch (err) {
+      console.error('Failed to fetch user stats:', err);
+    }
   }
 });
 </script>
