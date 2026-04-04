@@ -1,8 +1,7 @@
 # Master Development Plan — LyRemember
 
-> **Principes du plan :** Les phases sont des jalons logiques, pas des portes sequentielles rigides.
-> Les taches sans dependance dure peuvent avancer en parallele. Chaque phase a un **milestone de
-> feedback utilisateur** pour valider la direction avant d'investir plus.
+> Les phases sont des jalons logiques, pas des portes sequentielles rigides.
+> Les taches sans dependance dure peuvent avancer en parallele.
 
 ---
 
@@ -10,30 +9,12 @@
 
 **Objectif :** Corriger la dette technique et les bloqueurs avant toute nouvelle feature.
 
-### 0A. Migration PyO3 → Pure Rust (BLOQUEUR N1)
-
-Le bridging Python via PyO3 est le **principal obstacle** de developpement ET de CI. Il doit etre
-resolu maintenant, pas en Phase 5.
-
-| Option | Description | Complexite | Recommandation |
-|--------|-------------|------------|----------------|
-| **A (Choisie)** | Pure-Rust : `lindera` (JP kanji→romaji), table jamo (KR), feature flag `python-phonetics` | Faible | Elimine la dependance Python |
-| B | Bundler Python avec `pyembed`/`PyOxidizer` | Elevee | +30-50 MB, cross-compile complexe |
-| C | Python en sidecar Tauri | Moyenne | Fragile, necessite Python installe |
-
-**Actions concretes :**
-- [ ] Rendre PyO3 optionnel dans `rust-backend/Cargo.toml` :
-  ```toml
-  [features]
-  default = []
-  python-phonetics = ["pyo3"]
-  [dependencies]
-  pyo3 = { version = "0.20", features = ["auto-initialize"], optional = true }
-  ```
+### 0A. Migration PyO3 → Pure Rust
+- [ ] Rendre PyO3 optionnel dans `rust-backend/Cargo.toml` (feature flag `python-phonetics`)
 - [ ] Implementer fallback pure-Rust dans `phonetic.rs` :
-  - **JP** : `lindera` (tokenizer MeCab en Rust) pour decomposer les kanji en lectures, puis romaji. `wana_kana` seul ne suffit pas (ne gere que kana, pas kanji).
-  - **KR** : table de correspondance jamo → romanisation (19 initiales + 21 medianes + 28 finales, ~100 lignes de Rust pur)
-- [ ] Compiler et tester sans feature `python-phonetics` — ca doit passer
+  - **JP** : `lindera` (tokenizer MeCab en Rust, kanji → lectures → romaji)
+  - **KR** : table de correspondance jamo → romanisation (~100 lignes Rust)
+- [ ] Compiler et tester sans feature `python-phonetics`
 
 ### 0B. Bugs critiques
 - [ ] **`get_user_sessions` signature mismatch** — `commands.rs` accepte `limit: Option<i32>` mais `practice.rs:get_user_sessions()` ne le prend pas. Aligner les deux.
@@ -42,11 +23,10 @@ resolu maintenant, pas en Phase 5.
 - [ ] **App identifier placeholder** — remplacer `com.runner.lyremember-app` par `com.lyremember.app`.
 
 ### 0C. Migrations DB
-- [ ] Implementer un systeme de migration SQLite simple (table `schema_version`, fonctions `migrate_to_vN`).
-- [ ] Necessaire des maintenant : chaque phase va ajouter/modifier des colonnes. Sans migrations, les DB existantes des testeurs alpha cassent.
+- [ ] Systeme de migration SQLite simple (table `schema_version`, fonctions `migrate_to_vN`)
 
 ### 0D. Gestion d'erreur LibreTranslate
-- [ ] Ajouter un `try/catch` propre : si l'API est indisponible, message clair dans l'UI, ne pas bloquer la creation de chanson. Les traductions sont deja cachees dans `songs.translations` — ne jamais re-traduire.
+- [ ] `try/catch` propre : si API indisponible, message clair, ne pas bloquer la creation de chanson
 
 **Livrable :** Backend sans dependance Python, bugs corriges, app qui fonctionne offline (sauf traduction).
 
@@ -54,17 +34,13 @@ resolu maintenant, pas en Phase 5.
 
 ## Phase 1 — CI minimal + Tests (v0.1.x)
 
-**Objectif :** Filet de securite minimum pour developper sereinement. Pas de sur-engineering.
+**Objectif :** Filet de securite minimum.
 
 ### 1A. Pipeline CI legere (GitHub Actions)
 - [ ] Un seul workflow `ci.yml` sur push/PR :
   - `cargo test --manifest-path rust-backend/Cargo.toml` (sans feature `python-phonetics`)
   - `vue-tsc --noEmit` dans `lyremember-app/`
 - [ ] Cache `actions/cache` pour `target/` et `node_modules/`
-- [ ] Pas de build Tauri multi-plateforme en CI pour l'instant (trop lent, pas utile a ce stade)
-
-> **Lint/format (ESLint, Prettier, Husky, rustfmt) :** Differe. On les ajoute quand l'equipe grandit
-> ou quand le code style diverge. Pour un dev solo, c'est de la friction inutile.
 
 ### 1B. Tests de base
 - [ ] Tests unitaires Rust : services auth, songs, practice (avec `tempfile`)
@@ -148,44 +124,17 @@ resolu maintenant, pas en Phase 5.
 
 **Objectif :** Features secondaires, priorisees par le feedback beta.
 
-### 4A. Import de lyrics (remplacement de Genius)
-
-> **Pourquoi pas Genius :** L'API Genius ne retourne **pas** les lyrics — seulement des metadonnees
-> et un lien web. Recuperer les paroles necessite du scraping HTML, ce qui viole leurs CGU.
-> LRCLIB et Genius sont tous deux des bases communautaires sans licence editeur — la difference
-> est purement technique : LRCLIB retourne les paroles directement via API, Genius oblige a scraper.
-> LRCLIB est aussi compatible avec la licence MIT du projet.
-
-**Strategie retenue : user-provided + LRCLIB en assistance**
-
-| Source | Legalite | Usage |
-|--------|----------|-------|
-| **Saisie manuelle** (existant) | Aucun risque | Modele principal — l'utilisateur colle ses paroles |
-| **LRCLIB** (lrclib.net) | Zone grise (communautaire, pas de licence editeur) | Recherche optionnelle : pre-remplit le champ, l'utilisateur valide/edite |
-| **Musixmatch** (si l'app grandit) | 100% legal (licencie) | Plan Creator ~$10-20/mois, snippets gratuits (30%) |
-
-Analyse complete des alternatives :
-
-| Service | Fournit les lyrics ? | Legalite | Prix | Couverture |
-|---------|---------------------|----------|------|------------|
-| **Genius API** | Non (metadonnees + URL) | Scraping = violation CGU | Gratuit | N/A |
-| **LRCLIB** | Oui (plain + synced/LRC) | Zone grise (communautaire) | Gratuit, pas d'API key | Variable, meilleur en EN |
-| **Musixmatch** | Snippet 30% (free) / Full (payant) | 100% legal (licencie) | $0-20+/mois | Excellent |
-| **Lyrics.ovh** | Oui | Flou | Gratuit | Defunct/instable |
-| **ChartLyrics** | Oui (SOAP/XML) | Flou | Gratuit | Vieux, uptime mauvais |
-| **Saisie manuelle** | N/A | Aucun risque | Gratuit | Tout |
-
-**Actions :**
+### 4A. Import de lyrics via LRCLIB
 - [ ] Service `lyrics_search.rs` : appels REST vers LRCLIB (`GET /api/search`, `GET /api/get`)
 - [ ] Bouton "Rechercher les paroles" dans AddSongView : resultats LRCLIB → pre-remplissage → validation utilisateur
 - [ ] Disclaimer UI : "Paroles fournies par la communaute — verifiez avant de sauvegarder"
-- [ ] Aucun token API necessaire (LRCLIB est ouvert)
+- [ ] Gestion d'erreur si LRCLIB est indisponible (non-bloquant)
 
 ### 4B. Internationalisation (i18n)
 - [ ] Setup `vue-i18n` avec fichiers de traduction FR / EN
 - [ ] Strings UI critiques externalisees (menus, boutons, messages d'erreur)
 - [ ] Switcher de langue dans les settings
-- [ ] JP / KR : ajouter plus tard si demande par les utilisateurs
+- [ ] JP / KR : ajouter si demande utilisateurs
 
 ### 4C. UX
 - [ ] Keyboard shortcuts (navigation, play/pause, next line)
@@ -195,7 +144,6 @@ Analyse complete des alternatives :
 ### 4D. Export / Import des donnees utilisateur
 - [ ] Export JSON depuis ProfileView : chansons, progression, settings
 - [ ] Import JSON : restaurer les donnees sur une nouvelle machine
-- [ ] Necessaire pour ne pas perdre la progression en changeant de machine
 
 ### 4E. Tests
 - [ ] Tests i18n : verification que toutes les cles existent dans chaque locale
@@ -205,9 +153,7 @@ Analyse complete des alternatives :
 
 **Livrable :** Import lyrics assiste, i18n FR/EN, UX amelioree, donnees portables.
 
-> **Hors scope v1.0 :** Mode oral (SpeechRecognition + PyAudio). C'est un projet a part entiere
-> (dep Python supplementaire, gestion micro cross-platform, reconnaissance multi-langues).
-> A reconsiderer en v2.0 si la demande existe.
+> **Hors scope v1.0 :** Mode oral (SpeechRecognition + PyAudio) → v2.0.
 
 ---
 
