@@ -129,11 +129,13 @@ import Button from '../components/ui/Button.vue';
 import Alert from '../components/ui/Alert.vue';
 import { useSongsStore } from '../stores/songs';
 import { useAuthStore } from '../stores/auth';
+import { useToast } from '../composables/useToast';
 import type { CreateSongForm } from '../types';
 
 const router = useRouter();
 const songsStore = useSongsStore();
 const authStore = useAuthStore();
+const toast = useToast();
 
 const form = ref<CreateSongForm>({
   title: '',
@@ -170,21 +172,25 @@ async function handleSubmit() {
     }
 
     // Create the song
-    const song = await songsStore.createSong(
+    const result = await songsStore.createSong(
       form.value.title,
       form.value.artist,
       form.value.language,
-      lyricsArray,
-      form.value.autoTranslate
+      lyricsArray
     );
 
     // Add to user's repertoire
     if (authStore.user) {
-      await songsStore.addToRepertoire(song.id);
+      await songsStore.addToRepertoire(result.song.id);
     }
 
-    // Navigate to the song detail
-    router.push(`/songs/${song.id}`);
+    // Show warnings if any
+    for (const warning of result.warnings) {
+      toast.info(warning);
+    }
+
+    toast.success('Song created successfully!');
+    router.push(`/songs/${result.song.id}`);
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to create song';
     showError.value = true;

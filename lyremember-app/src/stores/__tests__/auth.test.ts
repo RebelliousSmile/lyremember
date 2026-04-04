@@ -7,6 +7,7 @@ vi.mock('../../lib/tauri-api', () => ({
   register: vi.fn(),
   login: vi.fn(),
   verifyToken: vi.fn(),
+  getUser: vi.fn(),
 }))
 
 import * as api from '../../lib/tauri-api'
@@ -71,7 +72,8 @@ describe('useAuthStore', () => {
 
   it('logs in and saves token', async () => {
     vi.mocked(api.login).mockResolvedValueOnce('jwt-token-123')
-    vi.mocked(api.verifyToken).mockResolvedValueOnce(mockUser)
+    vi.mocked(api.verifyToken).mockResolvedValueOnce('user-123')
+    vi.mocked(api.getUser).mockResolvedValueOnce(mockUser)
     const store = useAuthStore()
 
     await store.login('testuser', 'password123')
@@ -96,7 +98,8 @@ describe('useAuthStore', () => {
 
   it('checkAuth restores session from localStorage', async () => {
     localStorageMock.store['auth_token'] = 'saved-token'
-    vi.mocked(api.verifyToken).mockResolvedValueOnce(mockUser)
+    vi.mocked(api.verifyToken).mockResolvedValueOnce('user-123')
+    vi.mocked(api.getUser).mockResolvedValueOnce(mockUser)
     const store = useAuthStore()
 
     const result = await store.checkAuth()

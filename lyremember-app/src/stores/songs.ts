@@ -101,15 +101,14 @@ export const useSongsStore = defineStore('songs', () => {
     title: string,
     artist: string,
     language: string,
-    lyrics: string[],
-    autoTranslate: boolean = true
+    lyrics: string[]
   ) {
     loading.value = true;
     error.value = null;
     try {
-      const song = await api.createSong(title, artist, language, lyrics, autoTranslate);
-      songs.value.push(song);
-      return song;
+      const result = await api.createSong(title, artist, language, lyrics);
+      songs.value.push(result.song);
+      return result;
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to create song';
       throw err;

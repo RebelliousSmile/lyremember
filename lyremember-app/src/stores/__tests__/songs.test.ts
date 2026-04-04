@@ -88,11 +88,11 @@ describe('useSongsStore', () => {
 
   it('creates a song and adds to list', async () => {
     const newSong = { ...mockSongs[0], id: '4', title: 'New Song' }
-    vi.mocked(api.createSong).mockResolvedValueOnce(newSong)
+    vi.mocked(api.createSong).mockResolvedValueOnce({ song: newSong, warnings: [] })
     const store = useSongsStore()
 
-    const result = await store.createSong('New Song', 'Artist', 'jp', ['lyrics'], true)
-    expect(result).toEqual(newSong)
+    const result = await store.createSong('New Song', 'Artist', 'jp', ['lyrics'])
+    expect(result.song).toEqual(newSong)
     expect(store.songs).toContainEqual(newSong)
   })
 

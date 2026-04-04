@@ -1,10 +1,12 @@
 <template>
   <router-view />
+  <Toast />
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useUiStore } from './stores/ui';
+import Toast from './components/ui/Toast.vue';
 
 const uiStore = useUiStore();
 

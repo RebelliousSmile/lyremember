@@ -1,5 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 
+// ==================== TYPES ====================
+
 export interface User {
   id: string;
   username: string;
@@ -16,8 +18,15 @@ export interface Song {
   lyrics: string[];
   phonetic_lyrics: string[] | null;
   translations: Record<string, string[]> | null;
+  genius_id: string | null;
+  genius_url: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface CreateSongResult {
+  song: Song;
+  warnings: string[];
 }
 
 export interface PracticeSession {
@@ -29,23 +38,15 @@ export interface PracticeSession {
   lines_practiced: number;
   lines_correct: number;
   duration_seconds: number;
-  practiced_at: string;
+  created_at: string;
 }
 
 export interface UserStats {
   total_sessions: number;
   total_practice_time: number;
   average_score: number;
-  songs_practiced: number;
-}
-
-export interface SongMastery {
-  song_id: string;
-  sessions_count: number;
-  average_score: number;
-  best_score: number;
-  total_time: number;
-  mastery_level: string;
+  total_lines_practiced: number;
+  total_lines_correct: number;
 }
 
 // ==================== AUTH API ====================
@@ -62,7 +63,7 @@ export async function login(username: string, password: string): Promise<string>
   return await invoke('cmd_login', { username, password });
 }
 
-export async function verifyToken(token: string): Promise<User> {
+export async function verifyToken(token: string): Promise<string> {
   return await invoke('cmd_verify_token', { token });
 }
 
@@ -76,16 +77,9 @@ export async function createSong(
   title: string,
   artist: string,
   language: string,
-  lyrics: string[],
-  autoTranslate?: boolean
-): Promise<Song> {
-  return await invoke('cmd_create_song', {
-    title,
-    artist,
-    language,
-    lyrics,
-    autoTranslate,
-  });
+  lyrics: string[]
+): Promise<CreateSongResult> {
+  return await invoke('cmd_create_song', { title, artist, language, lyrics });
 }
 
 export async function getSongs(): Promise<Song[]> {
@@ -129,13 +123,7 @@ export async function createPracticeSession(
   durationSeconds: number
 ): Promise<PracticeSession> {
   return await invoke('cmd_create_practice_session', {
-    userId,
-    songId,
-    mode,
-    score,
-    linesPracticed,
-    linesCorrect,
-    durationSeconds,
+    userId, songId, mode, score, linesPracticed, linesCorrect, durationSeconds,
   });
 }
 
@@ -153,7 +141,7 @@ export async function getUserStats(userId: string): Promise<UserStats> {
 export async function getSongMastery(
   userId: string,
   songId: string
-): Promise<SongMastery> {
+): Promise<number> {
   return await invoke('cmd_get_song_mastery', { userId, songId });
 }
 

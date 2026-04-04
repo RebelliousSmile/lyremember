@@ -2,9 +2,9 @@
 export type {
   User,
   Song,
+  CreateSongResult,
   PracticeSession,
   UserStats,
-  SongMastery,
 } from '../lib/tauri-api';
 
 // Additional UI-specific types

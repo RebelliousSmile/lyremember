@@ -36,9 +36,10 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const authToken = await api.login(username, password);
       token.value = authToken;
-      
-      // Verify token and get user
-      const authenticatedUser = await api.verifyToken(authToken);
+
+      // Verify token → get user_id → fetch user
+      const userId = await api.verifyToken(authToken);
+      const authenticatedUser = await api.getUser(userId);
       user.value = authenticatedUser;
       
       // Save token to localStorage
@@ -69,7 +70,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     loading.value = true;
     try {
-      const authenticatedUser = await api.verifyToken(savedToken);
+      const userId = await api.verifyToken(savedToken);
+      const authenticatedUser = await api.getUser(userId);
       user.value = authenticatedUser;
       token.value = savedToken;
       return true;

@@ -4,12 +4,12 @@
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
         Profile
       </h1>
-      
+
       <Card>
         <template #header>
           <h2 class="text-xl font-semibold">User Information</h2>
         </template>
-        
+
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -19,7 +19,7 @@
               {{ authStore.user?.username }}
             </p>
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Email
@@ -28,7 +28,7 @@
               {{ authStore.user?.email }}
             </p>
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Member Since
@@ -39,29 +39,39 @@
           </div>
         </div>
       </Card>
-      
+
       <Card>
         <template #header>
           <h2 class="text-xl font-semibold">Statistics</h2>
         </template>
-        
-        <div class="grid grid-cols-2 gap-4">
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <p class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
               {{ songsStore.totalSongs }}
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Total Songs
-            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Total Songs</p>
           </div>
-          
+
           <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <p class="text-3xl font-bold text-green-600 dark:text-green-400">
-              0
+              {{ stats?.total_sessions ?? 0 }}
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Practice Sessions
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Sessions</p>
+          </div>
+
+          <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <p class="text-3xl font-bold text-purple-600 dark:text-purple-400">
+              {{ stats && stats.total_sessions > 0 ? Math.round(stats.average_score) + '%' : '-' }}
             </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Avg Score</p>
+          </div>
+
+          <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <p class="text-3xl font-bold text-orange-600 dark:text-orange-400">
+              {{ stats ? formatTime(stats.total_practice_time) : '0m' }}
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Practice Time</p>
           </div>
         </div>
       </Card>
@@ -70,18 +80,29 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
 import { useAuthStore } from '../stores/auth';
 import { useSongsStore } from '../stores/songs';
+import * as api from '../lib/tauri-api';
+import type { UserStats } from '../types';
 
 const authStore = useAuthStore();
 const songsStore = useSongsStore();
+const stats = ref<UserStats | null>(null);
 
 function formatDate(date: string | undefined) {
   if (!date) return 'N/A';
   return new Date(date).toLocaleDateString();
+}
+
+function formatTime(seconds: number): string {
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  return `${hours}h ${minutes % 60}m`;
 }
 
 onMounted(async () => {
@@ -89,6 +110,14 @@ onMounted(async () => {
     await songsStore.fetchUserSongs();
   } catch (err) {
     console.error('Failed to fetch songs:', err);
+  }
+
+  if (authStore.user) {
+    try {
+      stats.value = await api.getUserStats(authStore.user.id);
+    } catch (err) {
+      console.error('Failed to fetch stats:', err);
+    }
   }
 });
 </script>
