@@ -151,8 +151,10 @@ resolu maintenant, pas en Phase 5.
 ### 4A. Import de lyrics (remplacement de Genius)
 
 > **Pourquoi pas Genius :** L'API Genius ne retourne **pas** les lyrics — seulement des metadonnees
-> et un lien web. Recuperer les paroles necessite du scraping HTML, ce qui viole leurs CGU et pose
-> des problemes de copyright (les lyrics sont la propriete des editeurs musicaux).
+> et un lien web. Recuperer les paroles necessite du scraping HTML, ce qui viole leurs CGU.
+> LRCLIB et Genius sont tous deux des bases communautaires sans licence editeur — la difference
+> est purement technique : LRCLIB retourne les paroles directement via API, Genius oblige a scraper.
+> LRCLIB est aussi compatible avec la licence MIT du projet.
 
 **Strategie retenue : user-provided + LRCLIB en assistance**
 
