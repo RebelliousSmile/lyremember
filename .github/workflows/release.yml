@@ -53,9 +53,10 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PYO3_PYTHON: python3
+          PYO3_PYTHON: ${{ runner.os == 'Windows' && 'python' || 'python3' }}
         with:
           projectPath: lyremember-app
+          args: --features python
           tagName: ${{ github.ref_name }}
           releaseName: 'LyRemember ${{ github.ref_name }}'
           releaseBody: |
@@ -116,7 +117,7 @@ jobs:
 
       - name: Build Android APK
         working-directory: lyremember-app
-        run: npx tauri android build --apk -- --no-default-features
+        run: npx tauri android build --apk
         env:
           NDK_HOME: ${{ env.ANDROID_NDK_HOME }}
 

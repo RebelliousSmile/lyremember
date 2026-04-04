@@ -13,7 +13,7 @@ pub fn create_song(conn: &Connection, data: CreateSongData) -> Result<Song> {
     
     // Auto-generate phonetic if language supports it
     if matches!(song.language.as_str(), "jp" | "kr" | "fr" | "en") {
-        match phonetic::generate_phonetic(data.lyrics.clone(), &song.language) {
+        match phonetic::generate_phonetic(&data.lyrics, &song.language) {
             Ok(phonetic_lyrics) => {
                 song.phonetic_lyrics = Some(phonetic_lyrics);
             }

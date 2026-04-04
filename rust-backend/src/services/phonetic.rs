@@ -19,24 +19,24 @@ use crate::{Error, Result};
 /// # Returns
 /// Vector of phonetic representations matching input lines
 #[cfg(feature = "python")]
-pub fn generate_phonetic(text: Vec<String>, language: &str) -> Result<Vec<String>> {
+pub fn generate_phonetic(text: &[String], language: &str) -> Result<Vec<String>> {
     match language {
         "jp" => japanese_to_romaji(text),
         "kr" => korean_to_roman(text),
         "fr" => to_ipa(text, "fra-Latn"),
         "en" => to_ipa(text, "eng-Latn"),
-        _ => Ok(text), // Return original text for unsupported languages
+        _ => Ok(text.to_vec()), // Return original text for unsupported languages
     }
 }
 
 /// Stub implementation when Python is not available (e.g. Android)
 #[cfg(not(feature = "python"))]
-pub fn generate_phonetic(_text: Vec<String>, language: &str) -> Result<Vec<String>> {
+pub fn generate_phonetic(text: &[String], language: &str) -> Result<Vec<String>> {
     match language {
         "jp" | "kr" | "fr" | "en" => Err(Error::Phonetic(
             "Phonetic generation is not available on this platform (requires Python)".to_string(),
         )),
-        _ => Ok(_text), // Return original text for unsupported languages
+        _ => Ok(text.to_vec()), // Return original text for unsupported languages
     }
 }
 
@@ -49,7 +49,7 @@ use pyo3::types::PyList;
 
 /// Convert Japanese (including kanji) to romaji using pykakasi
 #[cfg(feature = "python")]
-fn japanese_to_romaji(text: Vec<String>) -> Result<Vec<String>> {
+fn japanese_to_romaji(text: &[String]) -> Result<Vec<String>> {
     Python::with_gil(|py| {
         // Import pykakasi module
         let kakasi_module = py.import("pykakasi")
@@ -63,10 +63,10 @@ fn japanese_to_romaji(text: Vec<String>) -> Result<Vec<String>> {
 
         let mut result = Vec::new();
 
-        for line in text {
+        for line in text.iter() {
             // Convert each line
             let converted = kakasi
-                .call_method1("convert", (line,))
+                .call_method1("convert", (line.as_str(),))
                 .map_err(|e| Error::Phonetic(format!("kakasi.convert failed: {}", e)))?;
 
             // Extract romaji from each segment
@@ -101,7 +101,7 @@ fn japanese_to_romaji(text: Vec<String>) -> Result<Vec<String>> {
 
 /// Convert Korean hangul to romanized latin using hangul-romanize
 #[cfg(feature = "python")]
-fn korean_to_roman(text: Vec<String>) -> Result<Vec<String>> {
+fn korean_to_roman(text: &[String]) -> Result<Vec<String>> {
     Python::with_gil(|py| {
         // Import hangul_romanize module
         let module = py.import("hangul_romanize")
@@ -112,9 +112,9 @@ fn korean_to_roman(text: Vec<String>) -> Result<Vec<String>> {
 
         let mut result = Vec::new();
 
-        for line in text {
+        for line in text.iter() {
             let romanized = transliter_class
-                .call1((line,))
+                .call1((line.as_str(),))
                 .map_err(|e| Error::Phonetic(format!("Transliter failed: {}", e)))?
                 .extract::<String>()
                 .map_err(|e| Error::Phonetic(format!("Failed to extract string: {}", e)))?;
@@ -128,7 +128,7 @@ fn korean_to_roman(text: Vec<String>) -> Result<Vec<String>> {
 
 /// Convert text to IPA (International Phonetic Alphabet) using epitran
 #[cfg(feature = "python")]
-fn to_ipa(text: Vec<String>, lang_code: &str) -> Result<Vec<String>> {
+fn to_ipa(text: &[String], lang_code: &str) -> Result<Vec<String>> {
     Python::with_gil(|py| {
         // Import epitran module
         let epitran_module = py.import("epitran")
@@ -143,9 +143,9 @@ fn to_ipa(text: Vec<String>, lang_code: &str) -> Result<Vec<String>> {
 
         let mut result = Vec::new();
 
-        for line in text {
+        for line in text.iter() {
             let ipa = epitran
-                .call_method1("transliterate", (line,))
+                .call_method1("transliterate", (line.as_str(),))
                 .map_err(|e| Error::Phonetic(format!("transliterate failed: {}", e)))?
                 .extract::<String>()
                 .map_err(|e| Error::Phonetic(format!("Failed to extract string: {}", e)))?;
@@ -164,7 +164,7 @@ mod tests {
     #[test]
     fn test_generate_phonetic_unsupported_language() {
         let text = vec!["Hello".to_string(), "World".to_string()];
-        let result = generate_phonetic(text.clone(), "de").unwrap();
+        let result = generate_phonetic(&text, "de").unwrap();
         assert_eq!(result, text); // Should return original for unsupported language
     }
 
@@ -176,7 +176,7 @@ mod tests {
     #[cfg(feature = "python")]
     fn test_japanese_to_romaji() {
         let text = vec!["こんにちは".to_string()];
-        let result = japanese_to_romaji(text).unwrap();
+        let result = japanese_to_romaji(&text).unwrap();
         assert!(!result[0].is_empty());
         println!("Japanese romaji: {:?}", result);
     }
@@ -186,7 +186,7 @@ mod tests {
     #[cfg(feature = "python")]
     fn test_korean_to_roman() {
         let text = vec!["안녕하세요".to_string()];
-        let result = korean_to_roman(text).unwrap();
+        let result = korean_to_roman(&text).unwrap();
         assert!(!result[0].is_empty());
         println!("Korean roman: {:?}", result);
     }
@@ -196,7 +196,7 @@ mod tests {
     #[cfg(feature = "python")]
     fn test_to_ipa_english() {
         let text = vec!["hello world".to_string()];
-        let result = to_ipa(text, "eng-Latn").unwrap();
+        let result = to_ipa(&text, "eng-Latn").unwrap();
         assert!(!result[0].is_empty());
         println!("English IPA: {:?}", result);
     }

@@ -15,7 +15,7 @@ name = "lyremember_app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [features]
-default = ["python"]
+default = []
 python = ["lyremember_backend/python"]
 
 [build-dependencies]
