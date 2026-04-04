@@ -43,10 +43,8 @@ resolu maintenant, pas en Phase 5.
 - [ ] Implementer un systeme de migration SQLite simple (table `schema_version`, fonctions `migrate_to_vN`).
 - [ ] Necessaire des maintenant : chaque phase va ajouter/modifier des colonnes. Sans migrations, les DB existantes des testeurs alpha cassent.
 
-### 0D. Traduction : rendre offline-resilient
-- [ ] La traduction via LibreTranslate doit etre **100% optionnelle et non-bloquante**.
-- [ ] Si l'API est indisponible : afficher un message clair, ne pas bloquer la creation de chanson.
-- [ ] Cache agressif : les traductions sont deja stockees dans `songs.translations` — ne jamais re-traduire.
+### 0D. Gestion d'erreur LibreTranslate
+- [ ] Ajouter un `try/catch` propre : si l'API est indisponible, message clair dans l'UI, ne pas bloquer la creation de chanson. Les traductions sont deja cachees dans `songs.translations` — ne jamais re-traduire.
 
 **Livrable :** Backend sans dependance Python, bugs corriges, app qui fonctionne offline (sauf traduction).
 
@@ -189,12 +187,18 @@ Analyse complete des alternatives :
 - [ ] Animations/transitions entre vues (Vue Transition)
 - [ ] Systeme de notifications in-app (Toast)
 
-### 4D. Tests
+### 4D. Export / Import des donnees utilisateur
+- [ ] Export JSON depuis ProfileView : chansons, progression, settings
+- [ ] Import JSON : restaurer les donnees sur une nouvelle machine
+- [ ] Necessaire pour ne pas perdre la progression en changeant de machine
+
+### 4E. Tests
 - [ ] Tests i18n : verification que toutes les cles existent dans chaque locale
 - [ ] Tests LRCLIB : mocks des appels HTTP
+- [ ] Tests export/import : round-trip JSON valide
 - [ ] Tests accessibilite (a11y) basiques
 
-**Livrable :** Import lyrics assiste, i18n FR/EN, UX amelioree.
+**Livrable :** Import lyrics assiste, i18n FR/EN, UX amelioree, donnees portables.
 
 > **Hors scope v1.0 :** Mode oral (SpeechRecognition + PyAudio). C'est un projet a part entiere
 > (dep Python supplementaire, gestion micro cross-platform, reconnaissance multi-langues).
