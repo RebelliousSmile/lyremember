@@ -20,96 +20,135 @@
           {{ song?.language.toUpperCase() }}
         </span>
       </div>
-      
+
       <div v-if="loading" class="text-center py-12">
         <p class="text-gray-500 dark:text-gray-400">Loading song...</p>
       </div>
-      
+
       <div v-else-if="!song" class="text-center py-12">
         <p class="text-red-600 dark:text-red-400">Song not found</p>
       </div>
-      
+
       <div v-else class="space-y-6">
-        <Card>
-          <template #header>
-            <h2 class="text-xl font-semibold">Lyrics</h2>
-          </template>
-          
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Original Lyrics -->
-            <div>
-              <h3 class="font-semibold text-sm text-gray-600 dark:text-gray-400 mb-3">
-                Original ({{ song.language.toUpperCase() }})
-              </h3>
-              <div class="space-y-2">
-                <p
-                  v-for="(line, index) in song.lyrics"
-                  :key="`original-${index}`"
-                  class="text-lg leading-relaxed"
-                >
-                  {{ line }}
-                </p>
+        <!-- Practice mode active -->
+        <div v-if="activeMode">
+          <Card>
+            <template #header>
+              <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold">{{ modeTitles[activeMode] }}</h2>
+                <Button variant="ghost" size="sm" @click="closeMode">
+                  <X :size="18" />
+                  Close
+                </Button>
+              </div>
+            </template>
+
+            <KaraokeMode
+              v-if="activeMode === 'karaoke'"
+              :song="song"
+              @finish="onPracticeFinish"
+            />
+            <FillBlankMode
+              v-else-if="activeMode === 'fill-blank'"
+              :song="song"
+              @finish="onPracticeFinish"
+            />
+            <McqMode
+              v-else-if="activeMode === 'mcq'"
+              :song="song"
+              @finish="onPracticeFinish"
+            />
+            <OralMode
+              v-else-if="activeMode === 'oral'"
+              :song="song"
+              @finish="onPracticeFinish"
+            />
+          </Card>
+        </div>
+
+        <!-- Normal view (lyrics + mode selection) -->
+        <template v-else>
+          <Card>
+            <template #header>
+              <h2 class="text-xl font-semibold">Lyrics</h2>
+            </template>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <!-- Original Lyrics -->
+              <div>
+                <h3 class="font-semibold text-sm text-gray-600 dark:text-gray-400 mb-3">
+                  Original ({{ song.language.toUpperCase() }})
+                </h3>
+                <div class="space-y-2">
+                  <p
+                    v-for="(line, index) in song.lyrics"
+                    :key="`original-${index}`"
+                    class="text-lg leading-relaxed"
+                  >
+                    {{ line }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Phonetic -->
+              <div v-if="song.phonetic_lyrics">
+                <h3 class="font-semibold text-sm text-gray-600 dark:text-gray-400 mb-3">
+                  Phonetic
+                </h3>
+                <div class="space-y-2">
+                  <p
+                    v-for="(line, index) in song.phonetic_lyrics"
+                    :key="`phonetic-${index}`"
+                    class="text-lg leading-relaxed text-gray-600 dark:text-gray-400 italic"
+                  >
+                    {{ line }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Translation -->
+              <div v-if="song.translations && song.translations.en">
+                <h3 class="font-semibold text-sm text-gray-600 dark:text-gray-400 mb-3">
+                  English Translation
+                </h3>
+                <div class="space-y-2">
+                  <p
+                    v-for="(line, index) in song.translations.en"
+                    :key="`translation-${index}`"
+                    class="text-lg leading-relaxed text-gray-600 dark:text-gray-400"
+                  >
+                    {{ line }}
+                  </p>
+                </div>
               </div>
             </div>
-            
-            <!-- Phonetic -->
-            <div v-if="song.phonetic_lyrics">
-              <h3 class="font-semibold text-sm text-gray-600 dark:text-gray-400 mb-3">
-                Phonetic
-              </h3>
-              <div class="space-y-2">
-                <p
-                  v-for="(line, index) in song.phonetic_lyrics"
-                  :key="`phonetic-${index}`"
-                  class="text-lg leading-relaxed text-gray-600 dark:text-gray-400 italic"
-                >
-                  {{ line }}
-                </p>
-              </div>
+          </Card>
+
+          <Card>
+            <template #header>
+              <h2 class="text-xl font-semibold">Practice Modes</h2>
+            </template>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Button variant="primary" size="lg" className="w-full" @click="startMode('karaoke')">
+                <PlayCircle :size="20" />
+                Karaoke Mode
+              </Button>
+              <Button variant="secondary" size="lg" className="w-full" @click="startMode('fill-blank')">
+                <PenLine :size="20" />
+                Fill-in-the-Blank
+              </Button>
+              <Button variant="secondary" size="lg" className="w-full" @click="startMode('mcq')">
+                <List :size="20" />
+                Multiple Choice
+              </Button>
+              <Button variant="secondary" size="lg" className="w-full" @click="startMode('oral')">
+                <Mic :size="20" />
+                Oral Practice
+              </Button>
             </div>
-            
-            <!-- Translation -->
-            <div v-if="song.translations && song.translations.en">
-              <h3 class="font-semibold text-sm text-gray-600 dark:text-gray-400 mb-3">
-                English Translation
-              </h3>
-              <div class="space-y-2">
-                <p
-                  v-for="(line, index) in song.translations.en"
-                  :key="`translation-${index}`"
-                  class="text-lg leading-relaxed text-gray-600 dark:text-gray-400"
-                >
-                  {{ line }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </Card>
-        
-        <Card>
-          <template #header>
-            <h2 class="text-xl font-semibold">Practice Modes</h2>
-          </template>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Button variant="primary" size="lg" className="w-full">
-              <PlayCircle :size="20" />
-              Karaoke Mode
-            </Button>
-            <Button variant="secondary" size="lg" className="w-full">
-              <Music :size="20" />
-              Fill-in-the-Blank
-            </Button>
-            <Button variant="secondary" size="lg" className="w-full">
-              <List :size="20" />
-              Multiple Choice
-            </Button>
-            <Button variant="secondary" size="lg" className="w-full">
-              <Mic :size="20" />
-              Oral Practice
-            </Button>
-          </div>
-        </Card>
+          </Card>
+        </template>
       </div>
     </div>
   </MainLayout>
@@ -118,23 +157,76 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { ArrowLeft, PlayCircle, Music, List, Mic } from 'lucide-vue-next';
+import { ArrowLeft, PlayCircle, PenLine, List, Mic, X } from 'lucide-vue-next';
 import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
 import Button from '../components/ui/Button.vue';
+import KaraokeMode from '../components/practice/KaraokeMode.vue';
+import FillBlankMode from '../components/practice/FillBlankMode.vue';
+import McqMode from '../components/practice/McqMode.vue';
+import OralMode from '../components/practice/OralMode.vue';
 import { useSongsStore } from '../stores/songs';
-import type { Song } from '../types';
+import { useAuthStore } from '../stores/auth';
+import { createPracticeSession } from '../lib/tauri-api';
+import type { Song, PracticeMode } from '../types';
 
 const route = useRoute();
 const songsStore = useSongsStore();
+const authStore = useAuthStore();
 
 const song = ref<Song | null>(null);
 const loading = ref(true);
+const activeMode = ref<PracticeMode | null>(null);
+
+const modeTitles: Record<PracticeMode, string> = {
+  karaoke: 'Karaoke Mode',
+  'fill-blank': 'Fill-in-the-Blank',
+  mcq: 'Multiple Choice',
+  oral: 'Oral Practice',
+};
+
+function startMode(mode: PracticeMode) {
+  activeMode.value = mode;
+}
+
+function closeMode() {
+  activeMode.value = null;
+}
+
+async function onPracticeFinish(data: {
+  score: number;
+  linesPracticed: number;
+  linesCorrect: number;
+  durationSeconds: number;
+}) {
+  if (authStore.user && song.value && activeMode.value) {
+    try {
+      await createPracticeSession(
+        authStore.user.id,
+        song.value.id,
+        activeMode.value,
+        data.score,
+        data.linesPracticed,
+        data.linesCorrect,
+        data.durationSeconds,
+      );
+    } catch (err) {
+      console.error('Failed to save practice session:', err);
+    }
+  }
+  activeMode.value = null;
+}
 
 onMounted(async () => {
   try {
     const songId = String(route.params.id);
     song.value = await songsStore.fetchSong(songId);
+
+    // Auto-start mode from query param (e.g. from PracticeView)
+    const mode = route.query.mode as PracticeMode | undefined;
+    if (mode && mode in modeTitles) {
+      activeMode.value = mode;
+    }
   } catch (err) {
     console.error('Failed to fetch song:', err);
   } finally {

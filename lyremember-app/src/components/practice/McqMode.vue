@@ -1,0 +1,234 @@
+<template>
+  <div class="space-y-6">
+    <!-- Progress -->
+    <div class="flex items-center gap-4">
+      <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+        <div
+          class="bg-purple-600 dark:bg-purple-400 h-2 rounded-full transition-all duration-500"
+          :style="{ width: `${progress}%` }"
+        ></div>
+      </div>
+      <span class="text-sm text-gray-600 dark:text-gray-400">
+        {{ currentIndex + 1 }} / {{ song.lyrics.length }}
+      </span>
+      <span class="text-sm font-semibold" :class="scoreColor">
+        {{ correctCount }}/{{ currentIndex + (answered ? 1 : 0) }}
+      </span>
+    </div>
+
+    <!-- Question -->
+    <div v-if="!finished" class="space-y-6">
+      <!-- Prompt: show translation or phonetic, ask for original line -->
+      <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl text-center space-y-2">
+        <p class="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          {{ questionType === 'translation' ? 'What is the original lyric for:' : 'Which lyric matches this phonetic:' }}
+        </p>
+        <p class="text-xl font-semibold text-gray-900 dark:text-white">
+          {{ questionText }}
+        </p>
+      </div>
+
+      <!-- Choices -->
+      <div class="grid grid-cols-1 gap-3">
+        <button
+          v-for="(choice, i) in choices"
+          :key="i"
+          @click="selectAnswer(i)"
+          :disabled="answered"
+          class="p-4 rounded-lg border-2 text-left transition-all duration-200"
+          :class="choiceClass(i)"
+        >
+          <span class="inline-flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+              :class="choiceBadgeClass(i)"
+            >
+              {{ ['A', 'B', 'C', 'D'][i] }}
+            </span>
+            <span class="text-lg">{{ choice }}</span>
+          </span>
+        </button>
+      </div>
+
+      <!-- Feedback + Next -->
+      <div v-if="answered" class="flex items-center justify-between">
+        <p class="font-medium" :class="selectedIndex === correctChoiceIndex ? 'text-green-600' : 'text-red-500'">
+          {{ selectedIndex === correctChoiceIndex ? '✓ Correct!' : `✗ The answer was: ${choices[correctChoiceIndex]}` }}
+        </p>
+        <Button variant="primary" @click="nextQuestion">
+          Next
+          <ChevronRight :size="18" />
+        </Button>
+      </div>
+    </div>
+
+    <!-- End screen -->
+    <div v-else class="text-center py-6 space-y-4">
+      <div class="text-6xl mb-2">{{ scoreMedal }}</div>
+      <p class="text-xl font-semibold text-gray-900 dark:text-white">
+        Score: {{ Math.round(scorePercent) }}%
+      </p>
+      <p class="text-gray-600 dark:text-gray-400">
+        {{ correctCount }} correct out of {{ song.lyrics.length }}
+      </p>
+      <div class="flex justify-center gap-3">
+        <Button variant="primary" @click="restart">
+          <RotateCcw :size="18" />
+          Retry
+        </Button>
+        <Button variant="secondary" @click="$emit('finish', sessionData)">
+          Done
+        </Button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { ChevronRight, RotateCcw } from 'lucide-vue-next';
+import Button from '../ui/Button.vue';
+import type { Song } from '../../types';
+
+const props = defineProps<{ song: Song }>();
+defineEmits<{
+  finish: [data: { score: number; linesPracticed: number; linesCorrect: number; durationSeconds: number }];
+}>();
+
+const currentIndex = ref(0);
+const correctCount = ref(0);
+const answered = ref(false);
+const selectedIndex = ref(-1);
+const finished = ref(false);
+const startTime = Date.now();
+
+// Determine question type based on available data
+const questionType = computed<'translation' | 'phonetic'>(() => {
+  if (props.song.translations?.en?.[currentIndex.value]) return 'translation';
+  return 'phonetic';
+});
+
+const questionText = computed(() => {
+  if (questionType.value === 'translation') {
+    return props.song.translations?.en?.[currentIndex.value] ?? '';
+  }
+  return props.song.phonetic_lyrics?.[currentIndex.value] ?? props.song.lyrics[currentIndex.value];
+});
+
+function generateChoices(): { choices: string[]; correctIndex: number } {
+  const correctLine = props.song.lyrics[currentIndex.value];
+  const otherLines = props.song.lyrics.filter((_, i) => i !== currentIndex.value);
+
+  // Pick 3 random distractors
+  const shuffled = [...otherLines].sort(() => Math.random() - 0.5);
+  const distractors = shuffled.slice(0, 3);
+
+  // If not enough distractors, pad with variations
+  while (distractors.length < 3) {
+    distractors.push(distractors[distractors.length - 1] ?? correctLine + '...');
+  }
+
+  const all = [...distractors, correctLine];
+  // Shuffle
+  for (let i = all.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [all[i], all[j]] = [all[j], all[i]];
+  }
+
+  return { choices: all, correctIndex: all.indexOf(correctLine) };
+}
+
+let generated = generateChoices();
+const choices = ref(generated.choices);
+const correctChoiceIndex = ref(generated.correctIndex);
+
+const progress = computed(() =>
+  Math.round(((currentIndex.value + (finished.value ? 1 : 0)) / props.song.lyrics.length) * 100)
+);
+
+const scorePercent = computed(() => {
+  const total = currentIndex.value + (answered.value ? 1 : 0);
+  return total === 0 ? 0 : (correctCount.value / total) * 100;
+});
+
+const scoreColor = computed(() => {
+  if (currentIndex.value === 0 && !answered.value) return 'text-gray-500';
+  const pct = scorePercent.value;
+  if (pct >= 80) return 'text-green-600 dark:text-green-400';
+  if (pct >= 50) return 'text-yellow-600 dark:text-yellow-400';
+  return 'text-red-500 dark:text-red-400';
+});
+
+const scoreMedal = computed(() => {
+  const pct = (correctCount.value / props.song.lyrics.length) * 100;
+  if (pct >= 90) return '🏆';
+  if (pct >= 70) return '🎉';
+  if (pct >= 50) return '👍';
+  return '💪';
+});
+
+const sessionData = computed(() => ({
+  score: Math.round((correctCount.value / props.song.lyrics.length) * 100),
+  linesPracticed: props.song.lyrics.length,
+  linesCorrect: correctCount.value,
+  durationSeconds: Math.round((Date.now() - startTime) / 1000),
+}));
+
+function selectAnswer(index: number) {
+  if (answered.value) return;
+  selectedIndex.value = index;
+  answered.value = true;
+  if (index === correctChoiceIndex.value) {
+    correctCount.value++;
+  }
+}
+
+function choiceClass(i: number) {
+  if (!answered.value) {
+    return 'border-gray-200 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-500 cursor-pointer';
+  }
+  if (i === correctChoiceIndex.value) {
+    return 'border-green-500 bg-green-50 dark:bg-green-900/20';
+  }
+  if (i === selectedIndex.value) {
+    return 'border-red-500 bg-red-50 dark:bg-red-900/20';
+  }
+  return 'border-gray-200 dark:border-gray-700 opacity-50';
+}
+
+function choiceBadgeClass(i: number) {
+  if (!answered.value) {
+    return 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
+  }
+  if (i === correctChoiceIndex.value) {
+    return 'bg-green-500 text-white';
+  }
+  if (i === selectedIndex.value) {
+    return 'bg-red-500 text-white';
+  }
+  return 'bg-gray-200 dark:bg-gray-700 text-gray-400';
+}
+
+function nextQuestion() {
+  if (currentIndex.value < props.song.lyrics.length - 1) {
+    currentIndex.value++;
+    answered.value = false;
+    selectedIndex.value = -1;
+    const gen = generateChoices();
+    choices.value = gen.choices;
+    correctChoiceIndex.value = gen.correctIndex;
+  } else {
+    finished.value = true;
+  }
+}
+
+function restart() {
+  currentIndex.value = 0;
+  correctCount.value = 0;
+  answered.value = false;
+  selectedIndex.value = -1;
+  finished.value = false;
+  const gen = generateChoices();
+  choices.value = gen.choices;
+  correctChoiceIndex.value = gen.correctIndex;
+}
+</script>
