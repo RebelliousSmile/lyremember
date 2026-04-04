@@ -23,14 +23,18 @@ tokio = { version = "1", features = ["full"] }
 bcrypt = "0.15"
 jsonwebtoken = "9.2"
 
-# Python bridge for phonetics
-pyo3 = { version = "0.20", features = ["auto-initialize"] }
+# Python bridge for phonetics (optional — not available on Android/mobile)
+pyo3 = { version = "0.20", features = ["auto-initialize"], optional = true }
 
 # Utilities
 uuid = { version = "1.0", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 thiserror = "1.0"
 anyhow = "1.0"
+
+[features]
+default = ["python"]
+python = ["pyo3"]
 
 [dev-dependencies]
 tempfile = "3.0"

@@ -86,10 +86,6 @@ jobs:
           cache: npm
           cache-dependency-path: lyremember-app/package-lock.json
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -120,11 +116,9 @@ jobs:
 
       - name: Build Android APK
         working-directory: lyremember-app
-        run: npx tauri android build --apk
+        run: npx tauri android build --apk -- --no-default-features
         env:
           NDK_HOME: ${{ env.ANDROID_NDK_HOME }}
-          PYO3_PYTHON: python3
-          PYO3_CROSS_PYTHON_VERSION: '3.11'
 
       - name: Find APK
         id: find-apk
