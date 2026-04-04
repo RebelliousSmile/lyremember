@@ -15,6 +15,11 @@ pub struct LoginResponse {
     pub token: String,
 }
 
+/// Helper to lock the database connection
+fn lock_db(state: &State<'_, DbState>) -> Result<std::sync::MutexGuard<'_, Connection>, String> {
+    state.0.lock().map_err(|e: std::sync::PoisonError<_>| e.to_string())
+}
+
 // ==================== AUTH COMMANDS ====================
 
 #[tauri::command]
@@ -24,16 +29,9 @@ pub fn cmd_register(
     password: String,
     state: State<'_, DbState>,
 ) -> Result<User, String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
-    let data = RegisterData {
-        username,
-        email,
-        password,
-    };
-
-    auth::register(&conn, data)
-        .map_err(|e| format!("Registration failed: {}", e))
+    let conn = lock_db(&state)?;
+    let data = RegisterData { username, email, password };
+    auth::register(&conn, data).map_err(|e| format!("Registration failed: {}", e))
 }
 
 #[tauri::command]
@@ -42,20 +40,16 @@ pub fn cmd_login(
     password: String,
     state: State<'_, DbState>,
 ) -> Result<String, String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
+    let conn = lock_db(&state)?;
     let credentials = LoginCredentials { username, password };
-
     let (_user, token) = auth::login(&conn, credentials)
         .map_err(|e| format!("Login failed: {}", e))?;
-
     Ok(token)
 }
 
 #[tauri::command]
 pub fn cmd_verify_token(token: String) -> Result<String, String> {
-    auth::verify_token(&token)
-        .map_err(|e| format!("Token verification failed: {}", e))
+    auth::verify_token(&token).map_err(|e| format!("Token verification failed: {}", e))
 }
 
 #[tauri::command]
@@ -63,10 +57,8 @@ pub fn cmd_get_user(
     user_id: String,
     state: State<'_, DbState>,
 ) -> Result<User, String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
-    auth::get_user_by_id(&conn, &user_id)
-        .map_err(|e| format!("Failed to get user: {}", e))
+    let conn = lock_db(&state)?;
+    auth::get_user_by_id(&conn, &user_id).map_err(|e| format!("Failed to get user: {}", e))
 }
 
 // ==================== SONGS COMMANDS ====================
@@ -80,26 +72,15 @@ pub fn cmd_create_song(
     auto_translate: Option<bool>,
     state: State<'_, DbState>,
 ) -> Result<Song, String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
-    let data = CreateSongData {
-        title,
-        artist,
-        language,
-        lyrics,
-        auto_translate,
-    };
-
-    songs::create_song(&conn, data)
-        .map_err(|e| format!("Failed to create song: {}", e))
+    let conn = lock_db(&state)?;
+    let data = CreateSongData { title, artist, language, lyrics, auto_translate };
+    songs::create_song(&conn, data).map_err(|e| format!("Failed to create song: {}", e))
 }
 
 #[tauri::command]
 pub fn cmd_get_songs(state: State<'_, DbState>) -> Result<Vec<Song>, String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
-    songs::get_all_songs(&conn)
-        .map_err(|e| format!("Failed to get songs: {}", e))
+    let conn = lock_db(&state)?;
+    songs::get_all_songs(&conn).map_err(|e| format!("Failed to get songs: {}", e))
 }
 
 #[tauri::command]
@@ -107,10 +88,8 @@ pub fn cmd_get_song(
     song_id: String,
     state: State<'_, DbState>,
 ) -> Result<Song, String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
-    songs::get_song(&conn, &song_id)
-        .map_err(|e| format!("Failed to get song: {}", e))
+    let conn = lock_db(&state)?;
+    songs::get_song(&conn, &song_id).map_err(|e| format!("Failed to get song: {}", e))
 }
 
 #[tauri::command]
@@ -118,10 +97,8 @@ pub fn cmd_get_user_songs(
     user_id: String,
     state: State<'_, DbState>,
 ) -> Result<Vec<Song>, String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
-    songs::get_user_songs(&conn, &user_id)
-        .map_err(|e| format!("Failed to get user songs: {}", e))
+    let conn = lock_db(&state)?;
+    songs::get_user_songs(&conn, &user_id).map_err(|e| format!("Failed to get user songs: {}", e))
 }
 
 #[tauri::command]
@@ -130,8 +107,7 @@ pub fn cmd_add_to_repertoire(
     song_id: String,
     state: State<'_, DbState>,
 ) -> Result<(), String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
+    let conn = lock_db(&state)?;
     songs::add_to_user_repertoire(&conn, &user_id, &song_id)
         .map_err(|e| format!("Failed to add to repertoire: {}", e))
 }
@@ -141,19 +117,22 @@ pub fn cmd_update_song(
     song_id: String,
     title: Option<String>,
     artist: Option<String>,
+    language: Option<String>,
     lyrics: Option<Vec<String>>,
+    phonetic_lyrics: Option<Vec<String>>,
+    translations: Option<std::collections::HashMap<String, Vec<String>>>,
     state: State<'_, DbState>,
 ) -> Result<Song, String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
+    let conn = lock_db(&state)?;
     let data = UpdateSongData {
         title,
         artist,
+        language,
         lyrics,
+        phonetic_lyrics,
+        translations,
     };
-
-    songs::update_song(&conn, &song_id, data)
-        .map_err(|e| format!("Failed to update song: {}", e))
+    songs::update_song(&conn, &song_id, data).map_err(|e| format!("Failed to update song: {}", e))
 }
 
 #[tauri::command]
@@ -161,10 +140,8 @@ pub fn cmd_delete_song(
     song_id: String,
     state: State<'_, DbState>,
 ) -> Result<(), String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
-    songs::delete_song(&conn, &song_id)
-        .map_err(|e| format!("Failed to delete song: {}", e))
+    let conn = lock_db(&state)?;
+    songs::delete_song(&conn, &song_id).map_err(|e| format!("Failed to delete song: {}", e))
 }
 
 // ==================== PRACTICE COMMANDS ====================
@@ -180,18 +157,11 @@ pub fn cmd_create_practice_session(
     duration_seconds: i32,
     state: State<'_, DbState>,
 ) -> Result<PracticeSession, String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
+    let conn = lock_db(&state)?;
     let data = CreateSessionData {
-        user_id,
-        song_id,
-        mode,
-        score,
-        lines_practiced,
-        lines_correct,
-        duration_seconds,
+        user_id, song_id, mode, score,
+        lines_practiced, lines_correct, duration_seconds,
     };
-
     practice::create_session(&conn, data)
         .map_err(|e| format!("Failed to create practice session: {}", e))
 }
@@ -201,8 +171,7 @@ pub fn cmd_get_user_sessions(
     user_id: String,
     state: State<'_, DbState>,
 ) -> Result<Vec<PracticeSession>, String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
+    let conn = lock_db(&state)?;
     practice::get_user_sessions(&conn, &user_id)
         .map_err(|e| format!("Failed to get user sessions: {}", e))
 }
@@ -212,8 +181,7 @@ pub fn cmd_get_user_stats(
     user_id: String,
     state: State<'_, DbState>,
 ) -> Result<practice::UserStats, String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
+    let conn = lock_db(&state)?;
     practice::get_user_stats(&conn, &user_id)
         .map_err(|e| format!("Failed to get user stats: {}", e))
 }
@@ -224,8 +192,7 @@ pub fn cmd_get_song_mastery(
     song_id: String,
     state: State<'_, DbState>,
 ) -> Result<f64, String> {
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
-
+    let conn = lock_db(&state)?;
     practice::get_song_mastery(&conn, &user_id, &song_id)
         .map_err(|e| format!("Failed to get song mastery: {}", e))
 }
