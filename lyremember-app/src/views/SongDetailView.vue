@@ -1,6 +1,6 @@
 <template>
   <MainLayout>
-    <div class="space-y-5">
+    <div class="space-y-4">
       <!-- Loading state -->
       <div v-if="loading">
         <Spinner :label="$t('songDetail.loadingSong')" />
@@ -13,29 +13,33 @@
 
       <template v-else>
         <!-- Song Header Bar -->
-        <div class="flex items-center gap-3 py-2">
+        <div class="flex items-center gap-3 py-3 px-1">
           <button
-            class="w-10 h-10 flex items-center justify-center rounded-xl bg-deep-card border border-deep-border text-[#B8B0D0] hover:text-[#F5F0EB] transition-colors"
+            class="w-10 h-10 flex items-center justify-center rounded-xl bg-deep-card border border-deep-border text-[#B8B0D0] hover:text-[#F5F0EB] hover:border-[#3A3460] transition-all shrink-0"
             @click="$router.back()"
+            aria-label="Back"
           >
-            <ArrowLeft :size="20" />
+            <span class="text-xl leading-none font-light">&lsaquo;</span>
           </button>
 
-          <!-- Cover with gradient bg and emoji -->
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-accent to-[#5E5480] flex items-center justify-center text-lg shrink-0">
+          <!-- Cover with gradient violet bg and emoji -->
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7B6FA0] to-[#5E4B8B] flex items-center justify-center text-lg shrink-0 shadow-lg shadow-[#7B6FA0]/20">
             {{ languageEmoji(song.language) }}
           </div>
 
           <div class="flex-1 min-w-0">
-            <h1 class="text-base font-bold text-[#F5F0EB] truncate leading-tight">
+            <h1 class="text-[15px] font-bold text-[#F5F0EB] truncate leading-tight">
               {{ song.title }}
             </h1>
-            <p class="text-sm text-[#B8B0D0] truncate leading-tight">
+            <p class="text-[13px] text-[#B8B0D0] truncate leading-tight mt-0.5">
               {{ song.artist }}
             </p>
           </div>
 
-          <button class="w-10 h-10 flex items-center justify-center rounded-xl text-[#8A82A0] hover:text-[#F5F0EB] transition-colors">
+          <button
+            class="w-10 h-10 flex items-center justify-center rounded-xl text-[#8A82A0] hover:text-[#F5F0EB] hover:bg-deep-card transition-all shrink-0"
+            aria-label="More options"
+          >
             <MoreHorizontal :size="20" />
           </button>
         </div>
@@ -81,43 +85,45 @@
           <!-- Language Selector Bar -->
           <div
             v-if="song.translations && Object.keys(song.translations).length > 0"
-            class="flex items-center gap-2 flex-wrap"
+            class="bg-deep-card/50 rounded-2xl border border-deep-border px-4 py-3 flex items-center gap-2.5 flex-wrap"
           >
-            <span class="text-xs text-[#8A82A0] font-medium mr-1">Traduire en :</span>
-            <button
-              v-for="lang in availableTranslationLangs"
-              :key="lang"
-              class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-              :class="selectedTranslation === lang
-                ? 'border border-gold text-gold bg-gold/[0.08]'
-                : 'border border-deep-border text-[#B8B0D0] bg-deep-card hover:border-[#3A3460]'"
-              @click="selectedTranslation = selectedTranslation === lang ? null : lang"
-            >
-              {{ langFlag(lang) }} {{ lang.toUpperCase() }}
-            </button>
+            <span class="text-[11px] text-[#8A82A0] font-medium tracking-wide whitespace-nowrap">Traduire en :</span>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button
+                v-for="lang in availableTranslationLangs"
+                :key="lang"
+                class="px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all duration-200"
+                :class="selectedTranslation === lang
+                  ? 'border border-[#F2A93B] text-[#F2A93B] bg-[#F2A93B]/[0.10] shadow-sm shadow-[#F2A93B]/10'
+                  : 'border border-deep-border text-[#B8B0D0] bg-deep-card hover:border-[#3A3460] hover:text-[#F5F0EB]'"
+                @click="selectedTranslation = selectedTranslation === lang ? null : lang"
+              >
+                {{ langFlag(lang) }} {{ lang.toUpperCase() }}
+              </button>
+            </div>
           </div>
 
           <!-- Lyrics Bilingual View -->
-          <div class="bg-deep-card rounded-2xl border border-deep-border p-5 space-y-5">
+          <div class="bg-deep-card rounded-2xl border border-deep-border p-5 space-y-6">
             <div v-for="(section, sIdx) in lyricSections" :key="sIdx">
               <!-- Section label -->
-              <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-gold mb-3">
+              <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#F2A93B] mb-3.5 select-none">
                 {{ section.label }}
               </p>
 
               <!-- Lyric lines -->
-              <div class="space-y-3">
+              <div class="space-y-3.5">
                 <div
                   v-for="(line, lIdx) in section.lines"
                   :key="lIdx"
-                  class="border-l-2 border-violet-accent/40 pl-3"
+                  class="border-l-2 border-[#7B6FA0]/40 pl-3.5 py-0.5"
                 >
-                  <p class="text-[15px] leading-relaxed text-[#F5F0EB] font-serif">
+                  <p class="text-[15px] leading-[1.65] text-[#F5F0EB]/95 font-serif tracking-[0.01em]">
                     {{ line.original }}
                   </p>
                   <p
                     v-if="line.translation"
-                    class="text-[13px] leading-relaxed text-gold italic opacity-85 mt-0.5"
+                    class="text-[13px] leading-[1.55] text-[#F2A93B] italic opacity-[0.85] mt-1"
                   >
                     {{ line.translation }}
                   </p>
@@ -130,52 +136,52 @@
           <div>
             <h2 class="text-sm font-bold text-[#F5F0EB] mb-3">{{ $t('songDetail.practiceModes') }}</h2>
             <div class="grid grid-cols-2 gap-3">
-              <!-- Fill in the blanks -->
+              <!-- Fill in the blanks / Texte a trous -->
               <button
-                class="bg-deep-card rounded-2xl border border-deep-border p-5 text-left hover:bg-deep-card-hover transition-colors"
+                class="bg-deep-card rounded-2xl border border-deep-border p-5 text-left hover:bg-deep-card-hover hover:border-[#F59E0B]/20 transition-all duration-200 group"
                 @click="startMode('fill-blank')"
               >
-                <div class="w-10 h-10 rounded-full bg-[#F59E0B]/20 flex items-center justify-center mb-3">
+                <div class="w-10 h-10 rounded-full bg-[#F59E0B]/20 flex items-center justify-center mb-3 group-hover:bg-[#F59E0B]/30 transition-colors">
                   <PenLine :size="18" class="text-[#F59E0B]" />
                 </div>
-                <p class="text-sm font-bold text-[#F5F0EB] mb-0.5">{{ $t('songDetail.fillBlank') }}</p>
-                <p class="text-[11px] text-[#8A82A0] leading-snug">{{ $t('songDetail.fillBlankDesc', 'Complétez les paroles manquantes') }}</p>
+                <p class="text-[14px] font-bold text-[#F5F0EB] mb-1">{{ $t('songDetail.fillBlank') }}</p>
+                <p class="text-[11px] text-[#8A82A0] leading-snug">{{ $t('songDetail.fillBlankDesc', 'Completez les paroles manquantes') }}</p>
               </button>
 
-              <!-- First letter -->
+              <!-- First letter / Premiere lettre -->
               <button
-                class="bg-deep-card rounded-2xl border border-deep-border p-5 text-left hover:bg-deep-card-hover transition-colors"
+                class="bg-deep-card rounded-2xl border border-deep-border p-5 text-left hover:bg-deep-card-hover hover:border-[#10B981]/20 transition-all duration-200 group"
                 @click="startMode('mcq')"
               >
-                <div class="w-10 h-10 rounded-full bg-[#10B981]/20 flex items-center justify-center mb-3">
+                <div class="w-10 h-10 rounded-full bg-[#10B981]/20 flex items-center justify-center mb-3 group-hover:bg-[#10B981]/30 transition-colors">
                   <List :size="18" class="text-[#10B981]" />
                 </div>
-                <p class="text-sm font-bold text-[#F5F0EB] mb-0.5">{{ $t('songDetail.mcq') }}</p>
-                <p class="text-[11px] text-[#8A82A0] leading-snug">{{ $t('songDetail.mcqDesc', 'Choisissez la bonne réponse') }}</p>
+                <p class="text-[14px] font-bold text-[#F5F0EB] mb-1">{{ $t('songDetail.mcq') }}</p>
+                <p class="text-[11px] text-[#8A82A0] leading-snug">{{ $t('songDetail.mcqDesc', 'Choisissez la bonne reponse') }}</p>
               </button>
 
               <!-- Karaoke -->
               <button
-                class="bg-deep-card rounded-2xl border border-deep-border p-5 text-left hover:bg-deep-card-hover transition-colors"
+                class="bg-deep-card rounded-2xl border border-deep-border p-5 text-left hover:bg-deep-card-hover hover:border-[#EC4899]/20 transition-all duration-200 group"
                 @click="startMode('karaoke')"
               >
-                <div class="w-10 h-10 rounded-full bg-[#EC4899]/20 flex items-center justify-center mb-3">
+                <div class="w-10 h-10 rounded-full bg-[#EC4899]/20 flex items-center justify-center mb-3 group-hover:bg-[#EC4899]/30 transition-colors">
                   <PlayCircle :size="18" class="text-[#EC4899]" />
                 </div>
-                <p class="text-sm font-bold text-[#F5F0EB] mb-0.5">{{ $t('songDetail.karaokeMode') }}</p>
+                <p class="text-[14px] font-bold text-[#F5F0EB] mb-1">{{ $t('songDetail.karaokeMode') }}</p>
                 <p class="text-[11px] text-[#8A82A0] leading-snug">{{ $t('songDetail.karaokeDesc', 'Chantez en suivant les paroles') }}</p>
               </button>
 
-              <!-- Oral / Flashcards -->
+              <!-- Flashcards -->
               <button
-                class="bg-deep-card rounded-2xl border border-deep-border p-5 text-left hover:bg-deep-card-hover transition-colors"
+                class="bg-deep-card rounded-2xl border border-deep-border p-5 text-left hover:bg-deep-card-hover hover:border-[#6366F1]/20 transition-all duration-200 group"
                 @click="startMode('oral')"
               >
-                <div class="w-10 h-10 rounded-full bg-[#6366F1]/20 flex items-center justify-center mb-3">
+                <div class="w-10 h-10 rounded-full bg-[#6366F1]/20 flex items-center justify-center mb-3 group-hover:bg-[#6366F1]/30 transition-colors">
                   <Mic :size="18" class="text-[#6366F1]" />
                 </div>
-                <p class="text-sm font-bold text-[#F5F0EB] mb-0.5">{{ $t('songDetail.oralPractice') }}</p>
-                <p class="text-[11px] text-[#8A82A0] leading-snug">{{ $t('songDetail.oralDesc', 'Pratiquez à l\'oral') }}</p>
+                <p class="text-[14px] font-bold text-[#F5F0EB] mb-1">{{ $t('songDetail.oralPractice') }}</p>
+                <p class="text-[11px] text-[#8A82A0] leading-snug">{{ $t('songDetail.oralDesc', 'Pratiquez a l\'oral') }}</p>
               </button>
             </div>
           </div>
