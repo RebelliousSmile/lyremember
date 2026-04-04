@@ -93,7 +93,7 @@ pub fn get_song_sessions(conn: &Connection, song_id: &str) -> Result<Vec<Practic
 }
 
 /// Get statistics for a user
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct UserStats {
     pub total_sessions: i32,
     pub total_practice_time: i32,
