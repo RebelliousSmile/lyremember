@@ -164,5 +164,14 @@
     "search": "Rechercher",
     "import": "Importer",
     "noResults": "Aucun résultat"
+  },
+  "shortcuts": {
+    "title": "Raccourcis clavier",
+    "toggleHelp": "Afficher les raccourcis",
+    "goToDashboard": "Aller au tableau de bord",
+    "goToSongs": "Aller aux chansons",
+    "goToPractice": "Aller à la pratique",
+    "goToSettings": "Aller aux paramètres",
+    "close": "Fermer"
   }
 }

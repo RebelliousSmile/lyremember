@@ -1,5 +1,5 @@
 <template>
-  <div :class="['alert', `alert-${type}`]" v-if="modelValue">
+  <div :class="['alert', `alert-${type}`]" v-if="modelValue" role="alert">
     <div class="alert-icon">
       <component :is="icon" :size="20" />
     </div>
@@ -10,6 +10,7 @@
       v-if="closable"
       @click="$emit('update:modelValue', false)"
       class="alert-close"
+      aria-label="Close alert"
     >
       <X :size="16" />
     </button>

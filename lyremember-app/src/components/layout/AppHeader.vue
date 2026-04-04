@@ -1,10 +1,11 @@
 <template>
-  <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+  <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700" role="banner">
     <div class="px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-4">
         <button
           @click="uiStore.toggleSidebar()"
           class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+          aria-label="Toggle sidebar"
         >
           <Menu :size="20" />
         </button>
@@ -19,6 +20,7 @@
           @click="uiStore.toggleDarkMode()"
           class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
           :title="uiStore.darkMode ? 'Light mode' : 'Dark mode'"
+          :aria-label="uiStore.darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
         >
           <Moon v-if="uiStore.darkMode" :size="20" />
           <Sun v-else :size="20" />
@@ -28,6 +30,8 @@
           <button
             @click="showUserMenu = !showUserMenu"
             class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            aria-haspopup="true"
+            :aria-expanded="showUserMenu"
           >
             <User :size="20" />
             <span class="text-sm font-medium hidden sm:block">

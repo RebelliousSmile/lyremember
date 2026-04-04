@@ -12,6 +12,7 @@ const AddSongView = () => import('../views/AddSongView.vue');
 const PracticeView = () => import('../views/PracticeView.vue');
 const ProfileView = () => import('../views/ProfileView.vue');
 const SettingsView = () => import('../views/SettingsView.vue');
+const NotFoundView = () => import('../views/NotFoundView.vue');
 
 const routes: RouteRecordRaw[] = [
   {
@@ -71,6 +72,11 @@ const routes: RouteRecordRaw[] = [
     name: 'settings',
     component: SettingsView,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: NotFoundView,
   },
 ];
 

@@ -66,8 +66,8 @@
           <h2 class="text-xl font-semibold">{{ $t('dashboard.recentSongs') }}</h2>
         </template>
 
-        <div v-if="songsStore.loading" class="text-center py-8">
-          <p class="text-gray-500 dark:text-gray-400">{{ $t('common.loading') }}</p>
+        <div v-if="songsStore.loading">
+          <Spinner :label="$t('common.loading')" />
         </div>
 
         <div v-else-if="songsStore.songs.length === 0" class="text-center py-8">
@@ -107,6 +107,7 @@ import { Music, PlayCircle, TrendingUp, Plus, ChevronRight } from 'lucide-vue-ne
 import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
 import Button from '../components/ui/Button.vue';
+import Spinner from '../components/ui/Spinner.vue';
 import { useSongsStore } from '../stores/songs';
 import { useUserStats } from '../composables/useUserStats';
 

@@ -39,8 +39,8 @@
         </div>
       </Card>
 
-      <div v-if="songsStore.loading" class="text-center py-12">
-        <p class="text-gray-500 dark:text-gray-400">{{ $t('common.loading') }}</p>
+      <div v-if="songsStore.loading">
+        <Spinner :label="$t('common.loading')" />
       </div>
 
       <div v-else-if="songsStore.filteredSongs.length === 0" class="text-center py-12">
@@ -114,6 +114,7 @@ import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
 import Button from '../components/ui/Button.vue';
 import Input from '../components/ui/Input.vue';
+import Spinner from '../components/ui/Spinner.vue';
 import { useSongsStore } from '../stores/songs';
 
 const songsStore = useSongsStore();

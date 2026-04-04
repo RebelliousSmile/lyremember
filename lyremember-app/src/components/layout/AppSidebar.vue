@@ -5,7 +5,7 @@
       { 'sidebar-open': uiStore.sidebarOpen },
     ]"
   >
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" aria-label="Main navigation">
       <router-link
         v-for="item in navItems"
         :key="item.to"

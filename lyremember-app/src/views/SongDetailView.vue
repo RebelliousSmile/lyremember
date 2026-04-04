@@ -21,8 +21,8 @@
         </span>
       </div>
 
-      <div v-if="loading" class="text-center py-12">
-        <p class="text-gray-500 dark:text-gray-400">{{ $t('songDetail.loadingSong') }}</p>
+      <div v-if="loading">
+        <Spinner :label="$t('songDetail.loadingSong')" />
       </div>
 
       <div v-else-if="!song" class="text-center py-12">
@@ -162,6 +162,7 @@ import { ArrowLeft, PlayCircle, PenLine, List, Mic, X } from 'lucide-vue-next';
 import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
 import Button from '../components/ui/Button.vue';
+import Spinner from '../components/ui/Spinner.vue';
 import KaraokeMode from '../components/practice/KaraokeMode.vue';
 import FillBlankMode from '../components/practice/FillBlankMode.vue';
 import McqMode from '../components/practice/McqMode.vue';

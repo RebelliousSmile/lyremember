@@ -164,5 +164,14 @@
     "search": "Search",
     "import": "Import",
     "noResults": "No results found"
+  },
+  "shortcuts": {
+    "title": "Keyboard Shortcuts",
+    "toggleHelp": "Show shortcuts",
+    "goToDashboard": "Go to Dashboard",
+    "goToSongs": "Go to Songs",
+    "goToPractice": "Go to Practice",
+    "goToSettings": "Go to Settings",
+    "close": "Close"
   }
 }
