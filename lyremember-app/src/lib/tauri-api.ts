@@ -84,7 +84,6 @@ export async function createSong(
     artist,
     language,
     lyrics,
-    autoTranslate,
   });
 }
 
