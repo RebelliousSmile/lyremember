@@ -17,7 +17,7 @@ resolu maintenant, pas en Phase 5.
 
 | Option | Description | Complexite | Recommandation |
 |--------|-------------|------------|----------------|
-| **A (Choisie)** | Pure-Rust : `wana_kana` (JP romaji), lookup table (KR), feature flag `python-phonetics` | Faible | Elimine la dependance Python |
+| **A (Choisie)** | Pure-Rust : `lindera` (JP kanji→romaji), table jamo (KR), feature flag `python-phonetics` | Faible | Elimine la dependance Python |
 | B | Bundler Python avec `pyembed`/`PyOxidizer` | Elevee | +30-50 MB, cross-compile complexe |
 | C | Python en sidecar Tauri | Moyenne | Fragile, necessite Python installe |
 
@@ -30,7 +30,9 @@ resolu maintenant, pas en Phase 5.
   [dependencies]
   pyo3 = { version = "0.20", features = ["auto-initialize"], optional = true }
   ```
-- [ ] Implementer fallback pure-Rust dans `phonetic.rs` : `wana_kana` (JP), lookup table (KR)
+- [ ] Implementer fallback pure-Rust dans `phonetic.rs` :
+  - **JP** : `lindera` (tokenizer MeCab en Rust) pour decomposer les kanji en lectures, puis romaji. `wana_kana` seul ne suffit pas (ne gere que kana, pas kanji).
+  - **KR** : table de correspondance jamo → romanisation (19 initiales + 21 medianes + 28 finales, ~100 lignes de Rust pur)
 - [ ] Compiler et tester sans feature `python-phonetics` — ca doit passer
 
 ### 0B. Bugs critiques
@@ -124,9 +126,10 @@ resolu maintenant, pas en Phase 5.
 - [ ] Interface cartes avec feedback immediat
 - [ ] Progression adaptative (difficulte croissante)
 
-### 3D. Statistiques de pratique
+### 3D. Statistiques et retention
 - [ ] Vue `PracticeStatsView` : graphiques de progression (chart.js ou equivalent leger)
 - [ ] Historique des sessions par chanson
+- [ ] Systeme de streaks / objectifs quotidiens (mecanisme de retention type Duolingo)
 
 ### 3E. Tests
 - [ ] Tests unitaires : algorithmes de scoring, generation de blanks, distracteurs
@@ -297,7 +300,9 @@ Analyse complete des alternatives :
 Phase 0 (PyO3 + bugs) → Phase 1 (CI ne marche pas sans ca)
 Phase 1 (tests) → Phase 2 (besoin du filet de securite)
 Phase 2 (UI de base) → Phase 3 (les modes de pratique s'affichent dans l'UI)
-Phase 3 (modes jouables) → Phase 6 (pas de release sans le coeur du produit)
+Phase 3 (modes jouables) → Phase 5 (pas de packaging sans le coeur du produit)
+Phase 5 (packaging) → Phase 6 (pas de release sans binaires)
+Phase 4 (enrichissement) est optionnelle avant Phase 6, priorisee par le feedback beta
 ```
 
 ---
