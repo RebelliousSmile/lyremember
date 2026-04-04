@@ -2,36 +2,36 @@
   <MainLayout>
     <div class="max-w-2xl mx-auto space-y-6">
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-        Profile
+        {{ $t('profile.title') }}
       </h1>
-      
+
       <Card>
         <template #header>
-          <h2 class="text-xl font-semibold">User Information</h2>
+          <h2 class="text-xl font-semibold">{{ $t('profile.userInfo') }}</h2>
         </template>
-        
+
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Username
+              {{ $t('profile.username') }}
             </label>
             <p class="text-lg text-gray-900 dark:text-white">
               {{ authStore.user?.username }}
             </p>
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Email
+              {{ $t('profile.email') }}
             </label>
             <p class="text-lg text-gray-900 dark:text-white">
               {{ authStore.user?.email }}
             </p>
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Member Since
+              {{ $t('profile.memberSince') }}
             </label>
             <p class="text-lg text-gray-900 dark:text-white">
               {{ formatDate(authStore.user?.created_at) }}
@@ -39,19 +39,19 @@
           </div>
         </div>
       </Card>
-      
+
       <Card>
         <template #header>
-          <h2 class="text-xl font-semibold">Statistics</h2>
+          <h2 class="text-xl font-semibold">{{ $t('profile.statistics') }}</h2>
         </template>
-        
+
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <p class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
               {{ songsStore.totalSongs }}
             </p>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Total Songs
+              {{ $t('profile.totalSongs') }}
             </p>
           </div>
 
@@ -60,7 +60,7 @@
               {{ userStats?.total_sessions ?? 0 }}
             </p>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Practice Sessions
+              {{ $t('profile.practiceSessions') }}
             </p>
           </div>
 
@@ -69,7 +69,7 @@
               {{ userStats && userStats.total_sessions > 0 ? Math.round(userStats.average_score) + '%' : '-' }}
             </p>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Average Score
+              {{ $t('profile.averageScore') }}
             </p>
           </div>
 
@@ -78,7 +78,7 @@
               {{ userStats ? formatDuration(userStats.total_practice_time) : '0m' }}
             </p>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Practice Time
+              {{ $t('profile.practiceTime') }}
             </p>
           </div>
         </div>

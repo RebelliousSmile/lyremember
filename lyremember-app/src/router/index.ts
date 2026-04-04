@@ -11,6 +11,7 @@ const SongDetailView = () => import('../views/SongDetailView.vue');
 const AddSongView = () => import('../views/AddSongView.vue');
 const PracticeView = () => import('../views/PracticeView.vue');
 const ProfileView = () => import('../views/ProfileView.vue');
+const SettingsView = () => import('../views/SettingsView.vue');
 
 const routes: RouteRecordRaw[] = [
   {
@@ -63,6 +64,12 @@ const routes: RouteRecordRaw[] = [
     path: '/profile',
     name: 'profile',
     component: ProfileView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: SettingsView,
     meta: { requiresAuth: true },
   },
 ];

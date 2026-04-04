@@ -21,17 +21,21 @@
 </template>
 
 <script setup lang="ts">
-import { LayoutDashboard, Music, PlayCircle, User } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { LayoutDashboard, Music, PlayCircle, User, Settings } from 'lucide-vue-next';
 import { useUiStore } from '../../stores/ui';
 
+const { t } = useI18n();
 const uiStore = useUiStore();
 
-const navItems = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/songs', icon: Music, label: 'Songs' },
-  { to: '/practice', icon: PlayCircle, label: 'Practice' },
-  { to: '/profile', icon: User, label: 'Profile' },
-];
+const navItems = computed(() => [
+  { to: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
+  { to: '/songs', icon: Music, label: t('nav.songs') },
+  { to: '/practice', icon: PlayCircle, label: t('nav.practice') },
+  { to: '/profile', icon: User, label: t('nav.profile') },
+  { to: '/settings', icon: Settings, label: t('nav.settings') },
+]);
 </script>
 
 <style scoped>

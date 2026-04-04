@@ -3,7 +3,7 @@
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          Practice
+          {{ $t('practice.title') }}
         </h1>
       </div>
 
@@ -12,7 +12,7 @@
         <Card>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Total Sessions</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('practice.totalSessions') }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-white">
                 {{ userStats?.total_sessions ?? 0 }}
               </p>
@@ -23,7 +23,7 @@
         <Card>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Songs Practiced</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('practice.songsPracticed') }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-white">
                 {{ userStats?.songs_practiced ?? 0 }}
               </p>
@@ -34,7 +34,7 @@
         <Card>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Average Score</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('practice.averageScore') }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-white">
                 {{ userStats && userStats.total_sessions > 0 ? Math.round(userStats.average_score) + '%' : '-' }}
               </p>
@@ -47,26 +47,22 @@
       <!-- Song selection -->
       <Card>
         <template #header>
-          <h2 class="text-xl font-semibold">Choose a Song to Practice</h2>
+          <h2 class="text-xl font-semibold">{{ $t('practice.chooseSong') }}</h2>
         </template>
 
         <div v-if="songsStore.loading" class="text-center py-8">
-          <p class="text-gray-500 dark:text-gray-400">Loading songs...</p>
+          <p class="text-gray-500 dark:text-gray-400">{{ $t('common.loading') }}</p>
         </div>
 
         <div v-else-if="songsStore.songs.length === 0" class="text-center py-8">
           <Music :size="48" class="mx-auto text-gray-400 mb-2" />
-          <p class="text-gray-600 dark:text-gray-400">No songs in your repertoire</p>
+          <p class="text-gray-600 dark:text-gray-400">{{ $t('practice.noSongsInRepertoire') }}</p>
           <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">
-            Add songs first to start practicing!
+            {{ $t('practice.addSongsFirst') }}
           </p>
-          <Button
-            variant="primary"
-            className="mt-4"
-            @click="$router.push('/songs/add')"
-          >
+          <Button variant="primary" className="mt-4" @click="$router.push('/songs/add')">
             <Plus :size="18" />
-            Add a Song
+            {{ $t('practice.addASong') }}
           </Button>
         </div>
 
@@ -78,49 +74,29 @@
           >
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-gray-900 dark:text-white">
-                  {{ song.title }}
-                </h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                  {{ song.artist }}
-                </p>
+                <h3 class="font-semibold text-gray-900 dark:text-white">{{ song.title }}</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">{{ song.artist }}</p>
               </div>
               <span class="px-2 py-1 text-xs rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300">
                 {{ song.language.toUpperCase() }}
               </span>
             </div>
             <div class="flex flex-wrap gap-2">
-              <Button
-                variant="primary"
-                size="sm"
-                @click="startPractice(song.id, 'karaoke')"
-              >
+              <Button variant="primary" size="sm" @click="startPractice(song.id, 'karaoke')">
                 <PlayCircle :size="16" />
-                Karaoke
+                {{ $t('practice.karaoke') }}
               </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                @click="startPractice(song.id, 'fill-blank')"
-              >
+              <Button variant="secondary" size="sm" @click="startPractice(song.id, 'fill-blank')">
                 <PenLine :size="16" />
-                Fill-in-Blank
+                {{ $t('practice.fillBlank') }}
               </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                @click="startPractice(song.id, 'mcq')"
-              >
+              <Button variant="secondary" size="sm" @click="startPractice(song.id, 'mcq')">
                 <List :size="16" />
-                MCQ
+                {{ $t('practice.mcq') }}
               </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                @click="startPractice(song.id, 'oral')"
-              >
+              <Button variant="secondary" size="sm" @click="startPractice(song.id, 'oral')">
                 <Mic :size="16" />
-                Oral
+                {{ $t('practice.oral') }}
               </Button>
             </div>
           </div>

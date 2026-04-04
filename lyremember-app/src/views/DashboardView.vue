@@ -3,15 +3,15 @@
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          Dashboard
+          {{ $t('dashboard.title') }}
         </h1>
       </div>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Total Songs</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('dashboard.totalSongs') }}</p>
               <p class="text-3xl font-bold text-gray-900 dark:text-white">
                 {{ songsStore.totalSongs }}
               </p>
@@ -19,75 +19,65 @@
             <Music :size="40" class="text-indigo-600 dark:text-indigo-400" />
           </div>
         </Card>
-        
+
         <Card>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Practice Sessions</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('dashboard.practiceSessions') }}</p>
               <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ totalSessions }}</p>
             </div>
             <PlayCircle :size="40" class="text-green-600 dark:text-green-400" />
           </div>
         </Card>
-        
+
         <Card>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Average Score</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('dashboard.averageScore') }}</p>
               <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ averageScore }}</p>
             </div>
             <TrendingUp :size="40" class="text-purple-600 dark:text-purple-400" />
           </div>
         </Card>
       </div>
-      
+
       <Card>
         <template #header>
           <div class="flex items-center justify-between">
-            <h2 class="text-xl font-semibold">Quick Actions</h2>
+            <h2 class="text-xl font-semibold">{{ $t('dashboard.quickActions') }}</h2>
           </div>
         </template>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Button
-            variant="primary"
-            size="lg"
-            className="w-full"
-            @click="$router.push('/songs/add')"
-          >
+          <Button variant="primary" size="lg" className="w-full" @click="$router.push('/songs/add')">
             <Plus :size="20" />
-            Add New Song
+            {{ $t('dashboard.addNewSong') }}
           </Button>
-          
-          <Button
-            variant="secondary"
-            size="lg"
-            className="w-full"
-            @click="$router.push('/songs')"
-          >
+
+          <Button variant="secondary" size="lg" className="w-full" @click="$router.push('/songs')">
             <Music :size="20" />
-            Browse Songs
+            {{ $t('dashboard.browseSongs') }}
           </Button>
         </div>
       </Card>
-      
+
       <Card>
         <template #header>
-          <h2 class="text-xl font-semibold">Recent Songs</h2>
+          <h2 class="text-xl font-semibold">{{ $t('dashboard.recentSongs') }}</h2>
         </template>
-        
+
         <div v-if="songsStore.loading" class="text-center py-8">
-          <p class="text-gray-500 dark:text-gray-400">Loading...</p>
+          <p class="text-gray-500 dark:text-gray-400">{{ $t('common.loading') }}</p>
         </div>
-        
+
         <div v-else-if="songsStore.songs.length === 0" class="text-center py-8">
           <Music :size="48" class="mx-auto text-gray-400 mb-2" />
-          <p class="text-gray-600 dark:text-gray-400">No songs yet</p>
+          <p class="text-gray-600 dark:text-gray-400">{{ $t('dashboard.noSongsYet') }}</p>
           <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">
-            Add your first song to get started!
+            {{ $t('dashboard.addFirstSong') }}
           </p>
         </div>
-        
+
         <div v-else class="space-y-2">
           <router-link
             v-for="song in recentSongs"
@@ -97,11 +87,9 @@
           >
             <div class="flex items-center justify-between">
               <div>
-                <h3 class="font-semibold text-gray-900 dark:text-white">
-                  {{ song.title }}
-                </h3>
+                <h3 class="font-semibold text-gray-900 dark:text-white">{{ song.title }}</h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400">
-                  {{ song.artist }} • {{ song.language.toUpperCase() }}
+                  {{ song.artist }} - {{ song.language.toUpperCase() }}
                 </p>
               </div>
               <ChevronRight :size="20" class="text-gray-400" />

@@ -2,48 +2,36 @@
   <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-900 dark:to-purple-900 p-4">
     <Card className="w-full max-w-md">
       <template #header>
-        <h2 class="text-2xl font-bold text-center">Login to LyRemember</h2>
+        <h2 class="text-2xl font-bold text-center">{{ $t('auth.loginTitle') }}</h2>
       </template>
-      
+
       <form @submit.prevent="handleSubmit" class="space-y-4">
-        <Alert
-          v-model="showError"
-          type="error"
-          closable
-        >
+        <Alert v-model="showError" type="error" closable>
           {{ authStore.error }}
         </Alert>
-        
+
         <Input
           v-model="form.username"
-          label="Username"
+          :label="$t('auth.username')"
           type="text"
-          placeholder="Enter your username"
           required
         />
-        
+
         <Input
           v-model="form.password"
-          label="Password"
+          :label="$t('auth.password')"
           type="password"
-          placeholder="Enter your password"
           required
         />
-        
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          className="w-full"
-          :loading="authStore.loading"
-        >
-          Login
+
+        <Button type="submit" variant="primary" size="lg" className="w-full" :loading="authStore.loading">
+          {{ $t('auth.login') }}
         </Button>
-        
+
         <p class="text-center text-sm text-gray-600 dark:text-gray-400">
-          Don't have an account?
+          {{ $t('auth.noAccount') }}
           <router-link to="/register" class="text-indigo-600 dark:text-indigo-400 hover:underline">
-            Register
+            {{ $t('auth.register') }}
           </router-link>
         </p>
       </form>
@@ -80,7 +68,6 @@ async function handleSubmit() {
     await authStore.login(form.value.username, form.value.password);
     router.push('/dashboard');
   } catch (err) {
-    // Error is already set in store
     console.error('Login failed:', err);
   }
 }

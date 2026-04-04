@@ -46,14 +46,22 @@
               @click="showUserMenu = false"
             >
               <User :size="16" />
-              Profile
+              {{ $t('nav.profile') }}
+            </router-link>
+            <router-link
+              to="/settings"
+              class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+              @click="showUserMenu = false"
+            >
+              <Settings :size="16" />
+              {{ $t('nav.settings') }}
             </router-link>
             <button
               @click="handleLogout"
               class="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600"
             >
               <LogOut :size="16" />
-              Logout
+              {{ $t('nav.logout') }}
             </button>
           </div>
         </div>
@@ -65,7 +73,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { Menu, Moon, Sun, User, ChevronDown, LogOut } from 'lucide-vue-next';
+import { Menu, Moon, Sun, User, ChevronDown, LogOut, Settings } from 'lucide-vue-next';
 import { useAuthStore } from '../../stores/auth';
 import { useUiStore } from '../../stores/ui';
 

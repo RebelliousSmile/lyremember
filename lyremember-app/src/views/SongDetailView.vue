@@ -22,11 +22,11 @@
       </div>
 
       <div v-if="loading" class="text-center py-12">
-        <p class="text-gray-500 dark:text-gray-400">Loading song...</p>
+        <p class="text-gray-500 dark:text-gray-400">{{ $t('songDetail.loadingSong') }}</p>
       </div>
 
       <div v-else-if="!song" class="text-center py-12">
-        <p class="text-red-600 dark:text-red-400">Song not found</p>
+        <p class="text-red-600 dark:text-red-400">{{ $t('songDetail.songNotFound') }}</p>
       </div>
 
       <div v-else class="space-y-6">
@@ -38,7 +38,7 @@
                 <h2 class="text-xl font-semibold">{{ modeTitles[activeMode] }}</h2>
                 <Button variant="ghost" size="sm" @click="closeMode">
                   <X :size="18" />
-                  Close
+                  {{ $t('common.close') }}
                 </Button>
               </div>
             </template>
@@ -70,14 +70,14 @@
         <template v-else>
           <Card>
             <template #header>
-              <h2 class="text-xl font-semibold">Lyrics</h2>
+              <h2 class="text-xl font-semibold">{{ $t('songDetail.lyrics') }}</h2>
             </template>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <!-- Original Lyrics -->
               <div>
                 <h3 class="font-semibold text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  Original ({{ song.language.toUpperCase() }})
+                  {{ $t('songDetail.original') }} ({{ song.language.toUpperCase() }})
                 </h3>
                 <div class="space-y-2">
                   <p
@@ -93,7 +93,7 @@
               <!-- Phonetic -->
               <div v-if="song.phonetic_lyrics">
                 <h3 class="font-semibold text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  Phonetic
+                  {{ $t('songDetail.phonetic') }}
                 </h3>
                 <div class="space-y-2">
                   <p
@@ -109,7 +109,7 @@
               <!-- Translation -->
               <div v-if="song.translations && song.translations.en">
                 <h3 class="font-semibold text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  English Translation
+                  {{ $t('songDetail.englishTranslation') }}
                 </h3>
                 <div class="space-y-2">
                   <p
@@ -126,25 +126,25 @@
 
           <Card>
             <template #header>
-              <h2 class="text-xl font-semibold">Practice Modes</h2>
+              <h2 class="text-xl font-semibold">{{ $t('songDetail.practiceModes') }}</h2>
             </template>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Button variant="primary" size="lg" className="w-full" @click="startMode('karaoke')">
                 <PlayCircle :size="20" />
-                Karaoke Mode
+                {{ $t('songDetail.karaokeMode') }}
               </Button>
               <Button variant="secondary" size="lg" className="w-full" @click="startMode('fill-blank')">
                 <PenLine :size="20" />
-                Fill-in-the-Blank
+                {{ $t('songDetail.fillBlank') }}
               </Button>
               <Button variant="secondary" size="lg" className="w-full" @click="startMode('mcq')">
                 <List :size="20" />
-                Multiple Choice
+                {{ $t('songDetail.mcq') }}
               </Button>
               <Button variant="secondary" size="lg" className="w-full" @click="startMode('oral')">
                 <Mic :size="20" />
-                Oral Practice
+                {{ $t('songDetail.oralPractice') }}
               </Button>
             </div>
           </Card>
@@ -155,8 +155,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { ArrowLeft, PlayCircle, PenLine, List, Mic, X } from 'lucide-vue-next';
 import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
@@ -170,6 +171,7 @@ import { useAuthStore } from '../stores/auth';
 import { createPracticeSession } from '../lib/tauri-api';
 import type { Song, PracticeMode } from '../types';
 
+const { t } = useI18n();
 const route = useRoute();
 const songsStore = useSongsStore();
 const authStore = useAuthStore();
@@ -178,12 +180,12 @@ const song = ref<Song | null>(null);
 const loading = ref(true);
 const activeMode = ref<PracticeMode | null>(null);
 
-const modeTitles: Record<PracticeMode, string> = {
-  karaoke: 'Karaoke Mode',
-  'fill-blank': 'Fill-in-the-Blank',
-  mcq: 'Multiple Choice',
-  oral: 'Oral Practice',
-};
+const modeTitles = computed<Record<PracticeMode, string>>(() => ({
+  karaoke: t('songDetail.karaokeMode'),
+  'fill-blank': t('songDetail.fillBlank'),
+  mcq: t('songDetail.mcq'),
+  oral: t('songDetail.oralPractice'),
+}));
 
 function startMode(mode: PracticeMode) {
   activeMode.value = mode;
@@ -224,7 +226,7 @@ onMounted(async () => {
 
     // Auto-start mode from query param (e.g. from PracticeView)
     const mode = route.query.mode as PracticeMode | undefined;
-    if (mode && mode in modeTitles) {
+    if (mode && mode in modeTitles.value) {
       activeMode.value = mode;
     }
   } catch (err) {

@@ -2,66 +2,51 @@
   <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-900 dark:to-purple-900 p-4">
     <Card className="w-full max-w-md">
       <template #header>
-        <h2 class="text-2xl font-bold text-center">Create Account</h2>
+        <h2 class="text-2xl font-bold text-center">{{ $t('auth.registerTitle') }}</h2>
       </template>
-      
+
       <form @submit.prevent="handleSubmit" class="space-y-4">
-        <Alert
-          v-model="showError"
-          type="error"
-          closable
-        >
+        <Alert v-model="showError" type="error" closable>
           {{ error }}
         </Alert>
-        
+
         <Input
           v-model="form.username"
-          label="Username"
+          :label="$t('auth.username')"
           type="text"
-          placeholder="Choose a username"
           required
         />
-        
+
         <Input
           v-model="form.email"
-          label="Email"
+          :label="$t('auth.email')"
           type="email"
-          placeholder="Enter your email"
           required
         />
-        
+
         <Input
           v-model="form.password"
-          label="Password"
+          :label="$t('auth.password')"
           type="password"
-          placeholder="Choose a password"
           required
         />
-        
+
         <Input
           v-model="form.confirmPassword"
-          label="Confirm Password"
+          :label="$t('auth.confirmPassword')"
           type="password"
-          placeholder="Confirm your password"
           required
           :error="passwordError"
         />
-        
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          className="w-full"
-          :loading="authStore.loading"
-          :disabled="!!passwordError"
-        >
-          Register
+
+        <Button type="submit" variant="primary" size="lg" className="w-full" :loading="authStore.loading" :disabled="!!passwordError">
+          {{ $t('auth.register') }}
         </Button>
-        
+
         <p class="text-center text-sm text-gray-600 dark:text-gray-400">
-          Already have an account?
+          {{ $t('auth.hasAccount') }}
           <router-link to="/login" class="text-indigo-600 dark:text-indigo-400 hover:underline">
-            Login
+            {{ $t('auth.login') }}
           </router-link>
         </p>
       </form>
@@ -72,6 +57,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/auth';
 import Card from '../components/ui/Card.vue';
 import Input from '../components/ui/Input.vue';
@@ -79,6 +65,7 @@ import Button from '../components/ui/Button.vue';
 import Alert from '../components/ui/Alert.vue';
 import type { RegisterForm } from '../types';
 
+const { t } = useI18n();
 const router = useRouter();
 const authStore = useAuthStore();
 
@@ -95,7 +82,7 @@ const error = ref('');
 const passwordError = computed(() => {
   if (!form.value.confirmPassword) return '';
   if (form.value.password !== form.value.confirmPassword) {
-    return 'Passwords do not match';
+    return t('auth.passwordMismatch');
   }
   return '';
 });
@@ -114,7 +101,6 @@ async function handleSubmit() {
 
   try {
     await authStore.register(form.value.username, form.value.email, form.value.password);
-    // Auto-login after registration
     await authStore.login(form.value.username, form.value.password);
     router.push('/dashboard');
   } catch (err) {
