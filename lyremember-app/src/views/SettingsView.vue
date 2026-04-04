@@ -111,8 +111,7 @@
                 v-for="result in searchResults"
                 :key="result.id"
                 class="flex items-center justify-between p-3 rounded-lg border
-                       border-deep-border hover:border-indigo-300
-                       dark:hover:border-indigo-600 transition-colors"
+                       border-deep-border hover:border-gold transition-colors"
               >
                 <div>
                   <p class="font-medium text-[#F5F0EB]">{{ result.title }}</p>

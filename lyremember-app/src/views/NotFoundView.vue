@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+  <div class="min-h-screen flex items-center justify-center bg-deep p-4">
     <div class="text-center space-y-6">
-      <div class="text-8xl font-bold text-indigo-200 dark:text-indigo-900">404</div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $t('notFound.title') }}</h1>
-      <p class="text-gray-600 dark:text-gray-400 max-w-md">
+      <div class="text-8xl font-bold text-gold/20">404</div>
+      <h1 class="text-2xl font-bold text-[#F5F0EB]">{{ $t('notFound.title') }}</h1>
+      <p class="text-[#8A82A0] max-w-md">
         {{ $t('notFound.description') }}
       </p>
       <div class="flex justify-center gap-3">

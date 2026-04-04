@@ -2,13 +2,13 @@
   <div class="space-y-6">
     <!-- Progress bar -->
     <div class="flex items-center gap-4">
-      <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+      <div class="flex-1 bg-deep-card-hover rounded-full h-2">
         <div
-          class="bg-indigo-600 dark:bg-indigo-400 h-2 rounded-full transition-all duration-500"
+          class="bg-gold h-2 rounded-full transition-all duration-500"
           :style="{ width: `${progress}%` }"
         ></div>
       </div>
-      <span class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+      <span class="text-sm text-[#8A82A0] whitespace-nowrap">
         {{ currentIndex + 1 }} / {{ song.lyrics.length }}
       </span>
     </div>
@@ -21,26 +21,26 @@
         :ref="el => { if (index === currentIndex) activeLine = el as HTMLElement }"
         class="flex gap-4 p-3 rounded-lg transition-all duration-300"
         :class="{
-          'bg-indigo-100 dark:bg-indigo-900/40 scale-[1.02]': index === currentIndex,
+          'bg-gold/10 scale-[1.02]': index === currentIndex,
           'opacity-40': index < currentIndex,
           'opacity-60': index > currentIndex,
         }"
       >
         <div class="flex-1">
-          <p class="text-lg" :class="{ 'font-bold text-indigo-700 dark:text-indigo-300': index === currentIndex }">
+          <p class="text-lg" :class="{ 'font-bold text-gold': index === currentIndex }">
             {{ line }}
           </p>
           <p
             v-if="song.phonetic_lyrics?.[index]"
             class="text-sm italic mt-1"
-            :class="index === currentIndex ? 'text-indigo-500 dark:text-indigo-400' : 'text-gray-400 dark:text-gray-500'"
+            :class="index === currentIndex ? 'text-gold' : 'text-[#8A82A0]'"
           >
             {{ song.phonetic_lyrics[index] }}
           </p>
           <p
             v-if="showTranslation && song.translations?.en?.[index]"
             class="text-sm mt-1"
-            :class="index === currentIndex ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'"
+            :class="index === currentIndex ? 'text-[#8A82A0]' : 'text-[#8A82A0] opacity-60'"
           >
             {{ song.translations.en[index] }}
           </p>
@@ -64,13 +64,13 @@
       </div>
 
       <div class="flex items-center gap-4">
-        <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
+        <label class="flex items-center gap-2 text-sm text-[#8A82A0] cursor-pointer">
           <input type="checkbox" v-model="showTranslation" class="rounded" />
           Translation
         </label>
         <div class="flex items-center gap-2">
           <span class="text-xs text-gray-500">Speed</span>
-          <select v-model.number="speed" class="text-sm rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 px-2 py-1">
+          <select v-model.number="speed" class="text-sm rounded border-deep-border bg-deep-card-hover px-2 py-1">
             <option :value="4000">Slow</option>
             <option :value="2500">Normal</option>
             <option :value="1500">Fast</option>
@@ -82,7 +82,7 @@
     <!-- End screen -->
     <div v-if="finished" class="text-center py-6 space-y-4">
       <CheckCircle :size="48" class="mx-auto text-green-500" />
-      <p class="text-xl font-semibold text-gray-900 dark:text-white">Song Complete!</p>
+      <p class="text-xl font-semibold text-[#F5F0EB]">Song Complete!</p>
       <div class="flex justify-center gap-3">
         <Button variant="primary" @click="restart">
           <RotateCcw :size="18" />

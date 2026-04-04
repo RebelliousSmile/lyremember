@@ -1,10 +1,10 @@
 <template>
   <div class="flex flex-col items-center justify-center py-8 gap-3" role="status">
     <div
-      class="animate-spin rounded-full border-4 border-gray-200 dark:border-gray-700"
+      class="animate-spin rounded-full border-4 border-deep-border"
       :class="[sizeClass, colorClass]"
     ></div>
-    <p v-if="label" class="text-sm text-gray-500 dark:text-gray-400">{{ label }}</p>
+    <p v-if="label" class="text-sm text-[#8A82A0]">{{ label }}</p>
     <span class="sr-only">{{ $t('common.loading') }}</span>
   </div>
 </template>
@@ -25,5 +25,5 @@ const sizeClass = computed(() => ({
   lg: 'w-12 h-12 border-4',
 }[props.size]));
 
-const colorClass = 'border-t-indigo-600 dark:border-t-indigo-400';
+const colorClass = 'border-t-gold';
 </script>

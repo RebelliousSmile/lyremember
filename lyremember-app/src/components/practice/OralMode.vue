@@ -36,24 +36,24 @@
 
         <!-- Stage 1: Phonetic -->
         <div v-if="revealStage >= 1" class="space-y-1">
-          <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Phonetic</p>
-          <p class="text-xl italic text-indigo-600 dark:text-indigo-400">
+          <p class="text-xs uppercase tracking-wide text-[#8A82A0]">Phonetic</p>
+          <p class="text-xl italic text-gold">
             {{ song.phonetic_lyrics?.[currentIndex] ?? 'N/A' }}
           </p>
         </div>
 
         <!-- Stage 2: First characters hint -->
         <div v-if="revealStage >= 2" class="space-y-1">
-          <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">First characters</p>
-          <p class="text-xl text-gray-700 dark:text-gray-300 font-mono">
+          <p class="text-xs uppercase tracking-wide text-[#8A82A0]">First characters</p>
+          <p class="text-xl text-[#B8B0D0] font-mono">
             {{ firstCharsHint }}
           </p>
         </div>
 
         <!-- Stage 3: Full original -->
         <div v-if="revealStage >= 3" class="space-y-1">
-          <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Original</p>
-          <p class="text-xl font-semibold text-gray-900 dark:text-white">
+          <p class="text-xs uppercase tracking-wide text-[#8A82A0]">Original</p>
+          <p class="text-xl font-semibold text-[#F5F0EB]">
             {{ song.lyrics[currentIndex] }}
           </p>
         </div>
@@ -61,7 +61,7 @@
 
       <!-- Self assessment -->
       <div v-if="revealStage >= 3 && !selfAssessed" class="space-y-2">
-        <p class="text-sm text-gray-600 dark:text-gray-400 text-center">How did you do?</p>
+        <p class="text-sm text-[#8A82A0] text-center">How did you do?</p>
         <div class="flex justify-center gap-3">
           <Button variant="danger" size="sm" @click="assess(false)">
             <X :size="16" />
@@ -103,10 +103,10 @@
     <!-- End screen -->
     <div v-else class="text-center py-6 space-y-4">
       <Mic :size="48" class="mx-auto text-orange-500" />
-      <p class="text-xl font-semibold text-gray-900 dark:text-white">
+      <p class="text-xl font-semibold text-[#F5F0EB]">
         Practice Complete!
       </p>
-      <p class="text-gray-600 dark:text-gray-400">
+      <p class="text-[#8A82A0]">
         {{ correctCount }} / {{ song.lyrics.length }} lines self-assessed as correct
       </p>
       <div class="flex justify-center gap-3">

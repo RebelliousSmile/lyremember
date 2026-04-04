@@ -2,13 +2,13 @@
   <div class="space-y-6">
     <!-- Progress -->
     <div class="flex items-center gap-4">
-      <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+      <div class="flex-1 bg-deep-card-hover rounded-full h-2">
         <div
           class="bg-purple-600 dark:bg-purple-400 h-2 rounded-full transition-all duration-500"
           :style="{ width: `${progress}%` }"
         ></div>
       </div>
-      <span class="text-sm text-gray-600 dark:text-gray-400">
+      <span class="text-sm text-[#8A82A0]">
         {{ currentIndex + 1 }} / {{ song.lyrics.length }}
       </span>
       <span class="text-sm font-semibold" :class="scoreColor">
@@ -19,11 +19,11 @@
     <!-- Question -->
     <div v-if="!finished" class="space-y-6">
       <!-- Prompt: show translation or phonetic, ask for original line -->
-      <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl text-center space-y-2">
-        <p class="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+      <div class="p-6 bg-deep-card rounded-xl text-center space-y-2">
+        <p class="text-sm text-[#8A82A0] uppercase tracking-wide">
           {{ questionType === 'translation' ? 'What is the original lyric for:' : 'Which lyric matches this phonetic:' }}
         </p>
-        <p class="text-xl font-semibold text-gray-900 dark:text-white">
+        <p class="text-xl font-semibold text-[#F5F0EB]">
           {{ questionText }}
         </p>
       </div>
@@ -64,10 +64,10 @@
     <!-- End screen -->
     <div v-else class="text-center py-6 space-y-4">
       <div class="text-6xl mb-2">{{ scoreMedal }}</div>
-      <p class="text-xl font-semibold text-gray-900 dark:text-white">
+      <p class="text-xl font-semibold text-[#F5F0EB]">
         Score: {{ Math.round(scorePercent) }}%
       </p>
-      <p class="text-gray-600 dark:text-gray-400">
+      <p class="text-[#8A82A0]">
         {{ correctCount }} correct out of {{ song.lyrics.length }}
       </p>
       <div class="flex justify-center gap-3">
@@ -192,7 +192,7 @@ function selectAnswer(index: number) {
 
 function choiceClass(i: number) {
   if (!answered.value) {
-    return 'border-gray-200 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-500 cursor-pointer';
+    return 'border-deep-border hover:border-gold cursor-pointer';
   }
   if (i === correctChoiceIndex.value) {
     return 'border-green-500 bg-green-50 dark:bg-green-900/20';
@@ -200,12 +200,12 @@ function choiceClass(i: number) {
   if (i === selectedIndex.value) {
     return 'border-red-500 bg-red-50 dark:bg-red-900/20';
   }
-  return 'border-gray-200 dark:border-gray-700 opacity-50';
+  return 'border-deep-border opacity-50';
 }
 
 function choiceBadgeClass(i: number) {
   if (!answered.value) {
-    return 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
+    return 'bg-deep-card-hover text-[#B8B0D0]';
   }
   if (i === correctChoiceIndex.value) {
     return 'bg-green-500 text-white';
@@ -213,7 +213,7 @@ function choiceBadgeClass(i: number) {
   if (i === selectedIndex.value) {
     return 'bg-red-500 text-white';
   }
-  return 'bg-gray-200 dark:bg-gray-700 text-gray-400';
+  return 'bg-deep-card-hover text-[#8A82A0]';
 }
 
 function nextQuestion() {

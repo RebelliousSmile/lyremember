@@ -9,14 +9,14 @@
         aria-modal="true"
         aria-label="Keyboard shortcuts"
       >
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full mx-4 p-6 space-y-4">
+        <div class="bg-deep-card rounded-xl shadow-2xl max-w-md w-full mx-4 p-6 space-y-4">
           <div class="flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+            <h2 class="text-lg font-semibold text-[#F5F0EB]">
               {{ $t('shortcuts.title') }}
             </h2>
             <button
               @click="$emit('close')"
-              class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+              class="p-1 rounded hover:bg-deep-card-hover"
               aria-label="Close"
             >
               <X :size="20" />
@@ -29,15 +29,15 @@
               :key="shortcut.keys"
               class="flex items-center justify-between py-2"
             >
-              <span class="text-sm text-gray-600 dark:text-gray-400">
+              <span class="text-sm text-[#8A82A0]">
                 {{ $t(shortcut.description) }}
               </span>
               <div class="flex gap-1">
                 <kbd
                   v-for="key in shortcut.keys.split(' ')"
                   :key="key"
-                  class="px-2 py-1 text-xs font-mono bg-gray-100 dark:bg-gray-700 border
-                         border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300"
+                  class="px-2 py-1 text-xs font-mono bg-deep-card-hover border
+                         border-deep-border rounded text-[#B8B0D0]"
                 >
                   {{ key }}
                 </kbd>
