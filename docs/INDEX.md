@@ -7,6 +7,7 @@ Documentation organisée par thème. Le README à la racine en référence les p
 - [usage_guide.md](usage_guide.md) — guide d'utilisation de l'app CLI
 
 ## Planning & Décisions produit
+- [MASTER_PLAN.md](MASTER_PLAN.md) — roadmap post-MVP (phases 0-3 done, phases 4-6 → issues #33-#44)
 - [FINAL_DECISIONS.md](FINAL_DECISIONS.md) — synthèse de toutes les décisions techniques
 - [TECH_CHOICES.md](TECH_CHOICES.md) — comparatif des stacks envisagées
 - [USER_STORIES.md](USER_STORIES.md) — user stories initiales
