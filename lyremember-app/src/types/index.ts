@@ -26,6 +26,7 @@ export interface CreateSongForm {
   language: string;
   lyrics: string; // Will be split into array
   autoTranslate: boolean;
+  geniusUrl: string; // Optional outbound link to the genius.com page
 }
 
 export type PracticeMode = 'karaoke' | 'fill-blank' | 'mcq' | 'oral';

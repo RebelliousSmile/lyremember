@@ -102,11 +102,12 @@ export const useSongsStore = defineStore('songs', () => {
     artist: string,
     language: string,
     lyrics: string[],
+    geniusUrl?: string | null,
   ) {
     loading.value = true;
     error.value = null;
     try {
-      const song = await api.createSong(title, artist, language, lyrics);
+      const song = await api.createSong(title, artist, language, lyrics, geniusUrl);
       songs.value.push(song);
       return song;
     } catch (err) {

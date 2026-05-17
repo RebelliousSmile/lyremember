@@ -74,6 +74,7 @@
     "fillBlank": "Texte à trous",
     "mcq": "Choix multiples",
     "oralPractice": "Pratique orale",
+    "openOnGenius": "Ouvrir sur Genius ↗",
     "songNotFound": "Chanson introuvable",
     "loadingSong": "Chargement de la chanson..."
   },
@@ -88,6 +89,8 @@
     "lyrics": "Paroles",
     "lyricsPlaceholder": "Entrez les paroles (une ligne par ligne)",
     "lyricsHint": "Entrez chaque ligne de paroles sur une nouvelle ligne",
+    "geniusUrl": "Lien Genius (optionnel)",
+    "geniusUrlPlaceholder": "https://genius.com/...",
     "autoTranslate": "Traduire automatiquement en anglais (si pas déjà en anglais)",
     "autoTranslateNote": "Lors de la création, la chanson sera automatiquement :",
     "autoTranslatePhonetic": "Romanisation phonétique pour le japonais et le coréen",

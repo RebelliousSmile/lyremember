@@ -10,7 +10,8 @@ use std::collections::HashMap;
 /// Create a new song with automatic translation and phonetic generation
 pub fn create_song(conn: &Connection, data: CreateSongData) -> Result<Song> {
     let mut song = Song::new(data.title, data.artist, data.language, data.lyrics.clone());
-    
+    song.genius_url = data.genius_url;
+
     // Auto-generate phonetic if language supports it
     if matches!(song.language.as_str(), "jp" | "kr" | "fr" | "en") {
         match phonetic::generate_phonetic(&data.lyrics, &song.language) {
@@ -217,9 +218,13 @@ pub fn update_song(conn: &Connection, song_id: &str, data: UpdateSongData) -> Re
     if let Some(translations) = data.translations {
         song.translations = Some(translations);
     }
-    
+    if let Some(url) = data.genius_url {
+        // Empty string clears the URL — see UpdateSongData doc.
+        song.genius_url = if url.is_empty() { None } else { Some(url) };
+    }
+
     song.updated_at = chrono::Utc::now().to_rfc3339();
-    
+
     // Update in database
     let lyrics_json = serde_json::to_string(&song.lyrics)?;
     let phonetic_json = song.phonetic_lyrics.as_ref()
@@ -228,12 +233,12 @@ pub fn update_song(conn: &Connection, song_id: &str, data: UpdateSongData) -> Re
     let translations_json = song.translations.as_ref()
         .map(serde_json::to_string)
         .transpose()?;
-    
+
     conn.execute(
-        "UPDATE songs 
+        "UPDATE songs
          SET title = ?1, artist = ?2, language = ?3, lyrics = ?4,
-             phonetic_lyrics = ?5, translations = ?6, updated_at = ?7
-         WHERE id = ?8",
+             phonetic_lyrics = ?5, translations = ?6, genius_url = ?7, updated_at = ?8
+         WHERE id = ?9",
         rusqlite::params![
             &song.title,
             &song.artist,
@@ -241,11 +246,12 @@ pub fn update_song(conn: &Connection, song_id: &str, data: UpdateSongData) -> Re
             &lyrics_json,
             &phonetic_json,
             &translations_json,
+            &song.genius_url,
             &song.updated_at,
             song_id,
         ],
     )?;
-    
+
     Ok(song)
 }
 
@@ -297,6 +303,7 @@ mod tests {
             artist: "Test Artist".to_string(),
             language: "en".to_string(),
             lyrics: vec!["Line 1".to_string(), "Line 2".to_string()],
+            genius_url: None,
         };
 
         let song = create_song(&conn, data).unwrap();
@@ -340,6 +347,98 @@ mod tests {
         let retrieved = get_song(&conn, &song.id).unwrap();
         assert!(retrieved.genius_id.is_none());
         assert!(retrieved.genius_url.is_none());
+    }
+
+    // ---- genius_url ----
+
+    #[test]
+    fn test_create_song_with_genius_url_persists() {
+        let (_tmp, conn) = setup_db();
+
+        let data = CreateSongData {
+            title: "Bohemian Rhapsody".to_string(),
+            artist: "Queen".to_string(),
+            language: "en".to_string(),
+            lyrics: vec!["Is this the real life".to_string()],
+            genius_url: Some("https://genius.com/Queen-bohemian-rhapsody-lyrics".to_string()),
+        };
+        let song = create_song(&conn, data).unwrap();
+
+        let retrieved = get_song(&conn, &song.id).unwrap();
+        assert_eq!(
+            retrieved.genius_url.as_deref(),
+            Some("https://genius.com/Queen-bohemian-rhapsody-lyrics")
+        );
+    }
+
+    #[test]
+    fn test_create_song_without_genius_url_stays_none() {
+        let (_tmp, conn) = setup_db();
+
+        let data = CreateSongData {
+            title: "Some Song".to_string(),
+            artist: "Someone".to_string(),
+            language: "en".to_string(),
+            lyrics: vec!["Line".to_string()],
+            genius_url: None,
+        };
+        let song = create_song(&conn, data).unwrap();
+
+        let retrieved = get_song(&conn, &song.id).unwrap();
+        assert!(retrieved.genius_url.is_none());
+    }
+
+    #[test]
+    fn test_update_song_sets_genius_url() {
+        let (_tmp, conn) = setup_db();
+        let song = insert_test_song(&conn, "Title", "Artist", "en");
+
+        let updated = update_song(
+            &conn,
+            &song.id,
+            UpdateSongData {
+                title: None,
+                artist: None,
+                language: None,
+                lyrics: None,
+                phonetic_lyrics: None,
+                translations: None,
+                genius_url: Some("https://genius.com/example".to_string()),
+            },
+        )
+        .unwrap();
+
+        assert_eq!(updated.genius_url.as_deref(), Some("https://genius.com/example"));
+    }
+
+    #[test]
+    fn test_update_song_clears_genius_url_when_empty_string() {
+        let (_tmp, conn) = setup_db();
+        let data = CreateSongData {
+            title: "Title".to_string(),
+            artist: "Artist".to_string(),
+            language: "en".to_string(),
+            lyrics: vec!["x".to_string()],
+            genius_url: Some("https://genius.com/old".to_string()),
+        };
+        let song = create_song(&conn, data).unwrap();
+
+        let updated = update_song(
+            &conn,
+            &song.id,
+            UpdateSongData {
+                title: None,
+                artist: None,
+                language: None,
+                lyrics: None,
+                phonetic_lyrics: None,
+                translations: None,
+                genius_url: Some(String::new()),
+            },
+        )
+        .unwrap();
+
+        assert!(updated.genius_url.is_none());
     }
 
     // ---- get_song ----
@@ -517,6 +616,7 @@ mod tests {
             lyrics: None,
             phonetic_lyrics: None,
             translations: None,
+            genius_url: None,
         }).unwrap();
 
         assert_eq!(updated.title, "New Title");
@@ -540,6 +640,7 @@ mod tests {
             lyrics: None,
             phonetic_lyrics: None,
             translations: None,
+            genius_url: None,
         }).unwrap();
 
         assert_eq!(updated.artist, "New Artist");
@@ -560,6 +661,7 @@ mod tests {
             lyrics: Some(new_lyrics.clone()),
             phonetic_lyrics: None,
             translations: None,
+            genius_url: None,
         }).unwrap();
 
         assert_eq!(updated.lyrics, new_lyrics);
@@ -579,6 +681,7 @@ mod tests {
             lyrics: None,
             phonetic_lyrics: Some(phonetics.clone()),
             translations: None,
+            genius_url: None,
         }).unwrap();
 
         assert_eq!(updated.phonetic_lyrics, Some(phonetics));
@@ -599,6 +702,7 @@ mod tests {
             lyrics: None,
             phonetic_lyrics: None,
             translations: Some(translations.clone()),
+            genius_url: None,
         }).unwrap();
 
         assert_eq!(updated.translations, Some(translations));
@@ -617,6 +721,7 @@ mod tests {
             lyrics: Some(vec!["Bonjour".to_string()]),
             phonetic_lyrics: None,
             translations: None,
+            genius_url: None,
         }).unwrap();
 
         assert_eq!(updated.title, "New Title");
@@ -639,6 +744,7 @@ mod tests {
             lyrics: None,
             phonetic_lyrics: None,
             translations: None,
+            genius_url: None,
         }).unwrap();
 
         // updated_at should be >= the original
@@ -656,6 +762,7 @@ mod tests {
             lyrics: None,
             phonetic_lyrics: None,
             translations: None,
+            genius_url: None,
         });
         assert!(result.is_err());
         let err_msg = format!("{}", result.unwrap_err());

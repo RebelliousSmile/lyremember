@@ -34,6 +34,15 @@
             <p class="text-[13px] text-[#B8B0D0] truncate leading-tight mt-0.5">
               {{ song.artist }}
             </p>
+            <a
+              v-if="song.genius_url"
+              :href="song.genius_url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-[11px] text-[#B8B0D0] hover:text-[#F5F0EB] underline truncate block mt-0.5"
+            >
+              {{ $t('songDetail.openOnGenius') }}
+            </a>
           </div>
 
           <button

@@ -178,6 +178,7 @@ mod tests {
             artist: "Test Artist".to_string(),
             language: "en".to_string(),
             lyrics: vec!["Line 1".to_string(), "Line 2".to_string()],
+            genius_url: None,
         }).unwrap()
     }
 

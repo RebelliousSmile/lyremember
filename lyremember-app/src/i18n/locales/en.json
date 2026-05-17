@@ -75,7 +75,8 @@
     "mcq": "Multiple Choice",
     "oralPractice": "Oral Practice",
     "songNotFound": "Song not found",
-    "loadingSong": "Loading song..."
+    "loadingSong": "Loading song...",
+    "openOnGenius": "Open on Genius ↗"
   },
   "addSong": {
     "title": "Add New Song",
@@ -88,6 +89,8 @@
     "lyrics": "Lyrics",
     "lyricsPlaceholder": "Enter lyrics (one line per line)",
     "lyricsHint": "Enter each line of lyrics on a new line",
+    "geniusUrl": "Genius link (optional)",
+    "geniusUrlPlaceholder": "https://genius.com/...",
     "autoTranslate": "Automatically translate to English (if not already in English)",
     "autoTranslateNote": "When you create the song, it will automatically:",
     "autoTranslatePhonetic": "Generate phonetic romanization for Japanese and Korean",

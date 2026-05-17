@@ -55,10 +55,19 @@ pub struct CreateSongData {
     pub artist: String,
     pub language: String,
     pub lyrics: Vec<String>,
+    /// Optional outbound link to the song page on genius.com. Stored
+    /// verbatim — no lyrics extraction (cf. issue #14 / #18).
+    #[serde(default)]
+    pub genius_url: Option<String>,
 }
 
 /// Data for updating a song
-#[derive(Debug, Deserialize)]
+///
+/// `genius_url` semantics:
+/// - `None`  → field is left untouched
+/// - `Some("")` → field is cleared (set to NULL in DB)
+/// - `Some(url)` → field is overwritten with `url`
+#[derive(Debug, Default, Deserialize)]
 pub struct UpdateSongData {
     pub title: Option<String>,
     pub artist: Option<String>,
@@ -66,4 +75,6 @@ pub struct UpdateSongData {
     pub lyrics: Option<Vec<String>>,
     pub phonetic_lyrics: Option<Vec<String>>,
     pub translations: Option<HashMap<String, Vec<String>>>,
+    #[serde(default)]
+    pub genius_url: Option<String>,
 }

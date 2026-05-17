@@ -79,10 +79,17 @@ pub fn cmd_create_song(
     artist: String,
     language: String,
     lyrics: Vec<String>,
+    genius_url: Option<String>,
     state: State<'_, DbState>,
 ) -> Result<Song, String> {
     let conn = lock_db(&state)?;
-    let data = CreateSongData { title, artist, language, lyrics };
+    let data = CreateSongData {
+        title,
+        artist,
+        language,
+        lyrics,
+        genius_url: genius_url.filter(|s| !s.is_empty()),
+    };
     songs::create_song(&conn, data).map_err(|e| format!("Failed to create song: {}", e))
 }
 
@@ -130,6 +137,7 @@ pub fn cmd_update_song(
     lyrics: Option<Vec<String>>,
     phonetic_lyrics: Option<Vec<String>>,
     translations: Option<std::collections::HashMap<String, Vec<String>>>,
+    genius_url: Option<String>,
     state: State<'_, DbState>,
 ) -> Result<Song, String> {
     let conn = lock_db(&state)?;
@@ -140,6 +148,7 @@ pub fn cmd_update_song(
         lyrics,
         phonetic_lyrics,
         translations,
+        genius_url,
     };
     songs::update_song(&conn, &song_id, data).map_err(|e| format!("Failed to update song: {}", e))
 }

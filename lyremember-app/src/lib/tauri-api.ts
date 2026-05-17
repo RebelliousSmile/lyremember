@@ -16,6 +16,8 @@ export interface Song {
   lyrics: string[];
   phonetic_lyrics: string[] | null;
   translations: Record<string, string[]> | null;
+  genius_id: string | null;
+  genius_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -81,12 +83,14 @@ export async function createSong(
   artist: string,
   language: string,
   lyrics: string[],
+  geniusUrl?: string | null,
 ): Promise<Song> {
   return await invoke('cmd_create_song', {
     title,
     artist,
     language,
     lyrics,
+    geniusUrl: geniusUrl || null,
   });
 }
 
@@ -110,9 +114,10 @@ export async function updateSong(
   songId: string,
   title?: string,
   artist?: string,
-  lyrics?: string[]
+  lyrics?: string[],
+  geniusUrl?: string | null,
 ): Promise<void> {
-  return await invoke('cmd_update_song', { songId, title, artist, lyrics });
+  return await invoke('cmd_update_song', { songId, title, artist, lyrics, geniusUrl });
 }
 
 export async function deleteSong(songId: string): Promise<void> {

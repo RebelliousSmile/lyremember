@@ -63,6 +63,13 @@
             </p>
           </div>
 
+          <Input
+            v-model="form.geniusUrl"
+            :label="$t('addSong.geniusUrl')"
+            :placeholder="$t('addSong.geniusUrlPlaceholder')"
+            type="url"
+          />
+
           <div class="flex items-center gap-2">
             <input v-model="form.autoTranslate" type="checkbox" id="autoTranslate" class="rounded" />
             <label for="autoTranslate" class="text-sm text-[#B8B0D0]">
@@ -121,6 +128,7 @@ const form = ref<CreateSongForm>({
   language: '',
   lyrics: '',
   autoTranslate: true,
+  geniusUrl: '',
 });
 
 const loading = ref(false);
@@ -153,6 +161,7 @@ async function handleSubmit() {
       form.value.artist,
       form.value.language,
       lyricsArray,
+      form.value.geniusUrl.trim() || null,
     );
 
     if (authStore.user) {

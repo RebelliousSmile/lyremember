@@ -46,6 +46,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "No hell below us".to_string(),
             "Above us only sky".to_string(),
         ],
+        genius_url: None,
     };
     
     let song = create_song(&conn, song_data)?;
