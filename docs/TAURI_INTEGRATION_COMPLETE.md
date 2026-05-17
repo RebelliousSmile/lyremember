@@ -17,7 +17,7 @@ L'intégration du backend Rust avec Tauri est **100% fonctionnelle**.
 
 #### 2. Application Tauri (lyremember-app/)
 - ✅ **Projet créé** avec Vue 3 + TypeScript + Vite
-- ✅ **16 commandes Tauri** exposées
+- ✅ **19 commandes Tauri** exposées (auth 5, songs 7, practice 4, util 3 — voir détail plus bas)
 - ✅ **TypeScript API** type-safe (200 lignes)
 - ✅ **UI de test** d'intégration
 - ✅ **Base de données** auto-initialisée
@@ -53,7 +53,7 @@ L'intégration du backend Rust avec Tauri est **100% fonctionnelle**.
 │              Tauri IPC Layer                        │
 │                                                      │
 │  ┌──────────────────────────────────────────────┐  │
-│  │  commands.rs (16 Tauri Commands)             │  │
+│  │  commands.rs (19 Tauri Commands)             │  │
 │  │  • cmd_register, cmd_login                   │  │
 │  │  • cmd_create_song, cmd_get_songs            │  │
 │  │  • cmd_create_practice_session               │  │
@@ -176,7 +176,7 @@ lyremember-app/
 ├── src-tauri/                    ✅ Backend Tauri
 │   ├── src/
 │   │   ├── lib.rs                ✅ Setup + DB init (60 lines)
-│   │   ├── commands.rs           ✅ 16 Tauri commands (270 lines)
+│   │   ├── commands.rs           ✅ 19 Tauri commands (~233 lines)
 │   │   └── main.rs
 │   ├── Cargo.toml                ✅ Dependencies (includes rust-backend)
 │   └── tauri.conf.json
@@ -184,6 +184,18 @@ lyremember-app/
 ├── package.json                  ✅ npm scripts
 └── README.md                     ✅ Complete documentation
 ```
+
+### Détail des 19 commandes Tauri exposées
+
+Source de vérité : `lyremember-app/src-tauri/src/commands.rs`.
+
+**Auth (5)** : `cmd_register`, `cmd_login`, `cmd_verify_token`, `cmd_get_user`, `cmd_login_as_guest`.
+
+**Songs (7)** : `cmd_create_song`, `cmd_get_songs`, `cmd_get_song`, `cmd_get_user_songs`, `cmd_add_to_repertoire`, `cmd_update_song`, `cmd_delete_song`.
+
+**Practice (4)** : `cmd_create_practice_session`, `cmd_get_user_sessions`, `cmd_get_user_stats`, `cmd_get_song_mastery`.
+
+**Util (3)** : `cmd_translate_text`, `cmd_generate_phonetic`, `cmd_health_check`.
 
 ### Documentation (root/)
 ```

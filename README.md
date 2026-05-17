@@ -36,7 +36,7 @@ npm run tauri dev
 ```
 Vue 3 Frontend (TypeScript)
     ↓
-Tauri Commands (16 commands)
+Tauri Commands (19 commands)
     ↓
 Rust Backend (5 services)
     ↓
@@ -87,17 +87,17 @@ lyremember-app/
 ├── src/                   # Frontend Vue 3 + TypeScript
 │   ├── App.vue           # Integration test UI
 │   └── lib/
-│       └── tauri-api.ts  # TypeScript API (16 commands)
+│       └── tauri-api.ts  # TypeScript API (19 commands)
 │
 └── src-tauri/            # Backend Tauri
     ├── src/
-    │   ├── commands.rs   # 16 Tauri commands
+    │   ├── commands.rs   # 19 Tauri commands
     │   └── lib.rs        # Database initialization
     └── Cargo.toml        # Depends on rust-backend
 ```
 
 **Fonctionnalités:**
-- ✅ 16 Tauri commands (type-safe)
+- ✅ 19 Tauri commands (type-safe)
 - ✅ TypeScript API complète
 - ✅ Integration test UI
 - ✅ Database auto-created in app data dir
@@ -178,7 +178,7 @@ npm run tauri dev
 
 ### Phase 1: ✅ COMPLETE - Backend & Integration
 - [x] Backend Rust complet (2,400 lignes)
-- [x] 16 Tauri commands type-safe
+- [x] 19 Tauri commands type-safe
 - [x] TypeScript API (200 lignes)
 - [x] Integration test UI
 - [x] Database auto-initialization
@@ -253,7 +253,7 @@ const stats = await api.getUserStats(user.id);
 **Desktop:**
 - Tauri 2.0 (native windows)
 - WebView (OS native)
-- 16 Tauri commands
+- 19 Tauri commands
 
 **Backend:**
 - Rust (lyremember_backend library)
