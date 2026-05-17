@@ -34,3 +34,6 @@ Documentation organisée par thème. Le README à la racine en référence les p
 ## Spikes R&D
 - [spikes/2026-05-genius-api.md](spikes/2026-05-genius-api.md) — exploration API métadonnées Genius (NO-GO court terme)
 - [spikes/2026-05-song-detection.md](spikes/2026-05-song-detection.md) — détection de chanson Shazam-like (NO-GO MVP)
+
+## Prompts agentiques réutilisables
+- [PROMPTS/audit-and-issues-workflow.md](PROMPTS/audit-and-issues-workflow.md) — workflow "doc cleanup → audit → issues → tri", agnostique du repo
