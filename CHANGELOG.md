@@ -24,6 +24,9 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 - `docs/FINAL_DECISIONS.md` aligné sur la réalité du code : UI library = composants maison `lyremember-app/src/components/ui/` (Button, Card, Input, Alert, Spinner). Note ajoutée en tête de `docs/UI_LIBRARIES.md` pour marquer ce comparatif comme historique (#9).
 - Commandes Tauri : doc corrigée de 16 → 19 (5 auth + 7 songs + 4 practice + 3 util), avec liste exhaustive synchronisée sur `commands.rs`. Mentions "16" alignées dans `README.md` et `docs/TAURI_INTEGRATION_COMPLETE.md` (#10).
 - `docs/ARCHITECTURE.md` clarifie en tête : ce doc décrit le POC Python (legacy, storage JSON), la prod canonique est Rust+Tauri+Vue avec storage SQLite (`rust-backend/src/db/sqlite.rs`). Référence à `legacy/python-cli/` et à `FINAL_DECISIONS.md` (#11).
+- `docs/USER_STORIES_V2.md` : Epic 5 (Mode oral) descendu en CouldHave, scope MVP = self-assessment manuel, mode micro live → post-MVP avec pointeur vers #28 (#12).
+- `docs/USER_STORIES_V2.md` : Epics 4-7 préfacés par une note de navigation expliquant les rôles distincts `PracticeView` (apprendre) vs `SongDetailView` (lyrics), pointeur vers #19 (#13).
+- `docs/USER_STORIES_V2.md` : US-1.3 (Genius) refondue — import de lyrics interdit (ToS + API), remplacée par champ `genius_url` optionnel (#17) + spike API métadonnées (#26) + cleanup UI (#18). US-2.1 ajustée en conséquence (#14).
 - Le CLI Python (proof of concept) est archivé dans `legacy/python-cli/` (#6) : `lyremember/`, `tests/`, `data/`, `demo.py`, `setup.py`, `requirements.txt` y vivent désormais. La stack canonique est Rust + Tauri + Vue 3. Le workflow `ci-python` cible ce nouveau chemin.
 - Polish `SongDetailView` : layout des paroles et états hover affinés.
 - PyO3 rendu optionnel pour faciliter les builds cross-platform.

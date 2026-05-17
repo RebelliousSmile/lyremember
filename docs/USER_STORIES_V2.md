@@ -62,7 +62,28 @@ AND je dois me reconnecter pour accéder à mes données
 
 ---
 
-### US-1.3 : Lier un compte Genius
+### US-1.3 : ~~Lier un compte Genius~~ → Ajouter un lien Genius à une chanson
+
+> **Mise à jour (mai 2026)** — l'**import de paroles** depuis Genius
+> n'est **pas légalement faisable** :
+> - le scraping de pages Genius viole leurs ToS,
+> - l'API officielle (https://genius.com/api-clients) expose des
+>   métadonnées (artist, song, annotations) mais **pas les lyrics**.
+>
+> La story est remplacée par :
+> - **(a) Champ optionnel `genius_url` sur la chanson** — URL stockée en
+>   DB, affichée comme lien sortant. Suivi par
+>   [#17](https://github.com/RebelliousSmile/lyremember/issues/17).
+> - **(b) Spike R&D** — évaluer ce qu'on peut faire légalement avec
+>   l'API métadonnées (auto-complétion ?). Suivi par
+>   [#26](https://github.com/RebelliousSmile/lyremember/issues/26).
+> - **(c) Cleanup UI** — retrait du champ token et des mentions
+>   "import Genius" trompeuses. Suivi par
+>   [#18](https://github.com/RebelliousSmile/lyremember/issues/18).
+>
+> La story Genius originale (ci-dessous) est conservée pour traçabilité
+> historique uniquement.
+
 **En tant qu'** utilisateur  
 **Je veux** lier mon compte Genius  
 **Afin de** pouvoir importer facilement des paroles depuis Genius
@@ -95,7 +116,7 @@ AND je peux maintenant importer des chansons depuis Genius
 
 **Critères d'acceptation :**
 - [ ] L'utilisateur peut ajouter une chanson manuellement (titre, artiste, paroles)
-- [ ] L'utilisateur peut importer une chanson depuis Genius
+- [ ] L'utilisateur peut joindre un **lien Genius optionnel** à la chanson (URL stockée, lien sortant ; pas d'import de lyrics — voir US-1.3 mise à jour)
 - [ ] La chanson est ajoutée au répertoire de l'utilisateur uniquement
 - [ ] L'utilisateur voit une confirmation
 
@@ -262,6 +283,22 @@ THEN je vois :
 
 ## Epic 4 : Mode Défilement Phrase par Phrase
 
+> **Navigation UI (Epics 4-7)** — l'entrée canonique pour APPRENDRE une
+> chanson est `PracticeView.vue` (route `/practice`), pas
+> `SongDetailView.vue`. Ce dernier reste dédié à la **gestion des
+> lyrics** (édition métadonnées, vue 3 colonnes VO/phonétique/traduction,
+> ajout d'un lien Genius optionnel).
+>
+> Flow utilisateur attendu :
+> 1. Depuis `PracticeView` : choisir une chanson + un mode (Karaoke /
+>    FillBlank / MCQ / Oral) → bouton "Commencer".
+> 2. Le composant du mode (`KaraokeMode`, `FillBlankMode`, `McqMode`,
+>    `OralMode`) est monté.
+> 3. Raccourci "Practice this song" disponible depuis `SongDetailView`
+>    pour pré-sélectionner la chanson dans `PracticeView`.
+>
+> Implémentation suivie par [#19](https://github.com/RebelliousSmile/lyremember/issues/19).
+
 ### US-4.1 : Défilement automatique des paroles
 **En tant qu'** utilisateur  
 **Je veux** que les paroles défilent automatiquement phrase par phrase  
@@ -316,6 +353,15 @@ THEN la chanson se termine après toutes les lignes
 ---
 
 ## Epic 5 : Mode Vérification Orale
+
+> **Statut MVP (mai 2026)** — MoSCoW : **CouldHave**.
+> Le MVP livre uniquement le **self-assessment manuel**
+> (`lyremember-app/src/components/practice/OralMode.vue` : l'utilisateur
+> dit la phrase à voix haute puis clique sur "j'ai réussi / j'ai raté" ;
+> reveals progressifs).
+> Le mode **live avec micro** (Web Speech API / STT serveur + scoring
+> de similarité) est repoussé **post-MVP** — suivi par
+> [issue #28](https://github.com/RebelliousSmile/lyremember/issues/28).
 
 ### US-5.1 : Pratiquer en mode oral
 **En tant qu'** utilisateur  
