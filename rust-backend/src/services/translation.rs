@@ -22,12 +22,12 @@ struct TranslateResponse {
 }
 
 /// Translate text using LibreTranslate API
-/// 
+///
 /// # Arguments
 /// * `text` - Lines to translate
 /// * `source_lang` - Source language code (e.g., "ja", "ko", "fr")
 /// * `target_lang` - Target language code (e.g., "en")
-/// 
+///
 /// # Returns
 /// Vector of translated lines
 pub fn translate_text(
@@ -49,26 +49,26 @@ fn translate_with_libretranslate(
         .timeout(REQUEST_TIMEOUT)
         .build()
         .map_err(|e| Error::Translation(format!("Failed to create HTTP client: {}", e)))?;
-    
+
     let mut translations = Vec::new();
-    
+
     for line in text {
         if line.trim().is_empty() {
             translations.push(String::new());
             continue;
         }
-        
+
         let request = TranslateRequest {
             q: line.clone(),
             source: source_lang.to_string(),
             target: target_lang.to_string(),
             format: "text".to_string(),
         };
-        
+
         // Retry logic for rate limiting
         let mut retries = 3;
         let mut last_error = None;
-        
+
         while retries > 0 {
             match client.post(api_url).json(&request).send() {
                 Ok(response) => {
@@ -89,7 +89,7 @@ fn translate_with_libretranslate(
                     } else {
                         let status = response.status();
                         let body = response.text().unwrap_or_default();
-                        
+
                         if status.as_u16() == 429 {
                             // Rate limited, wait and retry
                             std::thread::sleep(Duration::from_secs(2));
@@ -112,14 +112,14 @@ fn translate_with_libretranslate(
                 }
             }
         }
-        
+
         if retries == 0 {
             return Err(last_error.unwrap_or_else(|| {
                 Error::Translation("Translation failed after retries".to_string())
             }));
         }
     }
-    
+
     Ok(translations)
 }
 
@@ -134,32 +134,32 @@ pub fn translate_batch(
         .timeout(REQUEST_TIMEOUT)
         .build()
         .map_err(|e| Error::Translation(format!("Failed to create HTTP client: {}", e)))?;
-    
+
     let mut translations = Vec::new();
-    
+
     for (i, line) in text.iter().enumerate() {
         if i > 0 && delay_ms > 0 {
             std::thread::sleep(Duration::from_millis(delay_ms));
         }
-        
+
         if line.trim().is_empty() {
             translations.push(String::new());
             continue;
         }
-        
+
         let request = TranslateRequest {
             q: line.clone(),
             source: source_lang.to_string(),
             target: target_lang.to_string(),
             format: "text".to_string(),
         };
-        
+
         let response = client
             .post(LIBRETRANSLATE_URL)
             .json(&request)
             .send()
             .map_err(|e| Error::Translation(format!("Request failed: {}", e)))?;
-        
+
         if !response.status().is_success() {
             let status = response.status();
             let body = response.text().unwrap_or_default();
@@ -168,14 +168,14 @@ pub fn translate_batch(
                 status, body
             )));
         }
-        
+
         let data = response
             .json::<TranslateResponse>()
             .map_err(|e| Error::Translation(format!("Failed to parse response: {}", e)))?;
-        
+
         translations.push(data.translated_text);
     }
-    
+
     Ok(translations)
 }
 
@@ -219,7 +219,7 @@ mod tests {
     fn test_translate_text_real_api() {
         let text = vec!["Hello".to_string(), "World".to_string()];
         let result = translate_text(text, "en", "fr");
-        
+
         match result {
             Ok(translations) => {
                 assert_eq!(translations.len(), 2);

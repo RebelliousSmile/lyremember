@@ -16,8 +16,13 @@ pub struct LoginResponse {
 }
 
 /// Helper to lock the database connection
-fn lock_db<'a>(state: &'a State<'a, DbState>) -> Result<std::sync::MutexGuard<'a, Connection>, String> {
-    state.0.lock().map_err(|e: std::sync::PoisonError<_>| e.to_string())
+fn lock_db<'a>(
+    state: &'a State<'a, DbState>,
+) -> Result<std::sync::MutexGuard<'a, Connection>, String> {
+    state
+        .0
+        .lock()
+        .map_err(|e: std::sync::PoisonError<_>| e.to_string())
 }
 
 // ==================== AUTH COMMANDS ====================
@@ -30,7 +35,11 @@ pub fn cmd_register(
     state: State<'_, DbState>,
 ) -> Result<User, String> {
     let conn = lock_db(&state)?;
-    let data = RegisterData { username, email, password };
+    let data = RegisterData {
+        username,
+        email,
+        password,
+    };
     auth::register(&conn, data).map_err(|e| format!("Registration failed: {}", e))
 }
 
@@ -42,8 +51,8 @@ pub fn cmd_login(
 ) -> Result<String, String> {
     let conn = lock_db(&state)?;
     let credentials = LoginCredentials { username, password };
-    let (_user, token) = auth::login(&conn, credentials)
-        .map_err(|e| format!("Login failed: {}", e))?;
+    let (_user, token) =
+        auth::login(&conn, credentials).map_err(|e| format!("Login failed: {}", e))?;
     Ok(token)
 }
 
@@ -53,21 +62,16 @@ pub fn cmd_verify_token(token: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-pub fn cmd_get_user(
-    user_id: String,
-    state: State<'_, DbState>,
-) -> Result<User, String> {
+pub fn cmd_get_user(user_id: String, state: State<'_, DbState>) -> Result<User, String> {
     let conn = lock_db(&state)?;
     auth::get_user_by_id(&conn, &user_id).map_err(|e| format!("Failed to get user: {}", e))
 }
 
 #[tauri::command]
-pub fn cmd_login_as_guest(
-    state: State<'_, DbState>,
-) -> Result<LoginResponse, String> {
+pub fn cmd_login_as_guest(state: State<'_, DbState>) -> Result<LoginResponse, String> {
     let conn = lock_db(&state)?;
-    let (user, token) = auth::login_as_guest(&conn)
-        .map_err(|e| format!("Guest login failed: {}", e))?;
+    let (user, token) =
+        auth::login_as_guest(&conn).map_err(|e| format!("Guest login failed: {}", e))?;
     Ok(LoginResponse { user, token })
 }
 
@@ -100,19 +104,13 @@ pub fn cmd_get_songs(state: State<'_, DbState>) -> Result<Vec<Song>, String> {
 }
 
 #[tauri::command]
-pub fn cmd_get_song(
-    song_id: String,
-    state: State<'_, DbState>,
-) -> Result<Song, String> {
+pub fn cmd_get_song(song_id: String, state: State<'_, DbState>) -> Result<Song, String> {
     let conn = lock_db(&state)?;
     songs::get_song(&conn, &song_id).map_err(|e| format!("Failed to get song: {}", e))
 }
 
 #[tauri::command]
-pub fn cmd_get_user_songs(
-    user_id: String,
-    state: State<'_, DbState>,
-) -> Result<Vec<Song>, String> {
+pub fn cmd_get_user_songs(user_id: String, state: State<'_, DbState>) -> Result<Vec<Song>, String> {
     let conn = lock_db(&state)?;
     songs::get_user_songs(&conn, &user_id).map_err(|e| format!("Failed to get user songs: {}", e))
 }
@@ -154,10 +152,7 @@ pub fn cmd_update_song(
 }
 
 #[tauri::command]
-pub fn cmd_delete_song(
-    song_id: String,
-    state: State<'_, DbState>,
-) -> Result<(), String> {
+pub fn cmd_delete_song(song_id: String, state: State<'_, DbState>) -> Result<(), String> {
     let conn = lock_db(&state)?;
     songs::delete_song(&conn, &song_id).map_err(|e| format!("Failed to delete song: {}", e))
 }
@@ -177,8 +172,13 @@ pub fn cmd_create_practice_session(
 ) -> Result<PracticeSession, String> {
     let conn = lock_db(&state)?;
     let data = CreateSessionData {
-        user_id, song_id, mode, score,
-        lines_practiced, lines_correct, duration_seconds,
+        user_id,
+        song_id,
+        mode,
+        score,
+        lines_practiced,
+        lines_correct,
+        duration_seconds,
     };
     practice::create_session(&conn, data)
         .map_err(|e| format!("Failed to create practice session: {}", e))
@@ -216,10 +216,7 @@ pub fn cmd_get_song_mastery(
 }
 
 #[tauri::command]
-pub fn cmd_get_user_streak(
-    user_id: String,
-    state: State<'_, DbState>,
-) -> Result<i32, String> {
+pub fn cmd_get_user_streak(user_id: String, state: State<'_, DbState>) -> Result<i32, String> {
     let conn = lock_db(&state)?;
     practice::get_user_streak(&conn, &user_id)
         .map_err(|e| format!("Failed to compute streak: {}", e))
@@ -249,10 +246,7 @@ pub fn cmd_translate_text(
 }
 
 #[tauri::command]
-pub fn cmd_generate_phonetic(
-    text: Vec<String>,
-    language: String,
-) -> Result<Vec<String>, String> {
+pub fn cmd_generate_phonetic(text: Vec<String>, language: String) -> Result<Vec<String>, String> {
     phonetic::generate_phonetic(&text, &language)
         .map_err(|e| format!("Phonetic generation failed: {}", e))
 }

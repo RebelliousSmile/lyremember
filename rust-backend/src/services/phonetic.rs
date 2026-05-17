@@ -60,13 +60,16 @@ use pyo3::types::PyList;
 fn japanese_to_romaji(text: &[String]) -> Result<Vec<String>> {
     Python::with_gil(|py| {
         // Import pykakasi module
-        let kakasi_module = py.import("pykakasi")
+        let kakasi_module = py
+            .import("pykakasi")
             .map_err(|e| Error::Phonetic(format!("Failed to import pykakasi: {}", e)))?;
 
         // Create kakasi instance
-        let kakasi_class = kakasi_module.getattr("kakasi")
+        let kakasi_class = kakasi_module
+            .getattr("kakasi")
             .map_err(|e| Error::Phonetic(format!("Failed to get kakasi class: {}", e)))?;
-        let kakasi = kakasi_class.call0()
+        let kakasi = kakasi_class
+            .call0()
             .map_err(|e| Error::Phonetic(format!("Failed to create kakasi instance: {}", e)))?;
 
         let mut result = Vec::new();
@@ -78,12 +81,14 @@ fn japanese_to_romaji(text: &[String]) -> Result<Vec<String>> {
                 .map_err(|e| Error::Phonetic(format!("kakasi.convert failed: {}", e)))?;
 
             // Extract romaji from each segment
-            let py_list: &PyList = converted.downcast()
+            let py_list: &PyList = converted
+                .downcast()
                 .map_err(|e| Error::Phonetic(format!("Failed to downcast to PyList: {}", e)))?;
 
             let mut romaji_line = String::new();
             for item in py_list {
-                let dict = item.downcast::<pyo3::types::PyDict>()
+                let dict = item
+                    .downcast::<pyo3::types::PyDict>()
                     .map_err(|e| Error::Phonetic(format!("Failed to downcast to PyDict: {}", e)))?;
 
                 // Try 'hepburn' first, fallback to 'hira' if not available
@@ -112,10 +117,12 @@ fn japanese_to_romaji(text: &[String]) -> Result<Vec<String>> {
 fn korean_to_roman(text: &[String]) -> Result<Vec<String>> {
     Python::with_gil(|py| {
         // Import hangul_romanize module
-        let module = py.import("hangul_romanize")
+        let module = py
+            .import("hangul_romanize")
             .map_err(|e| Error::Phonetic(format!("Failed to import hangul_romanize: {}", e)))?;
 
-        let transliter_class = module.getattr("Transliter")
+        let transliter_class = module
+            .getattr("Transliter")
             .map_err(|e| Error::Phonetic(format!("Failed to get Transliter class: {}", e)))?;
 
         let mut result = Vec::new();
@@ -139,14 +146,17 @@ fn korean_to_roman(text: &[String]) -> Result<Vec<String>> {
 fn to_ipa(text: &[String], lang_code: &str) -> Result<Vec<String>> {
     Python::with_gil(|py| {
         // Import epitran module
-        let epitran_module = py.import("epitran")
+        let epitran_module = py
+            .import("epitran")
             .map_err(|e| Error::Phonetic(format!("Failed to import epitran: {}", e)))?;
 
-        let epitran_class = epitran_module.getattr("Epitran")
+        let epitran_class = epitran_module
+            .getattr("Epitran")
             .map_err(|e| Error::Phonetic(format!("Failed to get Epitran class: {}", e)))?;
 
         // Create Epitran instance for the language
-        let epitran = epitran_class.call1((lang_code,))
+        let epitran = epitran_class
+            .call1((lang_code,))
             .map_err(|e| Error::Phonetic(format!("Failed to create Epitran instance: {}", e)))?;
 
         let mut result = Vec::new();
@@ -182,7 +192,11 @@ mod tests {
         // touching Python at all.
         for lang in &["jp", "kr", "fr", "en", "de"] {
             let result = generate_phonetic(&[], lang).unwrap();
-            assert!(result.is_empty(), "empty input must yield empty output for {}", lang);
+            assert!(
+                result.is_empty(),
+                "empty input must yield empty output for {}",
+                lang
+            );
         }
     }
 
@@ -230,7 +244,10 @@ mod tests {
         let text = vec!["こんにちは".to_string()];
         let result = japanese_to_romaji(&text).unwrap();
         assert_eq!(result.len(), 1);
-        assert!(!result[0].is_empty(), "kakasi must produce non-empty romaji");
+        assert!(
+            !result[0].is_empty(),
+            "kakasi must produce non-empty romaji"
+        );
         assert!(
             result[0].chars().all(|c| c.is_ascii() || c.is_whitespace()),
             "romaji output should be ASCII, got {:?}",

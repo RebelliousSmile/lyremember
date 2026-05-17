@@ -2,4 +2,4 @@
 
 pub mod sqlite;
 
-pub use sqlite::{init_database, get_connection};
+pub use sqlite::{get_connection, init_database};

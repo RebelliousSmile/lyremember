@@ -1,9 +1,9 @@
 //! Data models for LyRemember
 
-pub mod user;
-pub mod song;
 pub mod session;
+pub mod song;
+pub mod user;
 
-pub use user::{User, LoginCredentials, RegisterData};
-pub use song::{Song, CreateSongData, UpdateSongData};
-pub use session::{PracticeSession, CreateSessionData};
+pub use session::{CreateSessionData, PracticeSession};
+pub use song::{CreateSongData, Song, UpdateSongData};
+pub use user::{LoginCredentials, RegisterData, User};

@@ -9,13 +9,13 @@ pub struct Song {
     pub id: String,
     pub title: String,
     pub artist: String,
-    pub language: String, // 'fr', 'en', 'jp', 'kr'
+    pub language: String,    // 'fr', 'en', 'jp', 'kr'
     pub lyrics: Vec<String>, // Original lyrics (line by line)
-    
+
     // Generated and cached data
     pub phonetic_lyrics: Option<Vec<String>>, // Romanized/IPA (cached)
     pub translations: Option<HashMap<String, Vec<String>>>, // e.g. {"en": [...], "fr": [...]}
-    
+
     // Metadata
     pub genius_id: Option<String>,
     pub genius_url: Option<String>,
@@ -25,12 +25,7 @@ pub struct Song {
 
 impl Song {
     /// Create a new song with generated UUID
-    pub fn new(
-        title: String,
-        artist: String,
-        language: String,
-        lyrics: Vec<String>,
-    ) -> Self {
+    pub fn new(title: String, artist: String, language: String, lyrics: Vec<String>) -> Self {
         let now = chrono::Utc::now().to_rfc3339();
         Self {
             id: uuid::Uuid::new_v4().to_string(),

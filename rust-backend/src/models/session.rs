@@ -9,7 +9,7 @@ pub struct PracticeSession {
     pub user_id: String,
     pub song_id: String,
     pub mode: String, // 'karaoke', 'fill-blank', 'mcq', 'oral'
-    pub score: f64, // 0.0 to 100.0
+    pub score: f64,   // 0.0 to 100.0
     pub lines_practiced: i32,
     pub lines_correct: i32,
     pub duration_seconds: i32,

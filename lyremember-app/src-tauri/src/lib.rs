@@ -11,27 +11,27 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             // Get app data directory
-            let app_data_dir = app.path().app_data_dir()
+            let app_data_dir = app
+                .path()
+                .app_data_dir()
                 .expect("Failed to get app data directory");
-            
+
             // Create directory if it doesn't exist
-            std::fs::create_dir_all(&app_data_dir)
-                .expect("Failed to create app data directory");
-            
+            std::fs::create_dir_all(&app_data_dir).expect("Failed to create app data directory");
+
             // Initialize database in app data directory
             let db_path = app_data_dir.join("lyremember.db");
             let db_path_str = db_path.to_str().expect("Invalid database path");
-            
+
             println!("Initializing database at: {}", db_path_str);
-            
-            let conn = init_database(db_path_str)
-                .expect("Failed to initialize database");
-            
+
+            let conn = init_database(db_path_str).expect("Failed to initialize database");
+
             // Store database connection in app state
             app.manage(DbState(Mutex::new(conn)));
-            
+
             println!("Database initialized successfully!");
-            
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

@@ -1,9 +1,9 @@
 //! Songs management service
 
-pub use crate::models::{Song, CreateSongData, UpdateSongData};
+pub use crate::models::{CreateSongData, Song, UpdateSongData};
 
-use crate::{Error, Result};
 use crate::services::{phonetic, translation};
+use crate::{Error, Result};
 use rusqlite::Connection;
 use std::collections::HashMap;
 
@@ -24,7 +24,7 @@ pub fn create_song(conn: &Connection, data: CreateSongData) -> Result<Song> {
             }
         }
     }
-    
+
     // Auto-translate to English if original language is not English
     if song.language != "en" {
         match translation::translate_text(data.lyrics.clone(), &song.language, "en") {
@@ -39,23 +39,27 @@ pub fn create_song(conn: &Connection, data: CreateSongData) -> Result<Song> {
             }
         }
     }
-    
+
     // Insert into database
     save_song(conn, &song)?;
-    
+
     Ok(song)
 }
 
 /// Save song to database
 fn save_song(conn: &Connection, song: &Song) -> Result<()> {
     let lyrics_json = serde_json::to_string(&song.lyrics)?;
-    let phonetic_json = song.phonetic_lyrics.as_ref()
+    let phonetic_json = song
+        .phonetic_lyrics
+        .as_ref()
         .map(serde_json::to_string)
         .transpose()?;
-    let translations_json = song.translations.as_ref()
+    let translations_json = song
+        .translations
+        .as_ref()
         .map(serde_json::to_string)
         .transpose()?;
-    
+
     conn.execute(
         "INSERT INTO songs 
          (id, title, artist, language, lyrics, phonetic_lyrics, translations, 
@@ -75,7 +79,7 @@ fn save_song(conn: &Connection, song: &Song) -> Result<()> {
             &song.updated_at,
         ],
     )?;
-    
+
     Ok(())
 }
 
@@ -84,31 +88,31 @@ pub fn get_song(conn: &Connection, song_id: &str) -> Result<Song> {
     let mut stmt = conn.prepare(
         "SELECT id, title, artist, language, lyrics, phonetic_lyrics, translations,
                 genius_id, genius_url, created_at, updated_at
-         FROM songs WHERE id = ?1"
+         FROM songs WHERE id = ?1",
     )?;
-    
-    let song = stmt.query_row([song_id], |row| {
-        let lyrics_json: String = row.get(4)?;
-        let phonetic_json: Option<String> = row.get(5)?;
-        let translations_json: Option<String> = row.get(6)?;
-        
-        Ok(Song {
-            id: row.get(0)?,
-            title: row.get(1)?,
-            artist: row.get(2)?,
-            language: row.get(3)?,
-            lyrics: serde_json::from_str(&lyrics_json).unwrap_or_default(),
-            phonetic_lyrics: phonetic_json
-                .and_then(|j| serde_json::from_str(&j).ok()),
-            translations: translations_json
-                .and_then(|j| serde_json::from_str(&j).ok()),
-            genius_id: row.get(7)?,
-            genius_url: row.get(8)?,
-            created_at: row.get(9)?,
-            updated_at: row.get(10)?,
+
+    let song = stmt
+        .query_row([song_id], |row| {
+            let lyrics_json: String = row.get(4)?;
+            let phonetic_json: Option<String> = row.get(5)?;
+            let translations_json: Option<String> = row.get(6)?;
+
+            Ok(Song {
+                id: row.get(0)?,
+                title: row.get(1)?,
+                artist: row.get(2)?,
+                language: row.get(3)?,
+                lyrics: serde_json::from_str(&lyrics_json).unwrap_or_default(),
+                phonetic_lyrics: phonetic_json.and_then(|j| serde_json::from_str(&j).ok()),
+                translations: translations_json.and_then(|j| serde_json::from_str(&j).ok()),
+                genius_id: row.get(7)?,
+                genius_url: row.get(8)?,
+                created_at: row.get(9)?,
+                updated_at: row.get(10)?,
+            })
         })
-    }).map_err(|_| Error::NotFound("Song not found".to_string()))?;
-    
+        .map_err(|_| Error::NotFound("Song not found".to_string()))?;
+
     Ok(song)
 }
 
@@ -118,31 +122,31 @@ pub fn get_all_songs(conn: &Connection) -> Result<Vec<Song>> {
         "SELECT id, title, artist, language, lyrics, phonetic_lyrics, translations,
                 genius_id, genius_url, created_at, updated_at
          FROM songs
-         ORDER BY created_at DESC"
+         ORDER BY created_at DESC",
     )?;
-    
-    let songs = stmt.query_map([], |row| {
-        let lyrics_json: String = row.get(4)?;
-        let phonetic_json: Option<String> = row.get(5)?;
-        let translations_json: Option<String> = row.get(6)?;
-        
-        Ok(Song {
-            id: row.get(0)?,
-            title: row.get(1)?,
-            artist: row.get(2)?,
-            language: row.get(3)?,
-            lyrics: serde_json::from_str(&lyrics_json).unwrap_or_default(),
-            phonetic_lyrics: phonetic_json
-                .and_then(|j| serde_json::from_str(&j).ok()),
-            translations: translations_json
-                .and_then(|j| serde_json::from_str(&j).ok()),
-            genius_id: row.get(7)?,
-            genius_url: row.get(8)?,
-            created_at: row.get(9)?,
-            updated_at: row.get(10)?,
-        })
-    })?.collect::<rusqlite::Result<Vec<_>>>()?;
-    
+
+    let songs = stmt
+        .query_map([], |row| {
+            let lyrics_json: String = row.get(4)?;
+            let phonetic_json: Option<String> = row.get(5)?;
+            let translations_json: Option<String> = row.get(6)?;
+
+            Ok(Song {
+                id: row.get(0)?,
+                title: row.get(1)?,
+                artist: row.get(2)?,
+                language: row.get(3)?,
+                lyrics: serde_json::from_str(&lyrics_json).unwrap_or_default(),
+                phonetic_lyrics: phonetic_json.and_then(|j| serde_json::from_str(&j).ok()),
+                translations: translations_json.and_then(|j| serde_json::from_str(&j).ok()),
+                genius_id: row.get(7)?,
+                genius_url: row.get(8)?,
+                created_at: row.get(9)?,
+                updated_at: row.get(10)?,
+            })
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+
     Ok(songs)
 }
 
@@ -154,51 +158,51 @@ pub fn get_user_songs(conn: &Connection, user_id: &str) -> Result<Vec<Song>> {
          FROM songs s
          INNER JOIN user_songs us ON s.id = us.song_id
          WHERE us.user_id = ?1
-         ORDER BY us.added_at DESC"
+         ORDER BY us.added_at DESC",
     )?;
-    
-    let songs = stmt.query_map([user_id], |row| {
-        let lyrics_json: String = row.get(4)?;
-        let phonetic_json: Option<String> = row.get(5)?;
-        let translations_json: Option<String> = row.get(6)?;
-        
-        Ok(Song {
-            id: row.get(0)?,
-            title: row.get(1)?,
-            artist: row.get(2)?,
-            language: row.get(3)?,
-            lyrics: serde_json::from_str(&lyrics_json).unwrap_or_default(),
-            phonetic_lyrics: phonetic_json
-                .and_then(|j| serde_json::from_str(&j).ok()),
-            translations: translations_json
-                .and_then(|j| serde_json::from_str(&j).ok()),
-            genius_id: row.get(7)?,
-            genius_url: row.get(8)?,
-            created_at: row.get(9)?,
-            updated_at: row.get(10)?,
-        })
-    })?.collect::<rusqlite::Result<Vec<_>>>()?;
-    
+
+    let songs = stmt
+        .query_map([user_id], |row| {
+            let lyrics_json: String = row.get(4)?;
+            let phonetic_json: Option<String> = row.get(5)?;
+            let translations_json: Option<String> = row.get(6)?;
+
+            Ok(Song {
+                id: row.get(0)?,
+                title: row.get(1)?,
+                artist: row.get(2)?,
+                language: row.get(3)?,
+                lyrics: serde_json::from_str(&lyrics_json).unwrap_or_default(),
+                phonetic_lyrics: phonetic_json.and_then(|j| serde_json::from_str(&j).ok()),
+                translations: translations_json.and_then(|j| serde_json::from_str(&j).ok()),
+                genius_id: row.get(7)?,
+                genius_url: row.get(8)?,
+                created_at: row.get(9)?,
+                updated_at: row.get(10)?,
+            })
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+
     Ok(songs)
 }
 
 /// Add song to user's repertoire
 pub fn add_to_user_repertoire(conn: &Connection, user_id: &str, song_id: &str) -> Result<()> {
     let added_at = chrono::Utc::now().to_rfc3339();
-    
+
     conn.execute(
         "INSERT OR IGNORE INTO user_songs (user_id, song_id, added_at)
          VALUES (?1, ?2, ?3)",
         rusqlite::params![user_id, song_id, added_at],
     )?;
-    
+
     Ok(())
 }
 
 /// Update song
 pub fn update_song(conn: &Connection, song_id: &str, data: UpdateSongData) -> Result<Song> {
     let mut song = get_song(conn, song_id)?;
-    
+
     // Update fields if provided
     if let Some(title) = data.title {
         song.title = title;
@@ -227,10 +231,14 @@ pub fn update_song(conn: &Connection, song_id: &str, data: UpdateSongData) -> Re
 
     // Update in database
     let lyrics_json = serde_json::to_string(&song.lyrics)?;
-    let phonetic_json = song.phonetic_lyrics.as_ref()
+    let phonetic_json = song
+        .phonetic_lyrics
+        .as_ref()
         .map(serde_json::to_string)
         .transpose()?;
-    let translations_json = song.translations.as_ref()
+    let translations_json = song
+        .translations
+        .as_ref()
         .map(serde_json::to_string)
         .transpose()?;
 
@@ -258,11 +266,11 @@ pub fn update_song(conn: &Connection, song_id: &str, data: UpdateSongData) -> Re
 /// Delete song
 pub fn delete_song(conn: &Connection, song_id: &str) -> Result<()> {
     let affected = conn.execute("DELETE FROM songs WHERE id = ?1", [song_id])?;
-    
+
     if affected == 0 {
         return Err(Error::NotFound("Song not found".to_string()));
     }
-    
+
     Ok(())
 }
 
@@ -408,7 +416,10 @@ mod tests {
         )
         .unwrap();
 
-        assert_eq!(updated.genius_url.as_deref(), Some("https://genius.com/example"));
+        assert_eq!(
+            updated.genius_url.as_deref(),
+            Some("https://genius.com/example")
+        );
     }
 
     #[test]
@@ -518,11 +529,15 @@ mod tests {
     fn test_get_user_songs_empty() {
         let (_tmp, conn) = setup_db();
 
-        let user = register(&conn, RegisterData {
-            username: "testuser".to_string(),
-            email: "test@example.com".to_string(),
-            password: "password123".to_string(),
-        }).unwrap();
+        let user = register(
+            &conn,
+            RegisterData {
+                username: "testuser".to_string(),
+                email: "test@example.com".to_string(),
+                password: "password123".to_string(),
+            },
+        )
+        .unwrap();
 
         let songs = get_user_songs(&conn, &user.id).unwrap();
         assert!(songs.is_empty());
@@ -532,17 +547,25 @@ mod tests {
     fn test_get_user_songs_returns_only_user_repertoire() {
         let (_tmp, conn) = setup_db();
 
-        let user1 = register(&conn, RegisterData {
-            username: "alice".to_string(),
-            email: "alice@example.com".to_string(),
-            password: "password123".to_string(),
-        }).unwrap();
+        let user1 = register(
+            &conn,
+            RegisterData {
+                username: "alice".to_string(),
+                email: "alice@example.com".to_string(),
+                password: "password123".to_string(),
+            },
+        )
+        .unwrap();
 
-        let user2 = register(&conn, RegisterData {
-            username: "bob".to_string(),
-            email: "bob@example.com".to_string(),
-            password: "password123".to_string(),
-        }).unwrap();
+        let user2 = register(
+            &conn,
+            RegisterData {
+                username: "bob".to_string(),
+                email: "bob@example.com".to_string(),
+                password: "password123".to_string(),
+            },
+        )
+        .unwrap();
 
         let song_a = insert_test_song(&conn, "Song A", "Artist", "en");
         let song_b = insert_test_song(&conn, "Song B", "Artist", "en");
@@ -566,11 +589,15 @@ mod tests {
     fn test_add_to_user_repertoire() {
         let (_tmp, conn) = setup_db();
 
-        let user = register(&conn, RegisterData {
-            username: "testuser".to_string(),
-            email: "test@example.com".to_string(),
-            password: "password123".to_string(),
-        }).unwrap();
+        let user = register(
+            &conn,
+            RegisterData {
+                username: "testuser".to_string(),
+                email: "test@example.com".to_string(),
+                password: "password123".to_string(),
+            },
+        )
+        .unwrap();
 
         let song = insert_test_song(&conn, "Song", "Artist", "en");
 
@@ -585,11 +612,15 @@ mod tests {
     fn test_add_to_user_repertoire_duplicate_is_ignored() {
         let (_tmp, conn) = setup_db();
 
-        let user = register(&conn, RegisterData {
-            username: "testuser".to_string(),
-            email: "test@example.com".to_string(),
-            password: "password123".to_string(),
-        }).unwrap();
+        let user = register(
+            &conn,
+            RegisterData {
+                username: "testuser".to_string(),
+                email: "test@example.com".to_string(),
+                password: "password123".to_string(),
+            },
+        )
+        .unwrap();
 
         let song = insert_test_song(&conn, "Song", "Artist", "en");
 
@@ -609,15 +640,20 @@ mod tests {
 
         let song = insert_test_song(&conn, "Original Title", "Artist", "en");
 
-        let updated = update_song(&conn, &song.id, UpdateSongData {
-            title: Some("New Title".to_string()),
-            artist: None,
-            language: None,
-            lyrics: None,
-            phonetic_lyrics: None,
-            translations: None,
-            genius_url: None,
-        }).unwrap();
+        let updated = update_song(
+            &conn,
+            &song.id,
+            UpdateSongData {
+                title: Some("New Title".to_string()),
+                artist: None,
+                language: None,
+                lyrics: None,
+                phonetic_lyrics: None,
+                translations: None,
+                genius_url: None,
+            },
+        )
+        .unwrap();
 
         assert_eq!(updated.title, "New Title");
         assert_eq!(updated.artist, "Artist"); // unchanged
@@ -633,15 +669,20 @@ mod tests {
 
         let song = insert_test_song(&conn, "Song", "Old Artist", "en");
 
-        let updated = update_song(&conn, &song.id, UpdateSongData {
-            title: None,
-            artist: Some("New Artist".to_string()),
-            language: None,
-            lyrics: None,
-            phonetic_lyrics: None,
-            translations: None,
-            genius_url: None,
-        }).unwrap();
+        let updated = update_song(
+            &conn,
+            &song.id,
+            UpdateSongData {
+                title: None,
+                artist: Some("New Artist".to_string()),
+                language: None,
+                lyrics: None,
+                phonetic_lyrics: None,
+                translations: None,
+                genius_url: None,
+            },
+        )
+        .unwrap();
 
         assert_eq!(updated.artist, "New Artist");
         assert_eq!(updated.title, "Song"); // unchanged
@@ -653,16 +694,25 @@ mod tests {
 
         let song = insert_test_song(&conn, "Song", "Artist", "en");
 
-        let new_lyrics = vec!["New Line 1".to_string(), "New Line 2".to_string(), "New Line 3".to_string()];
-        let updated = update_song(&conn, &song.id, UpdateSongData {
-            title: None,
-            artist: None,
-            language: None,
-            lyrics: Some(new_lyrics.clone()),
-            phonetic_lyrics: None,
-            translations: None,
-            genius_url: None,
-        }).unwrap();
+        let new_lyrics = vec![
+            "New Line 1".to_string(),
+            "New Line 2".to_string(),
+            "New Line 3".to_string(),
+        ];
+        let updated = update_song(
+            &conn,
+            &song.id,
+            UpdateSongData {
+                title: None,
+                artist: None,
+                language: None,
+                lyrics: Some(new_lyrics.clone()),
+                phonetic_lyrics: None,
+                translations: None,
+                genius_url: None,
+            },
+        )
+        .unwrap();
 
         assert_eq!(updated.lyrics, new_lyrics);
     }
@@ -674,15 +724,20 @@ mod tests {
         let song = insert_test_song(&conn, "Song", "Artist", "jp");
 
         let phonetics = vec!["konnichiwa".to_string()];
-        let updated = update_song(&conn, &song.id, UpdateSongData {
-            title: None,
-            artist: None,
-            language: None,
-            lyrics: None,
-            phonetic_lyrics: Some(phonetics.clone()),
-            translations: None,
-            genius_url: None,
-        }).unwrap();
+        let updated = update_song(
+            &conn,
+            &song.id,
+            UpdateSongData {
+                title: None,
+                artist: None,
+                language: None,
+                lyrics: None,
+                phonetic_lyrics: Some(phonetics.clone()),
+                translations: None,
+                genius_url: None,
+            },
+        )
+        .unwrap();
 
         assert_eq!(updated.phonetic_lyrics, Some(phonetics));
     }
@@ -694,16 +749,24 @@ mod tests {
         let song = insert_test_song(&conn, "Song", "Artist", "fr");
 
         let mut translations = HashMap::new();
-        translations.insert("en".to_string(), vec!["Hello".to_string(), "World".to_string()]);
-        let updated = update_song(&conn, &song.id, UpdateSongData {
-            title: None,
-            artist: None,
-            language: None,
-            lyrics: None,
-            phonetic_lyrics: None,
-            translations: Some(translations.clone()),
-            genius_url: None,
-        }).unwrap();
+        translations.insert(
+            "en".to_string(),
+            vec!["Hello".to_string(), "World".to_string()],
+        );
+        let updated = update_song(
+            &conn,
+            &song.id,
+            UpdateSongData {
+                title: None,
+                artist: None,
+                language: None,
+                lyrics: None,
+                phonetic_lyrics: None,
+                translations: Some(translations.clone()),
+                genius_url: None,
+            },
+        )
+        .unwrap();
 
         assert_eq!(updated.translations, Some(translations));
     }
@@ -714,15 +777,20 @@ mod tests {
 
         let song = insert_test_song(&conn, "Song", "Artist", "en");
 
-        let updated = update_song(&conn, &song.id, UpdateSongData {
-            title: Some("New Title".to_string()),
-            artist: Some("New Artist".to_string()),
-            language: Some("fr".to_string()),
-            lyrics: Some(vec!["Bonjour".to_string()]),
-            phonetic_lyrics: None,
-            translations: None,
-            genius_url: None,
-        }).unwrap();
+        let updated = update_song(
+            &conn,
+            &song.id,
+            UpdateSongData {
+                title: Some("New Title".to_string()),
+                artist: Some("New Artist".to_string()),
+                language: Some("fr".to_string()),
+                lyrics: Some(vec!["Bonjour".to_string()]),
+                phonetic_lyrics: None,
+                translations: None,
+                genius_url: None,
+            },
+        )
+        .unwrap();
 
         assert_eq!(updated.title, "New Title");
         assert_eq!(updated.artist, "New Artist");
@@ -737,15 +805,20 @@ mod tests {
         let song = insert_test_song(&conn, "Song", "Artist", "en");
         let original_updated = song.updated_at.clone();
 
-        let updated = update_song(&conn, &song.id, UpdateSongData {
-            title: Some("New".to_string()),
-            artist: None,
-            language: None,
-            lyrics: None,
-            phonetic_lyrics: None,
-            translations: None,
-            genius_url: None,
-        }).unwrap();
+        let updated = update_song(
+            &conn,
+            &song.id,
+            UpdateSongData {
+                title: Some("New".to_string()),
+                artist: None,
+                language: None,
+                lyrics: None,
+                phonetic_lyrics: None,
+                translations: None,
+                genius_url: None,
+            },
+        )
+        .unwrap();
 
         // updated_at should be >= the original
         assert!(updated.updated_at >= original_updated);
@@ -755,15 +828,19 @@ mod tests {
     fn test_update_song_not_found() {
         let (_tmp, conn) = setup_db();
 
-        let result = update_song(&conn, "nonexistent-id", UpdateSongData {
-            title: Some("New".to_string()),
-            artist: None,
-            language: None,
-            lyrics: None,
-            phonetic_lyrics: None,
-            translations: None,
-            genius_url: None,
-        });
+        let result = update_song(
+            &conn,
+            "nonexistent-id",
+            UpdateSongData {
+                title: Some("New".to_string()),
+                artist: None,
+                language: None,
+                lyrics: None,
+                phonetic_lyrics: None,
+                translations: None,
+                genius_url: None,
+            },
+        );
         assert!(result.is_err());
         let err_msg = format!("{}", result.unwrap_err());
         assert!(err_msg.contains("Song not found"));

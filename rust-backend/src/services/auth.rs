@@ -1,11 +1,11 @@
 //! Authentication service
 
-pub use crate::models::{User, LoginCredentials, RegisterData};
+pub use crate::models::{LoginCredentials, RegisterData, User};
 
 use crate::{Error, Result};
-use rusqlite::Connection;
 use bcrypt::{hash, verify, DEFAULT_COST};
-use jsonwebtoken::{encode, decode, Header, Validation, EncodingKey, DecodingKey, Algorithm};
+use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
 
@@ -62,9 +62,11 @@ pub fn register(conn: &Connection, data: RegisterData) -> Result<User> {
         return Err(Error::Auth("Email cannot be empty".to_string()));
     }
     if data.password.len() < 8 {
-        return Err(Error::Auth("Password must be at least 8 characters".to_string()));
+        return Err(Error::Auth(
+            "Password must be at least 8 characters".to_string(),
+        ));
     }
-    
+
     // Check if username already exists
     let exists: bool = conn
         .query_row(
@@ -73,18 +75,18 @@ pub fn register(conn: &Connection, data: RegisterData) -> Result<User> {
             |row| row.get(0),
         )
         .unwrap_or(false);
-    
+
     if exists {
         return Err(Error::Auth("Username already taken".to_string()));
     }
-    
+
     // Hash password
     let password_hash = hash(&data.password, DEFAULT_COST)
         .map_err(|e| Error::Auth(format!("Failed to hash password: {}", e)))?;
-    
+
     // Create user
     let user = User::new(data.username, data.email, password_hash);
-    
+
     // Insert into database
     conn.execute(
         "INSERT INTO users (id, username, email, password_hash, genius_token, created_at)
@@ -98,7 +100,7 @@ pub fn register(conn: &Connection, data: RegisterData) -> Result<User> {
             &user.created_at,
         ],
     )?;
-    
+
     Ok(user)
 }
 
@@ -107,31 +109,33 @@ pub fn login(conn: &Connection, credentials: LoginCredentials) -> Result<(User, 
     // Get user from database
     let mut stmt = conn.prepare(
         "SELECT id, username, email, password_hash, genius_token, created_at
-         FROM users WHERE username = ?1"
+         FROM users WHERE username = ?1",
     )?;
-    
-    let user = stmt.query_row([&credentials.username], |row| {
-        Ok(User {
-            id: row.get(0)?,
-            username: row.get(1)?,
-            email: row.get(2)?,
-            password_hash: row.get(3)?,
-            genius_token: row.get(4)?,
-            created_at: row.get(5)?,
+
+    let user = stmt
+        .query_row([&credentials.username], |row| {
+            Ok(User {
+                id: row.get(0)?,
+                username: row.get(1)?,
+                email: row.get(2)?,
+                password_hash: row.get(3)?,
+                genius_token: row.get(4)?,
+                created_at: row.get(5)?,
+            })
         })
-    }).map_err(|_| Error::Auth("Invalid username or password".to_string()))?;
-    
+        .map_err(|_| Error::Auth("Invalid username or password".to_string()))?;
+
     // Verify password
     let valid = verify(&credentials.password, &user.password_hash)
         .map_err(|e| Error::Auth(format!("Password verification failed: {}", e)))?;
-    
+
     if !valid {
         return Err(Error::Auth("Invalid username or password".to_string()));
     }
-    
+
     // Generate JWT token
     let token = generate_token(&user)?;
-    
+
     Ok((user, token))
 }
 
@@ -141,32 +145,30 @@ fn generate_token(user: &User) -> Result<String> {
         .checked_add_signed(chrono::Duration::days(30))
         .ok_or_else(|| Error::Auth("Failed to calculate expiration".to_string()))?
         .timestamp() as usize;
-    
+
     let claims = Claims {
         sub: user.id.clone(),
         username: user.username.clone(),
         exp: expiration,
     };
-    
+
     let token = encode(
         &Header::default(),
         &claims,
         &EncodingKey::from_secret(jwt_secret()),
-    ).map_err(|e| Error::Auth(format!("Failed to generate token: {}", e)))?;
-    
+    )
+    .map_err(|e| Error::Auth(format!("Failed to generate token: {}", e)))?;
+
     Ok(token)
 }
 
 /// Verify JWT token and return user ID
 pub fn verify_token(token: &str) -> Result<String> {
     let validation = Validation::new(Algorithm::HS256);
-    
-    let token_data = decode::<Claims>(
-        token,
-        &DecodingKey::from_secret(jwt_secret()),
-        &validation,
-    ).map_err(|e| Error::Auth(format!("Invalid token: {}", e)))?;
-    
+
+    let token_data = decode::<Claims>(token, &DecodingKey::from_secret(jwt_secret()), &validation)
+        .map_err(|e| Error::Auth(format!("Invalid token: {}", e)))?;
+
     Ok(token_data.claims.sub)
 }
 
@@ -175,30 +177,44 @@ pub fn login_as_guest(conn: &Connection) -> Result<(User, String)> {
     let guest_username = "guest";
 
     // Check if guest user already exists
-    let existing: Option<User> = conn.prepare(
-        "SELECT id, username, email, password_hash, genius_token, created_at
-         FROM users WHERE username = ?1"
-    )?.query_row([guest_username], |row| {
-        Ok(User {
-            id: row.get(0)?,
-            username: row.get(1)?,
-            email: row.get(2)?,
-            password_hash: row.get(3)?,
-            genius_token: row.get(4)?,
-            created_at: row.get(5)?,
+    let existing: Option<User> = conn
+        .prepare(
+            "SELECT id, username, email, password_hash, genius_token, created_at
+         FROM users WHERE username = ?1",
+        )?
+        .query_row([guest_username], |row| {
+            Ok(User {
+                id: row.get(0)?,
+                username: row.get(1)?,
+                email: row.get(2)?,
+                password_hash: row.get(3)?,
+                genius_token: row.get(4)?,
+                created_at: row.get(5)?,
+            })
         })
-    }).ok();
+        .ok();
 
     let user = match existing {
         Some(u) => u,
         None => {
             let password_hash = hash("guest-local-account", DEFAULT_COST)
                 .map_err(|e| Error::Auth(format!("Failed to hash password: {}", e)))?;
-            let user = User::new(guest_username.to_string(), "guest@local".to_string(), password_hash);
+            let user = User::new(
+                guest_username.to_string(),
+                "guest@local".to_string(),
+                password_hash,
+            );
             conn.execute(
                 "INSERT INTO users (id, username, email, password_hash, genius_token, created_at)
                  VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
-                rusqlite::params![&user.id, &user.username, &user.email, &user.password_hash, &user.genius_token, &user.created_at],
+                rusqlite::params![
+                    &user.id,
+                    &user.username,
+                    &user.email,
+                    &user.password_hash,
+                    &user.genius_token,
+                    &user.created_at
+                ],
             )?;
             user
         }
@@ -212,20 +228,22 @@ pub fn login_as_guest(conn: &Connection) -> Result<(User, String)> {
 pub fn get_user_by_id(conn: &Connection, user_id: &str) -> Result<User> {
     let mut stmt = conn.prepare(
         "SELECT id, username, email, password_hash, genius_token, created_at
-         FROM users WHERE id = ?1"
+         FROM users WHERE id = ?1",
     )?;
-    
-    let user = stmt.query_row([user_id], |row| {
-        Ok(User {
-            id: row.get(0)?,
-            username: row.get(1)?,
-            email: row.get(2)?,
-            password_hash: row.get(3)?,
-            genius_token: row.get(4)?,
-            created_at: row.get(5)?,
+
+    let user = stmt
+        .query_row([user_id], |row| {
+            Ok(User {
+                id: row.get(0)?,
+                username: row.get(1)?,
+                email: row.get(2)?,
+                password_hash: row.get(3)?,
+                genius_token: row.get(4)?,
+                created_at: row.get(5)?,
+            })
         })
-    }).map_err(|_| Error::NotFound("User not found".to_string()))?;
-    
+        .map_err(|_| Error::NotFound("User not found".to_string()))?;
+
     Ok(user)
 }
 
@@ -244,11 +262,15 @@ mod tests {
 
     /// Helper to register a default test user
     fn register_test_user(conn: &Connection) -> User {
-        register(conn, RegisterData {
-            username: "testuser".to_string(),
-            email: "test@example.com".to_string(),
-            password: "password123".to_string(),
-        }).unwrap()
+        register(
+            conn,
+            RegisterData {
+                username: "testuser".to_string(),
+                email: "test@example.com".to_string(),
+                password: "password123".to_string(),
+            },
+        )
+        .unwrap()
     }
 
     #[test]
@@ -326,11 +348,14 @@ mod tests {
         let (_tmp, conn) = setup_db();
         register_test_user(&conn);
 
-        let result = register(&conn, RegisterData {
-            username: "testuser".to_string(),
-            email: "other@example.com".to_string(),
-            password: "password456".to_string(),
-        });
+        let result = register(
+            &conn,
+            RegisterData {
+                username: "testuser".to_string(),
+                email: "other@example.com".to_string(),
+                password: "password456".to_string(),
+            },
+        );
         assert!(result.is_err());
         let err_msg = format!("{}", result.unwrap_err());
         assert!(err_msg.contains("Username already taken"));
@@ -342,22 +367,28 @@ mod tests {
         register_test_user(&conn);
 
         // Same email but different username should succeed (no unique constraint on email)
-        let result = register(&conn, RegisterData {
-            username: "anotheruser".to_string(),
-            email: "test@example.com".to_string(),
-            password: "password123".to_string(),
-        });
+        let result = register(
+            &conn,
+            RegisterData {
+                username: "anotheruser".to_string(),
+                email: "test@example.com".to_string(),
+                password: "password123".to_string(),
+            },
+        );
         assert!(result.is_ok());
     }
 
     #[test]
     fn test_register_empty_username() {
         let (_tmp, conn) = setup_db();
-        let result = register(&conn, RegisterData {
-            username: "".to_string(),
-            email: "test@example.com".to_string(),
-            password: "password123".to_string(),
-        });
+        let result = register(
+            &conn,
+            RegisterData {
+                username: "".to_string(),
+                email: "test@example.com".to_string(),
+                password: "password123".to_string(),
+            },
+        );
         assert!(result.is_err());
         let err_msg = format!("{}", result.unwrap_err());
         assert!(err_msg.contains("Username cannot be empty"));
@@ -366,11 +397,14 @@ mod tests {
     #[test]
     fn test_register_whitespace_only_username() {
         let (_tmp, conn) = setup_db();
-        let result = register(&conn, RegisterData {
-            username: "   ".to_string(),
-            email: "test@example.com".to_string(),
-            password: "password123".to_string(),
-        });
+        let result = register(
+            &conn,
+            RegisterData {
+                username: "   ".to_string(),
+                email: "test@example.com".to_string(),
+                password: "password123".to_string(),
+            },
+        );
         assert!(result.is_err());
         let err_msg = format!("{}", result.unwrap_err());
         assert!(err_msg.contains("Username cannot be empty"));
@@ -379,11 +413,14 @@ mod tests {
     #[test]
     fn test_register_empty_email() {
         let (_tmp, conn) = setup_db();
-        let result = register(&conn, RegisterData {
-            username: "testuser".to_string(),
-            email: "".to_string(),
-            password: "password123".to_string(),
-        });
+        let result = register(
+            &conn,
+            RegisterData {
+                username: "testuser".to_string(),
+                email: "".to_string(),
+                password: "password123".to_string(),
+            },
+        );
         assert!(result.is_err());
         let err_msg = format!("{}", result.unwrap_err());
         assert!(err_msg.contains("Email cannot be empty"));
@@ -392,11 +429,14 @@ mod tests {
     #[test]
     fn test_register_short_password() {
         let (_tmp, conn) = setup_db();
-        let result = register(&conn, RegisterData {
-            username: "testuser".to_string(),
-            email: "test@example.com".to_string(),
-            password: "short".to_string(),
-        });
+        let result = register(
+            &conn,
+            RegisterData {
+                username: "testuser".to_string(),
+                email: "test@example.com".to_string(),
+                password: "short".to_string(),
+            },
+        );
         assert!(result.is_err());
         let err_msg = format!("{}", result.unwrap_err());
         assert!(err_msg.contains("Password must be at least 8 characters"));
@@ -405,22 +445,28 @@ mod tests {
     #[test]
     fn test_register_password_exactly_8_chars() {
         let (_tmp, conn) = setup_db();
-        let result = register(&conn, RegisterData {
-            username: "testuser".to_string(),
-            email: "test@example.com".to_string(),
-            password: "12345678".to_string(),
-        });
+        let result = register(
+            &conn,
+            RegisterData {
+                username: "testuser".to_string(),
+                email: "test@example.com".to_string(),
+                password: "12345678".to_string(),
+            },
+        );
         assert!(result.is_ok());
     }
 
     #[test]
     fn test_register_password_7_chars_fails() {
         let (_tmp, conn) = setup_db();
-        let result = register(&conn, RegisterData {
-            username: "testuser".to_string(),
-            email: "test@example.com".to_string(),
-            password: "1234567".to_string(),
-        });
+        let result = register(
+            &conn,
+            RegisterData {
+                username: "testuser".to_string(),
+                email: "test@example.com".to_string(),
+                password: "1234567".to_string(),
+            },
+        );
         assert!(result.is_err());
     }
 
@@ -429,10 +475,13 @@ mod tests {
         let (_tmp, conn) = setup_db();
         register_test_user(&conn);
 
-        let result = login(&conn, LoginCredentials {
-            username: "testuser".to_string(),
-            password: "wrongpassword".to_string(),
-        });
+        let result = login(
+            &conn,
+            LoginCredentials {
+                username: "testuser".to_string(),
+                password: "wrongpassword".to_string(),
+            },
+        );
         assert!(result.is_err());
         let err_msg = format!("{}", result.unwrap_err());
         assert!(err_msg.contains("Invalid username or password"));
@@ -442,10 +491,13 @@ mod tests {
     fn test_login_nonexistent_user() {
         let (_tmp, conn) = setup_db();
 
-        let result = login(&conn, LoginCredentials {
-            username: "noone".to_string(),
-            password: "password123".to_string(),
-        });
+        let result = login(
+            &conn,
+            LoginCredentials {
+                username: "noone".to_string(),
+                password: "password123".to_string(),
+            },
+        );
         assert!(result.is_err());
         let err_msg = format!("{}", result.unwrap_err());
         assert!(err_msg.contains("Invalid username or password"));
@@ -476,31 +528,47 @@ mod tests {
     fn test_register_multiple_users() {
         let (_tmp, conn) = setup_db();
 
-        let user1 = register(&conn, RegisterData {
-            username: "alice".to_string(),
-            email: "alice@example.com".to_string(),
-            password: "password123".to_string(),
-        }).unwrap();
+        let user1 = register(
+            &conn,
+            RegisterData {
+                username: "alice".to_string(),
+                email: "alice@example.com".to_string(),
+                password: "password123".to_string(),
+            },
+        )
+        .unwrap();
 
-        let user2 = register(&conn, RegisterData {
-            username: "bob".to_string(),
-            email: "bob@example.com".to_string(),
-            password: "password456".to_string(),
-        }).unwrap();
+        let user2 = register(
+            &conn,
+            RegisterData {
+                username: "bob".to_string(),
+                email: "bob@example.com".to_string(),
+                password: "password456".to_string(),
+            },
+        )
+        .unwrap();
 
         assert_ne!(user1.id, user2.id);
 
         // Both can log in independently
-        let (u1, _t1) = login(&conn, LoginCredentials {
-            username: "alice".to_string(),
-            password: "password123".to_string(),
-        }).unwrap();
+        let (u1, _t1) = login(
+            &conn,
+            LoginCredentials {
+                username: "alice".to_string(),
+                password: "password123".to_string(),
+            },
+        )
+        .unwrap();
         assert_eq!(u1.id, user1.id);
 
-        let (u2, _t2) = login(&conn, LoginCredentials {
-            username: "bob".to_string(),
-            password: "password456".to_string(),
-        }).unwrap();
+        let (u2, _t2) = login(
+            &conn,
+            LoginCredentials {
+                username: "bob".to_string(),
+                password: "password456".to_string(),
+            },
+        )
+        .unwrap();
         assert_eq!(u2.id, user2.id);
     }
 
@@ -509,18 +577,19 @@ mod tests {
         let (_tmp, conn) = setup_db();
         let user = register_test_user(&conn);
 
-        let (_, token) = login(&conn, LoginCredentials {
-            username: "testuser".to_string(),
-            password: "password123".to_string(),
-        }).unwrap();
+        let (_, token) = login(
+            &conn,
+            LoginCredentials {
+                username: "testuser".to_string(),
+                password: "password123".to_string(),
+            },
+        )
+        .unwrap();
 
         // Decode and verify the claims
         let validation = Validation::new(Algorithm::HS256);
-        let token_data = decode::<Claims>(
-            &token,
-            &DecodingKey::from_secret(jwt_secret()),
-            &validation,
-        ).unwrap();
+        let token_data =
+            decode::<Claims>(&token, &DecodingKey::from_secret(jwt_secret()), &validation).unwrap();
 
         assert_eq!(token_data.claims.sub, user.id);
         assert_eq!(token_data.claims.username, "testuser");
@@ -575,13 +644,19 @@ mod tests {
     fn test_jwt_secret_from_env_falls_back_when_none() {
         let secret = jwt_secret_from_env(None);
         assert!(!secret.is_empty(), "ephemeral fallback must not be empty");
-        assert!(secret.len() >= 32, "ephemeral fallback must be at least 32 bytes");
+        assert!(
+            secret.len() >= 32,
+            "ephemeral fallback must be at least 32 bytes"
+        );
     }
 
     #[test]
     fn test_jwt_secret_from_env_falls_back_when_empty_string() {
         let secret = jwt_secret_from_env(Some(String::new()));
-        assert!(!secret.is_empty(), "empty env value should trigger fallback");
+        assert!(
+            !secret.is_empty(),
+            "empty env value should trigger fallback"
+        );
         assert!(secret.len() >= 32);
     }
 
@@ -589,6 +664,9 @@ mod tests {
     fn test_jwt_secret_from_env_two_fallbacks_are_distinct() {
         let s1 = jwt_secret_from_env(None);
         let s2 = jwt_secret_from_env(None);
-        assert_ne!(s1, s2, "each fallback call must generate a fresh random secret");
+        assert_ne!(
+            s1, s2,
+            "each fallback call must generate a fresh random secret"
+        );
     }
 }

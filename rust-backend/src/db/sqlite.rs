@@ -7,10 +7,10 @@ use std::path::Path;
 /// Initialize the database with schema
 pub fn init_database<P: AsRef<Path>>(path: P) -> Result<Connection> {
     let conn = Connection::open(path)?;
-    
+
     // Create tables
     create_tables(&conn)?;
-    
+
     Ok(conn)
 }
 
@@ -88,17 +88,17 @@ fn create_tables(conn: &Connection) -> Result<()> {
         "CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)",
         [],
     )?;
-    
+
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_songs_language ON songs(language)",
         [],
     )?;
-    
+
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_user_songs_user ON user_songs(user_id)",
         [],
     )?;
-    
+
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_sessions_user ON practice_sessions(user_id)",
         [],
@@ -147,8 +147,14 @@ mod tests {
 
         assert!(tables.contains(&"users".to_string()), "missing users table");
         assert!(tables.contains(&"songs".to_string()), "missing songs table");
-        assert!(tables.contains(&"user_songs".to_string()), "missing user_songs table");
-        assert!(tables.contains(&"practice_sessions".to_string()), "missing practice_sessions table");
+        assert!(
+            tables.contains(&"user_songs".to_string()),
+            "missing user_songs table"
+        );
+        assert!(
+            tables.contains(&"practice_sessions".to_string()),
+            "missing practice_sessions table"
+        );
     }
 
     #[test]
@@ -156,10 +162,22 @@ mod tests {
         let (_tmp, conn) = setup_db();
         let indexes = get_index_names(&conn);
 
-        assert!(indexes.contains(&"idx_users_username".to_string()), "missing idx_users_username");
-        assert!(indexes.contains(&"idx_songs_language".to_string()), "missing idx_songs_language");
-        assert!(indexes.contains(&"idx_user_songs_user".to_string()), "missing idx_user_songs_user");
-        assert!(indexes.contains(&"idx_sessions_user".to_string()), "missing idx_sessions_user");
+        assert!(
+            indexes.contains(&"idx_users_username".to_string()),
+            "missing idx_users_username"
+        );
+        assert!(
+            indexes.contains(&"idx_songs_language".to_string()),
+            "missing idx_songs_language"
+        );
+        assert!(
+            indexes.contains(&"idx_user_songs_user".to_string()),
+            "missing idx_user_songs_user"
+        );
+        assert!(
+            indexes.contains(&"idx_sessions_user".to_string()),
+            "missing idx_sessions_user"
+        );
     }
 
     #[test]
@@ -185,16 +203,17 @@ mod tests {
             "INSERT INTO users (id, username, email, password_hash, created_at)
              VALUES ('u1', 'alice', 'alice@example.com', 'hash', '2024-01-01T00:00:00Z')",
             [],
-        ).unwrap();
+        )
+        .unwrap();
         drop(conn);
 
         // Re-open with get_connection
         let conn2 = get_connection(temp_file.path()).unwrap();
-        let username: String = conn2.query_row(
-            "SELECT username FROM users WHERE id = 'u1'",
-            [],
-            |row| row.get(0),
-        ).unwrap();
+        let username: String = conn2
+            .query_row("SELECT username FROM users WHERE id = 'u1'", [], |row| {
+                row.get(0)
+            })
+            .unwrap();
         assert_eq!(username, "alice");
     }
 
@@ -232,7 +251,8 @@ mod tests {
             "INSERT INTO users (id, username, email, password_hash, created_at)
              VALUES ('u1', 'alice', 'alice@example.com', 'hash', '2024-01-01T00:00:00Z')",
             [],
-        ).unwrap();
+        )
+        .unwrap();
 
         let result = conn.execute(
             "INSERT INTO users (id, username, email, password_hash, created_at)
@@ -252,11 +272,11 @@ mod tests {
             [],
         ).unwrap();
 
-        let title: String = conn.query_row(
-            "SELECT title FROM songs WHERE id = 's1'",
-            [],
-            |row| row.get(0),
-        ).unwrap();
+        let title: String = conn
+            .query_row("SELECT title FROM songs WHERE id = 's1'", [], |row| {
+                row.get(0)
+            })
+            .unwrap();
         assert_eq!(title, "Song");
     }
 
@@ -269,7 +289,8 @@ mod tests {
             "INSERT INTO users (id, username, email, password_hash, created_at)
              VALUES ('u1', 'alice', 'a@e.com', 'h', '2024-01-01T00:00:00Z')",
             [],
-        ).unwrap();
+        )
+        .unwrap();
         conn.execute(
             "INSERT INTO songs (id, title, artist, language, lyrics, created_at, updated_at)
              VALUES ('s1', 'Song', 'Art', 'en', '[]', '2024-01-01T00:00:00Z', '2024-01-01T00:00:00Z')",
@@ -297,7 +318,8 @@ mod tests {
             "INSERT INTO users (id, username, email, password_hash, created_at)
              VALUES ('u1', 'alice', 'a@e.com', 'h', '2024-01-01T00:00:00Z')",
             [],
-        ).unwrap();
+        )
+        .unwrap();
         conn.execute(
             "INSERT INTO songs (id, title, artist, language, lyrics, created_at, updated_at)
              VALUES ('s1', 'Song', 'Art', 'en', '[]', '2024-01-01T00:00:00Z', '2024-01-01T00:00:00Z')",
@@ -332,13 +354,16 @@ mod tests {
             "INSERT INTO users (id, username, email, password_hash, created_at)
              VALUES ('u1', 'alice', 'a@e.com', 'h', '2024-01-01T00:00:00Z')",
             [],
-        ).unwrap();
+        )
+        .unwrap();
 
-        let token: Option<String> = conn.query_row(
-            "SELECT genius_token FROM users WHERE id = 'u1'",
-            [],
-            |row| row.get(0),
-        ).unwrap();
+        let token: Option<String> = conn
+            .query_row(
+                "SELECT genius_token FROM users WHERE id = 'u1'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
         assert!(token.is_none());
     }
 }

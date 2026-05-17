@@ -1,6 +1,6 @@
 //! Practice session tracking service
 
-pub use crate::models::{PracticeSession, CreateSessionData};
+pub use crate::models::{CreateSessionData, PracticeSession};
 
 use crate::Result;
 use rusqlite::Connection;
@@ -16,7 +16,7 @@ pub fn create_session(conn: &Connection, data: CreateSessionData) -> Result<Prac
         data.lines_correct,
         data.duration_seconds,
     );
-    
+
     conn.execute(
         "INSERT INTO practice_sessions 
          (id, user_id, song_id, mode, score, lines_practiced, lines_correct, 
@@ -34,7 +34,7 @@ pub fn create_session(conn: &Connection, data: CreateSessionData) -> Result<Prac
             &session.created_at,
         ],
     )?;
-    
+
     Ok(session)
 }
 
@@ -45,23 +45,25 @@ pub fn get_user_sessions(conn: &Connection, user_id: &str) -> Result<Vec<Practic
                 duration_seconds, created_at
          FROM practice_sessions
          WHERE user_id = ?1
-         ORDER BY created_at DESC"
+         ORDER BY created_at DESC",
     )?;
-    
-    let sessions = stmt.query_map([user_id], |row| {
-        Ok(PracticeSession {
-            id: row.get(0)?,
-            user_id: row.get(1)?,
-            song_id: row.get(2)?,
-            mode: row.get(3)?,
-            score: row.get(4)?,
-            lines_practiced: row.get(5)?,
-            lines_correct: row.get(6)?,
-            duration_seconds: row.get(7)?,
-            created_at: row.get(8)?,
-        })
-    })?.collect::<rusqlite::Result<Vec<_>>>()?;
-    
+
+    let sessions = stmt
+        .query_map([user_id], |row| {
+            Ok(PracticeSession {
+                id: row.get(0)?,
+                user_id: row.get(1)?,
+                song_id: row.get(2)?,
+                mode: row.get(3)?,
+                score: row.get(4)?,
+                lines_practiced: row.get(5)?,
+                lines_correct: row.get(6)?,
+                duration_seconds: row.get(7)?,
+                created_at: row.get(8)?,
+            })
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+
     Ok(sessions)
 }
 
@@ -72,23 +74,25 @@ pub fn get_song_sessions(conn: &Connection, song_id: &str) -> Result<Vec<Practic
                 duration_seconds, created_at
          FROM practice_sessions
          WHERE song_id = ?1
-         ORDER BY created_at DESC"
+         ORDER BY created_at DESC",
     )?;
-    
-    let sessions = stmt.query_map([song_id], |row| {
-        Ok(PracticeSession {
-            id: row.get(0)?,
-            user_id: row.get(1)?,
-            song_id: row.get(2)?,
-            mode: row.get(3)?,
-            score: row.get(4)?,
-            lines_practiced: row.get(5)?,
-            lines_correct: row.get(6)?,
-            duration_seconds: row.get(7)?,
-            created_at: row.get(8)?,
-        })
-    })?.collect::<rusqlite::Result<Vec<_>>>()?;
-    
+
+    let sessions = stmt
+        .query_map([song_id], |row| {
+            Ok(PracticeSession {
+                id: row.get(0)?,
+                user_id: row.get(1)?,
+                song_id: row.get(2)?,
+                mode: row.get(3)?,
+                score: row.get(4)?,
+                lines_practiced: row.get(5)?,
+                lines_correct: row.get(6)?,
+                duration_seconds: row.get(7)?,
+                created_at: row.get(8)?,
+            })
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+
     Ok(sessions)
 }
 
@@ -123,7 +127,7 @@ pub fn get_user_stats(conn: &Connection, user_id: &str) -> Result<UserStats> {
             })
         },
     )?;
-    
+
     Ok(stats)
 }
 
@@ -186,7 +190,10 @@ pub fn get_user_streak(conn: &Connection, user_id: &str) -> Result<i32> {
         .filter_map(|r| r.ok())
         .filter(|d| d != &chrono::NaiveDate::default())
         .collect();
-    Ok(compute_streak_from_dates(chrono::Utc::now().date_naive(), &dates))
+    Ok(compute_streak_from_dates(
+        chrono::Utc::now().date_naive(),
+        &dates,
+    ))
 }
 
 /// Returns up to `limit` song ids the user should review (lowest mastery,
@@ -212,18 +219,20 @@ pub fn get_recommendations(conn: &Connection, user_id: &str, limit: i32) -> Resu
 /// Get mastery level for a specific song by user
 pub fn get_song_mastery(conn: &Connection, user_id: &str, song_id: &str) -> Result<f64> {
     // Calculate mastery based on recent sessions
-    let mastery: Option<f64> = conn.query_row(
-        "SELECT AVG(score)
+    let mastery: Option<f64> = conn
+        .query_row(
+            "SELECT AVG(score)
          FROM (
              SELECT score FROM practice_sessions
              WHERE user_id = ?1 AND song_id = ?2
              ORDER BY created_at DESC
              LIMIT 5
          )",
-        [user_id, song_id],
-        |row| row.get(0),
-    ).ok();
-    
+            [user_id, song_id],
+            |row| row.get(0),
+        )
+        .ok();
+
     Ok(mastery.unwrap_or(0.0))
 }
 
@@ -231,7 +240,7 @@ pub fn get_song_mastery(conn: &Connection, user_id: &str, song_id: &str) -> Resu
 mod tests {
     use super::*;
     use crate::db::init_database;
-    use crate::models::{Song, RegisterData};
+    use crate::models::{RegisterData, Song};
     use crate::services::auth::register;
     use crate::services::songs;
     use tempfile::NamedTempFile;
@@ -245,23 +254,31 @@ mod tests {
 
     /// Helper to register a test user
     fn create_test_user(conn: &Connection, username: &str) -> crate::models::User {
-        register(conn, RegisterData {
-            username: username.to_string(),
-            email: format!("{}@example.com", username),
-            password: "password123".to_string(),
-        }).unwrap()
+        register(
+            conn,
+            RegisterData {
+                username: username.to_string(),
+                email: format!("{}@example.com", username),
+                password: "password123".to_string(),
+            },
+        )
+        .unwrap()
     }
 
     /// Helper to insert a song directly (bypasses phonetic/translation)
     fn create_test_song(conn: &Connection, title: &str) -> Song {
         // save_song is private, so use create_song
-        songs::create_song(conn, crate::models::CreateSongData {
-            title: title.to_string(),
-            artist: "Test Artist".to_string(),
-            language: "en".to_string(),
-            lyrics: vec!["Line 1".to_string(), "Line 2".to_string()],
-            genius_url: None,
-        }).unwrap()
+        songs::create_song(
+            conn,
+            crate::models::CreateSongData {
+                title: title.to_string(),
+                artist: "Test Artist".to_string(),
+                language: "en".to_string(),
+                lyrics: vec!["Line 1".to_string(), "Line 2".to_string()],
+                genius_url: None,
+            },
+        )
+        .unwrap()
     }
 
     /// Helper to create a session
@@ -275,15 +292,19 @@ mod tests {
         lines_correct: i32,
         duration_seconds: i32,
     ) -> PracticeSession {
-        create_session(conn, CreateSessionData {
-            user_id: user_id.to_string(),
-            song_id: song_id.to_string(),
-            mode: mode.to_string(),
-            score,
-            lines_practiced,
-            lines_correct,
-            duration_seconds,
-        }).unwrap()
+        create_session(
+            conn,
+            CreateSessionData {
+                user_id: user_id.to_string(),
+                song_id: song_id.to_string(),
+                mode: mode.to_string(),
+                score,
+                lines_practiced,
+                lines_correct,
+                duration_seconds,
+            },
+        )
+        .unwrap()
     }
 
     // ---- streak ----
@@ -321,10 +342,7 @@ mod tests {
         // Yesterday-anchored streaks remain valid (user might just not have
         // practiced YET today).
         assert_eq!(
-            compute_streak_from_dates(
-                d("2026-05-17"),
-                &[d("2026-05-16"), d("2026-05-15")],
-            ),
+            compute_streak_from_dates(d("2026-05-17"), &[d("2026-05-16"), d("2026-05-15")],),
             2
         );
     }

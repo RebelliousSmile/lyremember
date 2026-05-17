@@ -1,5 +1,5 @@
 //! LyRemember Backend Library
-//! 
+//!
 //! Core backend functionality for LyRemember lyrics memorization app.
 //! Provides database management, authentication, translation, and phonetic services.
 
@@ -10,5 +10,5 @@ pub mod services;
 
 // Re-export commonly used types
 pub use error::{Error, Result};
-pub use models::{Song, User, PracticeSession};
+pub use models::{PracticeSession, Song, User};
 pub use rusqlite;

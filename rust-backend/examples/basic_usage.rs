@@ -3,9 +3,9 @@
 use lyremember_backend::{
     db::init_database,
     services::{
-        auth::{register, login, RegisterData, LoginCredentials},
-        songs::{create_song, get_user_songs, add_to_user_repertoire, CreateSongData},
+        auth::{login, register, LoginCredentials, RegisterData},
         practice::{create_session, get_user_stats, CreateSessionData},
+        songs::{add_to_user_repertoire, create_song, get_user_songs, CreateSongData},
     },
 };
 
@@ -22,7 +22,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         email: "lover@music.com".to_string(),
         password: "securepassword123".to_string(),
     };
-    
+
     let user = register(&conn, register_data)?;
     println!("✅ User registered: {}", user.username);
 
@@ -31,7 +31,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         username: "musiclover".to_string(),
         password: "securepassword123".to_string(),
     };
-    
+
     let (logged_user, token) = login(&conn, credentials)?;
     println!("✅ User logged in, JWT: {}...", &token[..20]);
 
@@ -48,10 +48,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ],
         genius_url: None,
     };
-    
+
     let song = create_song(&conn, song_data)?;
     println!("\n✅ Song created: {} by {}", song.title, song.artist);
-    
+
     if let Some(phonetic) = &song.phonetic_lyrics {
         println!("📝 Phonetic generated: {} lines", phonetic.len());
     }
@@ -74,7 +74,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         lines_correct: 3,
         duration_seconds: 120,
     };
-    
+
     let session = create_session(&conn, session_data)?;
     println!("\n✅ Practice session created:");
     println!("   Mode: {}", session.mode);
@@ -89,6 +89,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("   Average score: {:.1}%", stats.average_score);
 
     println!("\n🎉 Example completed successfully!");
-    
+
     Ok(())
 }
