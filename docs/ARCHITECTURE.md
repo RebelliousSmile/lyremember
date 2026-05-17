@@ -3,12 +3,26 @@
 ## Overview
 LyRemember is a lyrics memorization application supporting multiple languages. This document outlines the technical architecture and design decisions.
 
-## Technology Stack
+> **Statut (mai 2026)** : ce document décrit l'architecture du **proof of
+> concept Python** (CLI Click + storage JSON), désormais archivé dans
+> [`legacy/python-cli/`](../legacy/python-cli/). La stack canonique du
+> projet est Rust + Tauri + Vue 3 :
+> - Application : `lyremember-app/` (Vue 3 + TypeScript + Tauri v2 + Pinia)
+> - Backend : `rust-backend/` (Rust + SQLite + PyO3)
+> - Storage prod : **SQLite** via `rust-backend/src/db/sqlite.rs`
+>   (4 tables : `users`, `songs`, `user_songs`, `practice_sessions`).
+> - Storage POC legacy : **JSON** via `legacy/python-cli/lyremember/storage.py`.
+>
+> Pour les décisions techniques actuelles : voir
+> [`FINAL_DECISIONS.md`](FINAL_DECISIONS.md).
+
+## Technology Stack (POC Python — legacy)
 
 ### Core Application
 - **Language**: Python 3.8+
-- **Interface**: Command-Line Interface (CLI) for MVP, with potential web UI later
-- **Data Storage**: JSON files for simplicity (can migrate to SQLite/database later)
+- **Interface**: Command-Line Interface (CLI)
+- **Data Storage**: JSON files (`legacy/python-cli/data/*.json`).
+  La version prod (Tauri/Rust) utilise SQLite — voir note ci-dessus.
 
 ### Key Libraries
 - `click` - CLI framework for user-friendly command-line interface

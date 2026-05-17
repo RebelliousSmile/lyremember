@@ -23,6 +23,7 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 - Corrections doc : références à `deep-translator` remplacées par `LibreTranslate` (service réellement utilisé dans `rust-backend/src/services/translation.rs`) dans `docs/TECH_CHOICES.md` et `docs/RUST_OPTION.md` (#8).
 - `docs/FINAL_DECISIONS.md` aligné sur la réalité du code : UI library = composants maison `lyremember-app/src/components/ui/` (Button, Card, Input, Alert, Spinner). Note ajoutée en tête de `docs/UI_LIBRARIES.md` pour marquer ce comparatif comme historique (#9).
 - Commandes Tauri : doc corrigée de 16 → 19 (5 auth + 7 songs + 4 practice + 3 util), avec liste exhaustive synchronisée sur `commands.rs`. Mentions "16" alignées dans `README.md` et `docs/TAURI_INTEGRATION_COMPLETE.md` (#10).
+- `docs/ARCHITECTURE.md` clarifie en tête : ce doc décrit le POC Python (legacy, storage JSON), la prod canonique est Rust+Tauri+Vue avec storage SQLite (`rust-backend/src/db/sqlite.rs`). Référence à `legacy/python-cli/` et à `FINAL_DECISIONS.md` (#11).
 - Le CLI Python (proof of concept) est archivé dans `legacy/python-cli/` (#6) : `lyremember/`, `tests/`, `data/`, `demo.py`, `setup.py`, `requirements.txt` y vivent désormais. La stack canonique est Rust + Tauri + Vue 3. Le workflow `ci-python` cible ce nouveau chemin.
 - Polish `SongDetailView` : layout des paroles et états hover affinés.
 - PyO3 rendu optionnel pour faciliter les builds cross-platform.
