@@ -37,7 +37,9 @@ python -m pytest tests/ -q
 cd rust-backend && cargo test
 
 # Frontend Vue + Tauri
-cd lyremember-app && npm install && npm run test
+cd lyremember-app && npm install
+npm run test:unit         # Vitest (composants, stores)
+npm run test:e2e          # WebDriverIO (parcours utilisateur)
 ```
 
 ## Style & conventions

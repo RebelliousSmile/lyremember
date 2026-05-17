@@ -36,5 +36,8 @@ jobs:
       - name: TypeScript check
         run: npx vue-tsc --noEmit
 
+      - name: Unit tests (Vitest)
+        run: npm run test:unit
+
       - name: Build
         run: npx vite build

@@ -47,6 +47,7 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 
 ### Testing
 - Tests `services::phonetic` étoffés (#23) : empty input passes through tous langs ; ajout de tests pour la branche stub (`#[cfg(not(feature = "python"))]`) couvrant erreur sur langs supportés + passthrough sur lang non-supportée ; ajout test FR (`fra-Latn`) ignored ; ajout dispatcher test ; documentation des prérequis Python dans le module. Suite globale : 92 passed, 6 ignored, 0 failed avec feature `python` ; 91 passed, 0 ignored, 0 failed sans (couvre les deux branches CI).
+- Vitest infrastructure côté frontend (#24) : `vitest.config.ts` (jsdom + alias `@/*`), scripts npm `test:unit` (run-once) et `test:unit:watch`, devDeps `vitest` + `@vue/test-utils` + `jsdom`. Trois tests pilotes : `Button.spec.ts` (4 cas : rendering slot, click, loading, variant), `Alert.spec.ts` (3 cas : hidden, message+variant, close emit), `songs.spec.ts` (4 cas : filter search, filter lang, group by lang, count). Workflow CI Frontend exécute `npm run test:unit` entre le typecheck et le build. README + CONTRIBUTING.md mis à jour.
 - Le CLI Python (proof of concept) est archivé dans `legacy/python-cli/` (#6) : `lyremember/`, `tests/`, `data/`, `demo.py`, `setup.py`, `requirements.txt` y vivent désormais. La stack canonique est Rust + Tauri + Vue 3. Le workflow `ci-python` cible ce nouveau chemin.
 - Polish `SongDetailView` : layout des paroles et états hover affinés.
 - PyO3 rendu optionnel pour faciliter les builds cross-platform.
