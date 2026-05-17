@@ -44,7 +44,9 @@
     "browseSongs": "曲を閲覧",
     "recentSongs": "最近の曲",
     "noSongsYet": "まだ曲がありません",
-    "addFirstSong": "最初の曲を追加して始めましょう！"
+    "addFirstSong": "最初の曲を追加して始めましょう！",
+    "streakDays": "{count}日連続",
+    "streakTooltip": "連続して練習した日数"
   },
   "songs": {
     "title": "マイ ソング",

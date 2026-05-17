@@ -44,7 +44,9 @@
     "browseSongs": "Browse Songs",
     "recentSongs": "Recent Songs",
     "noSongsYet": "No songs yet",
-    "addFirstSong": "Add your first song to get started!"
+    "addFirstSong": "Add your first song to get started!",
+    "streakDays": "{count} day streak | {count} day streak | {count} day streak",
+    "streakTooltip": "Consecutive days you have practiced"
   },
   "songs": {
     "title": "My Songs",

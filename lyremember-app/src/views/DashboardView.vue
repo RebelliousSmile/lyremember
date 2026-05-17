@@ -5,6 +5,16 @@
         <h1 class="text-3xl font-bold text-[#F5F0EB]">
           {{ $t('dashboard.title') }}
         </h1>
+        <div
+          v-if="streak > 0"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gold/10 border border-gold/30"
+          :title="$t('dashboard.streakTooltip')"
+        >
+          <span class="text-lg leading-none">🔥</span>
+          <span class="text-sm font-bold text-gold">
+            {{ $t('dashboard.streakDays', { count: streak }) }}
+          </span>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -112,7 +122,7 @@ import { useSongsStore } from '../stores/songs';
 import { useUserStats } from '../composables/useUserStats';
 
 const songsStore = useSongsStore();
-const { userStats } = useUserStats();
+const { userStats, streak } = useUserStats();
 
 const recentSongs = computed(() => songsStore.songs.slice(0, 5));
 const totalSessions = computed(() => userStats.value?.total_sessions ?? 0);

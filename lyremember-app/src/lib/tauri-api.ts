@@ -124,6 +124,14 @@ export async function deleteSong(songId: string): Promise<void> {
   return await invoke('cmd_delete_song', { songId });
 }
 
+export async function getUserStreak(userId: string): Promise<number> {
+  return await invoke('cmd_get_user_streak', { userId });
+}
+
+export async function getRecommendations(userId: string, limit = 5): Promise<string[]> {
+  return await invoke('cmd_get_recommendations', { userId, limit });
+}
+
 // ==================== PRACTICE API ====================
 
 export async function createPracticeSession(

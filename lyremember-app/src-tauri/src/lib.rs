@@ -54,6 +54,8 @@ pub fn run() {
             cmd_get_user_sessions,
             cmd_get_user_stats,
             cmd_get_song_mastery,
+            cmd_get_user_streak,
+            cmd_get_recommendations,
             // Utility commands
             cmd_translate_text,
             cmd_generate_phonetic,

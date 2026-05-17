@@ -127,6 +127,88 @@ pub fn get_user_stats(conn: &Connection, user_id: &str) -> Result<UserStats> {
     Ok(stats)
 }
 
+/// Computes the user's current daily practice streak.
+///
+/// A streak is the number of **consecutive days, ending today or yesterday**,
+/// on which the user logged at least one practice session.
+/// - 0 if there are no sessions or the most recent session is older than
+///   yesterday.
+/// - 1 if there's a session today.
+/// - N if there's one today (or yesterday) and N-1 consecutive prior days.
+///
+/// Pure utility so it can be unit-tested with controlled dates.
+pub fn compute_streak_from_dates(
+    today: chrono::NaiveDate,
+    practice_dates_desc: &[chrono::NaiveDate],
+) -> i32 {
+    use std::collections::BTreeSet;
+    let unique: BTreeSet<_> = practice_dates_desc.iter().copied().collect();
+    let mut sorted: Vec<_> = unique.into_iter().collect();
+    sorted.sort_unstable_by(|a, b| b.cmp(a));
+
+    let most_recent = match sorted.first() {
+        Some(d) => *d,
+        None => return 0,
+    };
+
+    let delta = (today - most_recent).num_days();
+    if delta > 1 {
+        return 0;
+    }
+
+    let mut streak = 1;
+    let mut prev = most_recent;
+    for &d in &sorted[1..] {
+        if (prev - d).num_days() == 1 {
+            streak += 1;
+            prev = d;
+        } else {
+            break;
+        }
+    }
+    streak
+}
+
+/// Returns the user's current daily practice streak, reading session dates
+/// from SQLite.
+pub fn get_user_streak(conn: &Connection, user_id: &str) -> Result<i32> {
+    let mut stmt = conn.prepare(
+        "SELECT DISTINCT DATE(created_at) AS day
+         FROM practice_sessions
+         WHERE user_id = ?1
+         ORDER BY day DESC",
+    )?;
+    let dates: Vec<chrono::NaiveDate> = stmt
+        .query_map([user_id], |row| {
+            let s: String = row.get(0)?;
+            Ok(chrono::NaiveDate::parse_from_str(&s, "%Y-%m-%d").unwrap_or_default())
+        })?
+        .filter_map(|r| r.ok())
+        .filter(|d| d != &chrono::NaiveDate::default())
+        .collect();
+    Ok(compute_streak_from_dates(chrono::Utc::now().date_naive(), &dates))
+}
+
+/// Returns up to `limit` song ids the user should review (lowest mastery,
+/// then oldest last-practiced-date as tiebreaker). Only considers songs
+/// that the user has already opened (presence of any session) — fresh
+/// songs are not "recommendations" here.
+pub fn get_recommendations(conn: &Connection, user_id: &str, limit: i32) -> Result<Vec<String>> {
+    let mut stmt = conn.prepare(
+        "SELECT song_id, AVG(score) AS mastery, MAX(created_at) AS last
+         FROM practice_sessions
+         WHERE user_id = ?1
+         GROUP BY song_id
+         ORDER BY mastery ASC, last ASC
+         LIMIT ?2",
+    )?;
+    let songs: Vec<String> = stmt
+        .query_map(rusqlite::params![user_id, limit], |row| row.get(0))?
+        .filter_map(|r| r.ok())
+        .collect();
+    Ok(songs)
+}
+
 /// Get mastery level for a specific song by user
 pub fn get_song_mastery(conn: &Connection, user_id: &str, song_id: &str) -> Result<f64> {
     // Calculate mastery based on recent sessions
@@ -204,7 +286,120 @@ mod tests {
         }).unwrap()
     }
 
-    // ---- create_session ----
+    // ---- streak ----
+
+    fn d(s: &str) -> chrono::NaiveDate {
+        chrono::NaiveDate::parse_from_str(s, "%Y-%m-%d").unwrap()
+    }
+
+    #[test]
+    fn test_streak_zero_when_no_sessions() {
+        assert_eq!(compute_streak_from_dates(d("2026-05-17"), &[]), 0);
+    }
+
+    #[test]
+    fn test_streak_one_when_session_today() {
+        assert_eq!(
+            compute_streak_from_dates(d("2026-05-17"), &[d("2026-05-17")]),
+            1
+        );
+    }
+
+    #[test]
+    fn test_streak_three_when_three_consecutive_days_ending_today() {
+        assert_eq!(
+            compute_streak_from_dates(
+                d("2026-05-17"),
+                &[d("2026-05-17"), d("2026-05-16"), d("2026-05-15")],
+            ),
+            3
+        );
+    }
+
+    #[test]
+    fn test_streak_continues_when_last_session_was_yesterday() {
+        // Yesterday-anchored streaks remain valid (user might just not have
+        // practiced YET today).
+        assert_eq!(
+            compute_streak_from_dates(
+                d("2026-05-17"),
+                &[d("2026-05-16"), d("2026-05-15")],
+            ),
+            2
+        );
+    }
+
+    #[test]
+    fn test_streak_resets_when_gap_of_more_than_one_day() {
+        assert_eq!(
+            compute_streak_from_dates(d("2026-05-17"), &[d("2026-05-10")]),
+            0
+        );
+    }
+
+    #[test]
+    fn test_streak_breaks_at_first_gap() {
+        // Today, yesterday, then a 2-day gap before another batch — only the
+        // first 2 days count.
+        assert_eq!(
+            compute_streak_from_dates(
+                d("2026-05-17"),
+                &[
+                    d("2026-05-17"),
+                    d("2026-05-16"),
+                    d("2026-05-13"),
+                    d("2026-05-12"),
+                ],
+            ),
+            2
+        );
+    }
+
+    #[test]
+    fn test_streak_deduplicates_multiple_sessions_per_day() {
+        // 4 entries on 2 unique days should yield streak 2.
+        assert_eq!(
+            compute_streak_from_dates(
+                d("2026-05-17"),
+                &[
+                    d("2026-05-17"),
+                    d("2026-05-17"),
+                    d("2026-05-16"),
+                    d("2026-05-16"),
+                ],
+            ),
+            2
+        );
+    }
+
+    // ---- recommendations ----
+
+    #[test]
+    fn test_recommendations_orders_by_lowest_mastery() {
+        let (_tmp, conn) = setup_db();
+        let user = create_test_user(&conn, "u");
+        let s_high = create_test_song(&conn, "High mastery");
+        let s_low = create_test_song(&conn, "Low mastery");
+        let s_mid = create_test_song(&conn, "Mid mastery");
+        insert_session(&conn, &user.id, &s_high.id, "mcq", 95.0, 10, 9, 60);
+        insert_session(&conn, &user.id, &s_low.id, "mcq", 20.0, 10, 2, 60);
+        insert_session(&conn, &user.id, &s_mid.id, "mcq", 60.0, 10, 6, 60);
+
+        let recs = get_recommendations(&conn, &user.id, 3).unwrap();
+        assert_eq!(recs, vec![s_low.id, s_mid.id, s_high.id]);
+    }
+
+    #[test]
+    fn test_recommendations_respects_limit() {
+        let (_tmp, conn) = setup_db();
+        let user = create_test_user(&conn, "u");
+        for i in 0..5 {
+            let s = create_test_song(&conn, &format!("Song {}", i));
+            insert_session(&conn, &user.id, &s.id, "mcq", 50.0, 10, 5, 60);
+        }
+        let recs = get_recommendations(&conn, &user.id, 2).unwrap();
+        assert_eq!(recs.len(), 2);
+    }
 
     #[test]
     fn test_create_session_returns_correct_data() {

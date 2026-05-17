@@ -215,6 +215,27 @@ pub fn cmd_get_song_mastery(
         .map_err(|e| format!("Failed to get song mastery: {}", e))
 }
 
+#[tauri::command]
+pub fn cmd_get_user_streak(
+    user_id: String,
+    state: State<'_, DbState>,
+) -> Result<i32, String> {
+    let conn = lock_db(&state)?;
+    practice::get_user_streak(&conn, &user_id)
+        .map_err(|e| format!("Failed to compute streak: {}", e))
+}
+
+#[tauri::command]
+pub fn cmd_get_recommendations(
+    user_id: String,
+    limit: Option<i32>,
+    state: State<'_, DbState>,
+) -> Result<Vec<String>, String> {
+    let conn = lock_db(&state)?;
+    practice::get_recommendations(&conn, &user_id, limit.unwrap_or(5))
+        .map_err(|e| format!("Failed to compute recommendations: {}", e))
+}
+
 // ==================== UTILITY COMMANDS ====================
 
 #[tauri::command]

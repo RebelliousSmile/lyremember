@@ -44,7 +44,9 @@
     "browseSongs": "노래 둘러보기",
     "recentSongs": "최근 노래",
     "noSongsYet": "아직 노래가 없습니다",
-    "addFirstSong": "첫 노래를 추가해 시작하세요!"
+    "addFirstSong": "첫 노래를 추가해 시작하세요!",
+    "streakDays": "{count}일 연속",
+    "streakTooltip": "연속으로 연습한 일수"
   },
   "songs": {
     "title": "내 노래",
