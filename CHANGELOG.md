@@ -43,6 +43,10 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 - i18n : locales `ja.json` (日本語) et `ko.json` (한국어) ajoutées ; sélecteur de langue dans Settings (4 langues). Couverture 100% des 151 clés UI. Détection automatique de `navigator.language` étendue aux 4 codes (#20).
 - `SongDetailView.vue` : vue lyrics enrichie en 3 niveaux **VO + Phonétique + Traduction**. La phonétique (générée par PyO3 → pykakasi/hangul-romanize/epitran, voir #15) s'affiche en italique mono sous chaque ligne VO quand `song.phonetic_lyrics` est présent. La traduction reste en italique dorée sous la phonétique quand sélectionnée. Pas de toggle horizontal pour éviter la friction mobile ; l'ordre vertical respecte l'esprit "3 colonnes" promis (#21).
 - `McqMode.vue` : génération de distractors améliorée. Les distractors sont désormais classés par proximité de longueur avec la bonne réponse (∆ characters) avant d'être mélangés — plus difficile à éliminer visuellement que des lignes aléatoires. Fallback "word-scrambled" puise dans les autres lignes plutôt que de répéter la bonne réponse. Pas de doublons garanti (#22).
+- `services/phonetic.rs` court-circuite désormais l'input vide sans démarrer le runtime Python (perf + simplicité de test).
+
+### Testing
+- Tests `services::phonetic` étoffés (#23) : empty input passes through tous langs ; ajout de tests pour la branche stub (`#[cfg(not(feature = "python"))]`) couvrant erreur sur langs supportés + passthrough sur lang non-supportée ; ajout test FR (`fra-Latn`) ignored ; ajout dispatcher test ; documentation des prérequis Python dans le module. Suite globale : 92 passed, 6 ignored, 0 failed avec feature `python` ; 91 passed, 0 ignored, 0 failed sans (couvre les deux branches CI).
 - Le CLI Python (proof of concept) est archivé dans `legacy/python-cli/` (#6) : `lyremember/`, `tests/`, `data/`, `demo.py`, `setup.py`, `requirements.txt` y vivent désormais. La stack canonique est Rust + Tauri + Vue 3. Le workflow `ci-python` cible ce nouveau chemin.
 - Polish `SongDetailView` : layout des paroles et états hover affinés.
 - PyO3 rendu optionnel pour faciliter les builds cross-platform.

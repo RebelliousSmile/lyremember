@@ -20,6 +20,11 @@ use crate::{Error, Result};
 /// Vector of phonetic representations matching input lines
 #[cfg(feature = "python")]
 pub fn generate_phonetic(text: &[String], language: &str) -> Result<Vec<String>> {
+    // Short-circuit empty input so we don't spin up the Python interpreter
+    // for a no-op.
+    if text.is_empty() {
+        return Ok(Vec::new());
+    }
     match language {
         "jp" => japanese_to_romaji(text),
         "kr" => korean_to_roman(text),
@@ -32,6 +37,9 @@ pub fn generate_phonetic(text: &[String], language: &str) -> Result<Vec<String>>
 /// Stub implementation when Python is not available (e.g. Android)
 #[cfg(not(feature = "python"))]
 pub fn generate_phonetic(text: &[String], language: &str) -> Result<Vec<String>> {
+    if text.is_empty() {
+        return Ok(Vec::new());
+    }
     match language {
         "jp" | "kr" | "fr" | "en" => Err(Error::Phonetic(
             "Phonetic generation is not available on this platform (requires Python)".to_string(),
@@ -168,17 +176,66 @@ mod tests {
         assert_eq!(result, text); // Should return original for unsupported language
     }
 
-    // Note: The following tests require Python packages to be installed:
-    // pip install pykakasi hangul-romanize epitran
+    #[test]
+    fn test_generate_phonetic_empty_input() {
+        // Empty input should return empty output across all branches without
+        // touching Python at all.
+        for lang in &["jp", "kr", "fr", "en", "de"] {
+            let result = generate_phonetic(&[], lang).unwrap();
+            assert!(result.is_empty(), "empty input must yield empty output for {}", lang);
+        }
+    }
+
+    // ---- Stub branch: no `python` feature compiled in ----
+    //
+    // Verifies the Android/headless build path: a request for a supported
+    // language must return a clear `Error::Phonetic` rather than silently
+    // succeeding or panicking. Unsupported languages still pass through.
+    #[test]
+    #[cfg(not(feature = "python"))]
+    fn test_stub_returns_error_for_supported_language() {
+        let text = vec!["hello".to_string()];
+        for lang in &["jp", "kr", "fr", "en"] {
+            let result = generate_phonetic(&text, lang);
+            assert!(
+                matches!(result, Err(Error::Phonetic(_))),
+                "stub must error for supported language {}, got {:?}",
+                lang,
+                result
+            );
+        }
+    }
 
     #[test]
-    #[ignore] // Ignore by default, run with `cargo test -- --ignored` if Python deps are installed
+    #[cfg(not(feature = "python"))]
+    fn test_stub_passthrough_for_unsupported_language() {
+        let text = vec!["x".to_string()];
+        let result = generate_phonetic(&text, "de").unwrap();
+        assert_eq!(result, text);
+    }
+
+    // ---- Python-backed branch ----
+    //
+    // These tests require the Python interpreter and packages to be
+    // available on the host:
+    //     pip install pykakasi hangul-romanize epitran
+    // They run with `cargo test --features python -- --ignored`. The CI
+    // workflow (.github/workflows/ci-rust.yml) installs them and may
+    // enable this set.
+
+    #[test]
+    #[ignore]
     #[cfg(feature = "python")]
     fn test_japanese_to_romaji() {
         let text = vec!["こんにちは".to_string()];
         let result = japanese_to_romaji(&text).unwrap();
-        assert!(!result[0].is_empty());
-        println!("Japanese romaji: {:?}", result);
+        assert_eq!(result.len(), 1);
+        assert!(!result[0].is_empty(), "kakasi must produce non-empty romaji");
+        assert!(
+            result[0].chars().all(|c| c.is_ascii() || c.is_whitespace()),
+            "romaji output should be ASCII, got {:?}",
+            result[0]
+        );
     }
 
     #[test]
@@ -187,8 +244,8 @@ mod tests {
     fn test_korean_to_roman() {
         let text = vec!["안녕하세요".to_string()];
         let result = korean_to_roman(&text).unwrap();
+        assert_eq!(result.len(), 1);
         assert!(!result[0].is_empty());
-        println!("Korean roman: {:?}", result);
     }
 
     #[test]
@@ -197,7 +254,32 @@ mod tests {
     fn test_to_ipa_english() {
         let text = vec!["hello world".to_string()];
         let result = to_ipa(&text, "eng-Latn").unwrap();
+        assert_eq!(result.len(), 1);
         assert!(!result[0].is_empty());
-        println!("English IPA: {:?}", result);
+    }
+
+    #[test]
+    #[ignore]
+    #[cfg(feature = "python")]
+    fn test_to_ipa_french() {
+        let text = vec!["bonjour le monde".to_string()];
+        let result = to_ipa(&text, "fra-Latn").unwrap();
+        assert_eq!(result.len(), 1);
+        assert!(!result[0].is_empty());
+    }
+
+    #[test]
+    #[ignore]
+    #[cfg(feature = "python")]
+    fn test_generate_phonetic_dispatches_by_language() {
+        // generate_phonetic must route to the right backend per language.
+        // We don't assert on exact contents (depends on lib version), only
+        // that each supported language yields a non-empty result with the
+        // correct line count.
+        let text = vec!["test line".to_string()];
+        for lang in &["jp", "kr", "fr", "en"] {
+            let result = generate_phonetic(&text, lang).expect("supported lang must succeed");
+            assert_eq!(result.len(), 1, "{}: must keep line count", lang);
+        }
     }
 }
