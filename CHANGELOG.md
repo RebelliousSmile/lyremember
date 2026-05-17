@@ -5,6 +5,7 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 ## [Unreleased]
 
 ### Added
+- Génération automatique de release notes via `git-cliff` (#40) : `cliff.toml` à la racine + job `changelog` dans `.github/workflows/release.yml` qui exécute `orhun/git-cliff-action` et injecte les commits Conventional groupés (Added/Fixed/Changed/…) dans le body de la GitHub Release. CONTRIBUTING.md liste les préfixes acceptés.
 - Suite complète lint & formatage (#36) :
   - `cargo fmt --all -- --check` ajouté à la CI Rust (rust-backend) + nouveau job `fmt-tauri` pour `lyremember-app/src-tauri`.
   - ESLint flat config (`lyremember-app/eslint.config.js`) avec `typescript-eslint` + `eslint-plugin-vue` + `eslint-config-prettier` ; globals browser/node.

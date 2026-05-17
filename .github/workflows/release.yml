@@ -9,8 +9,25 @@ permissions:
   contents: write
 
 jobs:
+  changelog:
+    name: Generate changelog
+    runs-on: ubuntu-latest
+    outputs:
+      release_body: ${{ steps.git-cliff.outputs.content }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run git-cliff
+        id: git-cliff
+        uses: orhun/git-cliff-action@v3
+        with:
+          config: cliff.toml
+          args: --latest --strip header
+
   build-android:
     name: Android
+    needs: changelog
     runs-on: ubuntu-latest
 
     steps:
@@ -101,6 +118,10 @@ jobs:
             > (permission bloquee). Utilisez la version F-Droid de Termux ou votre gestionnaire de fichiers.
 
             _Desktop builds (Windows, Linux, macOS) coming soon._
+
+            ---
+
+            ${{ needs.changelog.outputs.release_body }}
           files: ${{ steps.find-apk.outputs.apk_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

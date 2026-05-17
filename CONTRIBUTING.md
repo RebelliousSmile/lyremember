@@ -23,7 +23,7 @@ Trois bases de code coexistent dans le repo — choisir la bonne selon le sujet 
 1. Forker le repo et créer une branche depuis `main` : `feat/<sujet>`, `fix/<sujet>`, `docs/<sujet>`, `refactor/<sujet>`.
 2. Écrire les tests **avant** le code (TDD red → green → refactor).
 3. Lancer la suite de tests locale (voir ci-dessous) et s'assurer qu'elle est verte.
-4. Commit en [Conventional Commits](https://www.conventionalcommits.org/) : `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`. Inclure `(#NN)` si une issue est liée.
+4. Commit en [Conventional Commits](https://www.conventionalcommits.org/) : `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`, `style:`, `perf:`, `ci:`, `build:`, `revert:`. Inclure `(#NN)` si une issue est liée. Format imposé : git-cliff utilise ces préfixes pour générer la section release notes automatiquement (voir `cliff.toml`).
 5. Pousser la branche et ouvrir une Pull Request claire : contexte, changements, sortie observable, tests joués.
 
 ## Lancer les tests
