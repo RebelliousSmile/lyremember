@@ -105,26 +105,28 @@ lyremember-app/
 
 ## 📚 Documentation Complète
 
+Toute la documentation détaillée vit dans [`docs/`](docs/) — voir [`docs/INDEX.md`](docs/INDEX.md) pour un sommaire complet.
+
 ### Planning & Décisions
-- [FINAL_DECISIONS.md](FINAL_DECISIONS.md) - Résumé de toutes les décisions techniques
-- [USER_STORIES_V2.md](USER_STORIES_V2.md) - 29 user stories détaillées (8 epics, 105 story points)
-- [TECH_CHOICES.md](TECH_CHOICES.md) - Comparaison des technologies (PWA, Tauri, Flutter, etc.)
+- [docs/FINAL_DECISIONS.md](docs/FINAL_DECISIONS.md) - Résumé de toutes les décisions techniques
+- [docs/USER_STORIES_V2.md](docs/USER_STORIES_V2.md) - 29 user stories détaillées (8 epics, 105 story points)
+- [docs/TECH_CHOICES.md](docs/TECH_CHOICES.md) - Comparaison des technologies (PWA, Tauri, Flutter, etc.)
 
 ### Architecture & Technique
-- [TAURI_INTEGRATION_COMPLETE.md](TAURI_INTEGRATION_COMPLETE.md) - 📖 **START HERE** - Guide complet intégration
-- [VUE_TAURI_GUIDE.md](VUE_TAURI_GUIDE.md) - Guide Vue + Tauri avec exemples
-- [ARCHITECTURE_EXPLAINED.md](ARCHITECTURE_EXPLAINED.md) - Un codebase, plusieurs plateformes
-- [TAURI_FRONTEND_LINK.md](TAURI_FRONTEND_LINK.md) - Comment Tauri et Vue interagissent
-- [TAURI_BACKEND_CLARIFICATION.md](TAURI_BACKEND_CLARIFICATION.md) - Rôle de Tauri vs votre code
+- [docs/TAURI_INTEGRATION_COMPLETE.md](docs/TAURI_INTEGRATION_COMPLETE.md) - 📖 **START HERE** - Guide complet intégration
+- [docs/VUE_TAURI_GUIDE.md](docs/VUE_TAURI_GUIDE.md) - Guide Vue + Tauri avec exemples
+- [docs/ARCHITECTURE_EXPLAINED.md](docs/ARCHITECTURE_EXPLAINED.md) - Un codebase, plusieurs plateformes
+- [docs/TAURI_FRONTEND_LINK.md](docs/TAURI_FRONTEND_LINK.md) - Comment Tauri et Vue interagissent
+- [docs/TAURI_BACKEND_CLARIFICATION.md](docs/TAURI_BACKEND_CLARIFICATION.md) - Rôle de Tauri vs votre code
 
 ### Stratégies
-- [TRANSLATION_PHONETIC_STRATEGY.md](TRANSLATION_PHONETIC_STRATEGY.md) - Stratégie "Generate Once, Store Forever"
-- [UI_LIBRARIES.md](UI_LIBRARIES.md) - Comparaison Shadcn-vue, Material, etc.
-- [RUST_OPTION.md](RUST_OPTION.md) - Analyse Rust/Tauri vs alternatives
+- [docs/TRANSLATION_PHONETIC_STRATEGY.md](docs/TRANSLATION_PHONETIC_STRATEGY.md) - Stratégie "Generate Once, Store Forever"
+- [docs/UI_LIBRARIES.md](docs/UI_LIBRARIES.md) - Comparaison Shadcn-vue, Material, etc.
+- [docs/RUST_OPTION.md](docs/RUST_OPTION.md) - Analyse Rust/Tauri vs alternatives
 
 ### Implementation
-- [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) - Guide step-by-step création projet
-- [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Résumé de l'implémentation backend
+- [docs/IMPLEMENTATION_GUIDE.md](docs/IMPLEMENTATION_GUIDE.md) - Guide step-by-step création projet
+- [rust-backend/IMPLEMENTATION_SUMMARY.md](rust-backend/IMPLEMENTATION_SUMMARY.md) - Résumé de l'implémentation backend
 
 ## ✨ Fonctionnalités Principales
 
@@ -461,8 +463,11 @@ All your data is stored locally in the `data/` directory:
 ```
 lyremember/
 ├── README.md                   # This file
-├── USER_STORIES.md            # User stories and requirements
-├── ARCHITECTURE.md            # Technical architecture
+├── docs/                       # All design & strategy docs
+│   ├── INDEX.md                # Documentation index
+│   ├── USER_STORIES.md         # User stories and requirements
+│   ├── ARCHITECTURE.md         # Technical architecture
+│   └── ...                     # see docs/INDEX.md
 ├── requirements.txt           # Python dependencies
 ├── setup.py                   # Package setup
 ├── lyremember/               # Main application package
@@ -479,11 +484,11 @@ lyremember/
 
 ## User Stories
 
-See [USER_STORIES.md](USER_STORIES.md) for detailed user stories and feature roadmap.
+See [docs/USER_STORIES.md](docs/USER_STORIES.md) for detailed user stories and feature roadmap.
 
 ## Architecture
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for technical architecture and design decisions.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for technical architecture and design decisions.
 
 ## Contributing
 
