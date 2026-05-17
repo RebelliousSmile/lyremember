@@ -50,15 +50,11 @@ npm run test:e2e          # WebDriverIO (parcours utilisateur)
 - **Markdown** : pas de duplication entre docs ; un sujet, un fichier canonique, on référence depuis les autres.
 - **Pas de secrets** : jamais de clé API en clair ; utiliser les variables d'environnement / store Tauri.
 
-### Pre-commit hook (optionnel mais recommandé)
+### Pre-commit hook
 
-Le repo embarque un hook `.husky/pre-commit` qui lance `lint-staged` (ESLint + Prettier) sur les fichiers stagés du dossier `lyremember-app/`. Pour l'activer **une fois** après clone :
+Le repo embarque un hook `.husky/pre-commit` qui lance `lint-staged` (ESLint + Prettier) sur les fichiers stagés du dossier `lyremember-app/`. Il s'active automatiquement à chaque `cd lyremember-app && npm install` via le script `prepare` (`scripts/setup-hooks.js`).
 
-```sh
-git config core.hooksPath .husky
-```
-
-Désactivation : `git config --unset core.hooksPath`.
+Désactivation manuelle : `git config --unset core.hooksPath`.
 
 ## Code review
 

@@ -5,6 +5,7 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 ## [Unreleased]
 
 ### Added
+- Pre-commit hook auto-activé : script `lyremember-app/scripts/setup-hooks.js` invoqué par `npm prepare` configure `core.hooksPath=.husky` à chaque install (plus besoin d'opt-in manuel) (#52).
 - Audit supply-chain Rust : step CI `rustsec/audit-check@v2` dans `ci-rust.yml` ; doc CONTRIBUTING pour audit local `cargo install cargo-audit && cargo audit` (#49).
 - `LYREMEMBER_LIBRETRANSLATE_URL` env var réellement implémentée dans `rust-backend/src/services/translation.rs` (lecture via `std::env::var` avec fallback `https://libretranslate.com/translate`) ; entrée ajoutée dans `.env.example` ; test unitaire `test_libretranslate_url_env_override` (#47).
 - Animations de feedback dans les modes pratique (#38) :
@@ -40,9 +41,12 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 - Modes de pratique : Karaoke, Fill-blank, MCQ, Oral (UI Phase 4).
 
 ### Fixed
+- CSP Tauri : `lyremember-app/src-tauri/tauri.conf.json` passe de `null` à une politique minimale `default-src 'self' ipc:; connect-src 'self' libretranslate.com/.de/.io; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' data:` (#48).
+- Documentation Tauri : 19 → **21 commandes** (5 auth + 7 songs + 6 practice + 3 util) dans `README.md` et `docs/TAURI_INTEGRATION_COMPLETE.md` ; section "Practice (4)" corrigée en "Practice (6)" avec ajout de `cmd_get_user_streak` + `cmd_get_recommendations` (#45).
 - `clippy::too_many_arguments` sur `rust-backend/src/services/practice.rs:285` (`insert_session` helper) : `#[allow]` localisé + ordre `impl From<pyo3::PyErr>` déplacé avant `mod tests` pour silencer `clippy::items_after_test_module`. CI Rust passe désormais avec `cargo clippy --all-targets -- -D warnings` (#46).
 
 ### Removed
+- Artefacts orphelins : `wireframes.jsx`, `wireframes2.jsx` (~88 KB à la racine, aucune référence) et `lyremember-app/README.old.md` (#51).
 - `docs/TECH_STACK_FINAL.md` (#7) : doublait `docs/FINAL_DECISIONS.md` et décrivait une stack (PWA/React/FastAPI) abandonnée. La source canonique est désormais `docs/FINAL_DECISIONS.md`.
 
 ### Changed

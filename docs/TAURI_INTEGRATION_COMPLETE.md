@@ -17,7 +17,7 @@ L'intégration du backend Rust avec Tauri est **100% fonctionnelle**.
 
 #### 2. Application Tauri (lyremember-app/)
 - ✅ **Projet créé** avec Vue 3 + TypeScript + Vite
-- ✅ **19 commandes Tauri** exposées (auth 5, songs 7, practice 4, util 3 — voir détail plus bas)
+- ✅ **21 commandes Tauri** exposées (auth 5, songs 7, practice 6, util 3 — voir détail plus bas)
 - ✅ **TypeScript API** type-safe (200 lignes)
 - ✅ **UI de test** d'intégration
 - ✅ **Base de données** auto-initialisée
@@ -53,7 +53,7 @@ L'intégration du backend Rust avec Tauri est **100% fonctionnelle**.
 │              Tauri IPC Layer                        │
 │                                                      │
 │  ┌──────────────────────────────────────────────┐  │
-│  │  commands.rs (19 Tauri Commands)             │  │
+│  │  commands.rs (21 Tauri Commands)             │  │
 │  │  • cmd_register, cmd_login                   │  │
 │  │  • cmd_create_song, cmd_get_songs            │  │
 │  │  • cmd_create_practice_session               │  │
@@ -176,7 +176,7 @@ lyremember-app/
 ├── src-tauri/                    ✅ Backend Tauri
 │   ├── src/
 │   │   ├── lib.rs                ✅ Setup + DB init (60 lines)
-│   │   ├── commands.rs           ✅ 19 Tauri commands (~233 lines)
+│   │   ├── commands.rs           ✅ 21 Tauri commands (~233 lines)
 │   │   └── main.rs
 │   ├── Cargo.toml                ✅ Dependencies (includes rust-backend)
 │   └── tauri.conf.json
@@ -185,7 +185,7 @@ lyremember-app/
 └── README.md                     ✅ Complete documentation
 ```
 
-### Détail des 19 commandes Tauri exposées
+### Détail des 21 commandes Tauri exposées
 
 Source de vérité : `lyremember-app/src-tauri/src/commands.rs`.
 
@@ -193,7 +193,7 @@ Source de vérité : `lyremember-app/src-tauri/src/commands.rs`.
 
 **Songs (7)** : `cmd_create_song`, `cmd_get_songs`, `cmd_get_song`, `cmd_get_user_songs`, `cmd_add_to_repertoire`, `cmd_update_song`, `cmd_delete_song`.
 
-**Practice (4)** : `cmd_create_practice_session`, `cmd_get_user_sessions`, `cmd_get_user_stats`, `cmd_get_song_mastery`.
+**Practice (6)** : `cmd_create_practice_session`, `cmd_get_user_sessions`, `cmd_get_user_stats`, `cmd_get_song_mastery`, `cmd_get_user_streak`, `cmd_get_recommendations`.
 
 **Util (3)** : `cmd_translate_text`, `cmd_generate_phonetic`, `cmd_health_check`.
 

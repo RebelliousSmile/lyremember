@@ -13,6 +13,7 @@ export default [
       '**/*.config.{js,ts,mjs,cjs}',
       'src/vite-env.d.ts',
       'wdio.conf.ts',
+      'scripts/**',
     ],
   },
   js.configs.recommended,
