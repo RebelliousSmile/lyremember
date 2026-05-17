@@ -37,7 +37,9 @@ export function useKeyboardShortcuts() {
 
   function waitForSecondKey() {
     pendingG = true;
-    gTimeout = setTimeout(() => { pendingG = false; }, 1000);
+    gTimeout = setTimeout(() => {
+      pendingG = false;
+    }, 1000);
   }
 
   function gHandler(e: KeyboardEvent) {
@@ -49,10 +51,18 @@ export function useKeyboardShortcuts() {
     if (gTimeout) clearTimeout(gTimeout);
 
     switch (e.key) {
-      case 'd': router.push('/dashboard'); break;
-      case 's': router.push('/songs'); break;
-      case 'p': router.push('/practice'); break;
-      case 't': router.push('/settings'); break;
+      case 'd':
+        router.push('/dashboard');
+        break;
+      case 's':
+        router.push('/songs');
+        break;
+      case 'p':
+        router.push('/practice');
+        break;
+      case 't':
+        router.push('/settings');
+        break;
     }
   }
 

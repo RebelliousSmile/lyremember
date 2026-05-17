@@ -1,11 +1,5 @@
 // Re-export types from tauri-api for convenience
-export type {
-  User,
-  Song,
-  PracticeSession,
-  UserStats,
-  SongMastery,
-} from '../lib/tauri-api';
+export type { User, Song, PracticeSession, UserStats, SongMastery } from '../lib/tauri-api';
 
 // Additional UI-specific types
 export interface LoginForm {

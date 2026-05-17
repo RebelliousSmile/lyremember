@@ -31,9 +31,9 @@ export class FileImportError extends Error {
 export function parseTxt(content: string): ParsedSong {
   const lyrics = content
     .split(/\r?\n/)
-    .map(line => line.replace(/\r$/, ''))
-    .filter(line => !line.trimStart().startsWith('#'))
-    .filter(line => line.trim() !== '');
+    .map((line) => line.replace(/\r$/, ''))
+    .filter((line) => !line.trimStart().startsWith('#'))
+    .filter((line) => line.trim() !== '');
   return { lyrics };
 }
 
@@ -49,7 +49,7 @@ export function parseJson(content: string): ParsedSong {
   }
   const obj = data as Record<string, unknown>;
   const lyrics = obj.lyrics;
-  if (!Array.isArray(lyrics) || !lyrics.every(l => typeof l === 'string')) {
+  if (!Array.isArray(lyrics) || !lyrics.every((l) => typeof l === 'string')) {
     throw new FileImportError("'lyrics' must be an array of strings.");
   }
   return {

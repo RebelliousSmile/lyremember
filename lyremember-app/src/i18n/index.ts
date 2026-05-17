@@ -15,11 +15,11 @@ export const supportedLocales: { code: SupportedLocale; label: string }[] = [
 
 function getInitialLocale(): SupportedLocale {
   const saved = localStorage.getItem('locale');
-  if (saved && supportedLocales.some(l => l.code === saved)) {
+  if (saved && supportedLocales.some((l) => l.code === saved)) {
     return saved as SupportedLocale;
   }
   const browserLang = navigator.language.split('-')[0];
-  if (supportedLocales.some(l => l.code === browserLang)) {
+  if (supportedLocales.some((l) => l.code === browserLang)) {
     return browserLang as SupportedLocale;
   }
   return 'en';

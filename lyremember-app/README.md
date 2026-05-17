@@ -17,6 +17,7 @@ Application multiplateforme pour mémoriser des paroles de chansons avec support
 Pour le développement desktop, vous devez avoir installé :
 
 **Linux:**
+
 ```bash
 sudo apt install libwebkit2gtk-4.0-dev \
     build-essential \
@@ -30,11 +31,13 @@ sudo apt install libwebkit2gtk-4.0-dev \
 ```
 
 **macOS:**
+
 ```bash
 xcode-select --install
 ```
 
 **Windows:**
+
 - Microsoft Visual Studio C++ Build Tools
 
 ### Runtime
@@ -60,6 +63,7 @@ cd ../lyremember-app
 ```
 
 Les packages installés :
+
 - `pykakasi>=2.2.1` - Japonais (kanji → romaji)
 - `hangul-romanize>=0.1.0` - Coréen (hangul → latin)
 - `epitran>=1.24` - Français/Anglais (→ IPA)
@@ -81,6 +85,7 @@ npm run tauri dev
 ```
 
 Cela va :
+
 1. Compiler le backend Rust avec toutes les commandes Tauri
 2. Démarrer le serveur Vite dev (Hot Module Reload)
 3. Ouvrir la fenêtre Tauri avec l'application
@@ -162,6 +167,7 @@ Crée les executables dans `src-tauri/target/release/bundle/` :
 ### Configuration
 
 Éditer `src-tauri/tauri.conf.json` pour configurer :
+
 - Nom de l'app
 - Icônes
 - Permissions
@@ -246,7 +252,7 @@ const song = await api.createSong(
   '初音ミク',
   'jp',
   ['千本桜', '夜ニ紛レ'],
-  true  // auto-translate to EN
+  true, // auto-translate to EN
 );
 
 // song.phonetic_lyrics = ['senbonzakura', 'yoru ni magire']
@@ -260,10 +266,10 @@ const session = await api.createPracticeSession(
   user.id,
   song.id,
   'karaoke',
-  85.5,  // score
-  10,    // lines practiced
-  8,     // lines correct
-  120    // duration in seconds
+  85.5, // score
+  10, // lines practiced
+  8, // lines correct
+  120, // duration in seconds
 );
 
 // Get stats

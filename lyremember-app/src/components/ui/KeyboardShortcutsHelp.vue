@@ -4,10 +4,10 @@
       <div
         v-if="show"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-        @click.self="$emit('close')"
         role="dialog"
         aria-modal="true"
         aria-label="Keyboard shortcuts"
+        @click.self="$emit('close')"
       >
         <div class="bg-deep-card rounded-xl shadow-2xl max-w-md w-full mx-4 p-6 space-y-4">
           <div class="flex items-center justify-between">
@@ -15,9 +15,9 @@
               {{ $t('shortcuts.title') }}
             </h2>
             <button
-              @click="$emit('close')"
               class="p-1 rounded hover:bg-deep-card-hover"
               aria-label="Close"
+              @click="$emit('close')"
             >
               <X :size="20" />
             </button>
@@ -36,8 +36,7 @@
                 <kbd
                   v-for="key in shortcut.keys.split(' ')"
                   :key="key"
-                  class="px-2 py-1 text-xs font-mono bg-deep-card-hover border
-                         border-deep-border rounded text-[#B8B0D0]"
+                  class="px-2 py-1 text-xs font-mono bg-deep-card-hover border border-deep-border rounded text-[#B8B0D0]"
                 >
                   {{ key }}
                 </kbd>

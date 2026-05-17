@@ -1,30 +1,26 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-deep p-4">
-    <Card className="w-full max-w-md">
+    <Card class-name="w-full max-w-md">
       <template #header>
         <h2 class="text-2xl font-bold text-center">{{ $t('auth.loginTitle') }}</h2>
       </template>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="handleSubmit">
         <Alert v-model="showError" type="error" closable>
           {{ authStore.error }}
         </Alert>
 
-        <Input
-          v-model="form.username"
-          :label="$t('auth.username')"
-          type="text"
-          required
-        />
+        <Input v-model="form.username" :label="$t('auth.username')" type="text" required />
 
-        <Input
-          v-model="form.password"
-          :label="$t('auth.password')"
-          type="password"
-          required
-        />
+        <Input v-model="form.password" :label="$t('auth.password')" type="password" required />
 
-        <Button type="submit" variant="primary" size="lg" className="w-full" :loading="authStore.loading">
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          class-name="w-full"
+          :loading="authStore.loading"
+        >
           {{ $t('auth.login') }}
         </Button>
 
@@ -38,7 +34,7 @@
           type="button"
           variant="secondary"
           size="lg"
-          className="w-full"
+          class-name="w-full"
           :loading="guestLoading"
           @click="handleGuestLogin"
         >
@@ -77,9 +73,12 @@ const form = ref<LoginForm>({
 const showError = ref(false);
 const guestLoading = ref(false);
 
-watch(() => authStore.error, (error) => {
-  showError.value = !!error;
-});
+watch(
+  () => authStore.error,
+  (error) => {
+    showError.value = !!error;
+  },
+);
 
 async function handleSubmit() {
   try {

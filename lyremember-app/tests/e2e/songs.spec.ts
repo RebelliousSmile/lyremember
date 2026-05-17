@@ -9,10 +9,9 @@ describe('Songs - Ma Lyre', () => {
         break;
       }
     }
-    await browser.waitUntil(
-      async () => (await browser.getUrl()).includes('dashboard'),
-      { timeout: 10000 }
-    );
+    await browser.waitUntil(async () => (await browser.getUrl()).includes('dashboard'), {
+      timeout: 10000,
+    });
   });
 
   it('should navigate to Ma Lyre (songs list)', async () => {
@@ -64,7 +63,7 @@ describe('Songs - Ma Lyre', () => {
         const url = await browser.getUrl();
         return url.includes('songs') && !url.includes('add');
       },
-      { timeout: 15000, timeoutMsg: 'Expected to navigate after song creation' }
+      { timeout: 15000, timeoutMsg: 'Expected to navigate after song creation' },
     );
   });
 

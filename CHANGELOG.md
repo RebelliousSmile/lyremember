@@ -5,6 +5,13 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 ## [Unreleased]
 
 ### Added
+- Suite complète lint & formatage (#36) :
+  - `cargo fmt --all -- --check` ajouté à la CI Rust (rust-backend) + nouveau job `fmt-tauri` pour `lyremember-app/src-tauri`.
+  - ESLint flat config (`lyremember-app/eslint.config.js`) avec `typescript-eslint` + `eslint-plugin-vue` + `eslint-config-prettier` ; globals browser/node.
+  - Prettier (`.prettierrc.json` + `.prettierignore`) ; scripts `npm run lint` (check) et `npm run lint:fix`.
+  - Step CI Frontend `npm run lint` (eslint + prettier --check).
+  - Pre-commit hook `.husky/pre-commit` qui lance `lint-staged` (ESLint + Prettier sur fichiers stagés) ; activation : `git config core.hooksPath .husky`.
+  - Config `lint-staged` dans `lyremember-app/package.json`.
 - Test automatique de parité des clés i18n (`lyremember-app/src/i18n/parity.spec.ts`) : vérifie que `fr.json` / `ja.json` / `ko.json` contiennent exactement les mêmes clés que `en.json` (référence). Échec immédiat sur clé manquante ou orpheline (#42).
 - Roadmap post-MVP `docs/MASTER_PLAN.md` (phases 0-3 done, phases 4-6 → issues #33-#44 avec décisions contradictoires arbitrées). Source : MASTER_PLAN.md de la branche `claude/add-claude-documentation-tgOOO` audité contre les issues #6-#31.
 - Index documentaire `docs/INDEX.md` regroupant les 16 fichiers de design par thème.

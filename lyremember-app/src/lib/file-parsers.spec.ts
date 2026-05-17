@@ -1,11 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  parseTxt,
-  parseJson,
-  parseLrc,
-  parseByExtension,
-  FileImportError,
-} from './file-parsers';
+import { parseTxt, parseJson, parseLrc, parseByExtension, FileImportError } from './file-parsers';
 
 describe('parseTxt', () => {
   it('returns one entry per non-empty line', () => {

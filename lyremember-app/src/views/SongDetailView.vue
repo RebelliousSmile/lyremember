@@ -16,14 +16,16 @@
         <div class="flex items-center gap-3 py-3 px-1">
           <button
             class="w-10 h-10 flex items-center justify-center rounded-xl bg-deep-card border border-deep-border text-[#B8B0D0] hover:text-[#F5F0EB] hover:border-[#3A3460] transition-all shrink-0"
-            @click="$router.back()"
             aria-label="Back"
+            @click="$router.back()"
           >
             <span class="text-xl leading-none font-light">&lsaquo;</span>
           </button>
 
           <!-- Cover with gradient violet bg and emoji -->
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7B6FA0] to-[#5E4B8B] flex items-center justify-center text-lg shrink-0 shadow-lg shadow-[#7B6FA0]/20">
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7B6FA0] to-[#5E4B8B] flex items-center justify-center text-lg shrink-0 shadow-lg shadow-[#7B6FA0]/20"
+          >
             {{ languageEmoji(song.language) }}
           </div>
 
@@ -66,26 +68,14 @@
               </div>
             </template>
 
-            <KaraokeMode
-              v-if="activeMode === 'karaoke'"
-              :song="song"
-              @finish="onPracticeFinish"
-            />
+            <KaraokeMode v-if="activeMode === 'karaoke'" :song="song" @finish="onPracticeFinish" />
             <FillBlankMode
               v-else-if="activeMode === 'fill-blank'"
               :song="song"
               @finish="onPracticeFinish"
             />
-            <McqMode
-              v-else-if="activeMode === 'mcq'"
-              :song="song"
-              @finish="onPracticeFinish"
-            />
-            <OralMode
-              v-else-if="activeMode === 'oral'"
-              :song="song"
-              @finish="onPracticeFinish"
-            />
+            <McqMode v-else-if="activeMode === 'mcq'" :song="song" @finish="onPracticeFinish" />
+            <OralMode v-else-if="activeMode === 'oral'" :song="song" @finish="onPracticeFinish" />
           </Card>
         </div>
 
@@ -96,15 +86,19 @@
             v-if="song.translations && Object.keys(song.translations).length > 0"
             class="bg-deep-card/50 rounded-2xl border border-deep-border px-4 py-3 flex items-center gap-2.5 flex-wrap"
           >
-            <span class="text-[11px] text-[#8A82A0] font-medium tracking-wide whitespace-nowrap">Traduire en :</span>
+            <span class="text-[11px] text-[#8A82A0] font-medium tracking-wide whitespace-nowrap"
+              >Traduire en :</span
+            >
             <div class="flex items-center gap-2 flex-wrap">
               <button
                 v-for="lang in availableTranslationLangs"
                 :key="lang"
                 class="px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all duration-200"
-                :class="selectedTranslation === lang
-                  ? 'border border-[#F2A93B] text-[#F2A93B] bg-[#F2A93B]/[0.10] shadow-sm shadow-[#F2A93B]/10'
-                  : 'border border-deep-border text-[#B8B0D0] bg-deep-card hover:border-[#3A3460] hover:text-[#F5F0EB]'"
+                :class="
+                  selectedTranslation === lang
+                    ? 'border border-[#F2A93B] text-[#F2A93B] bg-[#F2A93B]/[0.10] shadow-sm shadow-[#F2A93B]/10'
+                    : 'border border-deep-border text-[#B8B0D0] bg-deep-card hover:border-[#3A3460] hover:text-[#F5F0EB]'
+                "
                 @click="selectedTranslation = selectedTranslation === lang ? null : lang"
               >
                 {{ langFlag(lang) }} {{ lang.toUpperCase() }}
@@ -116,7 +110,9 @@
           <div class="bg-deep-card rounded-2xl border border-deep-border p-5 space-y-6">
             <div v-for="(section, sIdx) in lyricSections" :key="sIdx">
               <!-- Section label -->
-              <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#F2A93B] mb-3.5 select-none">
+              <p
+                class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#F2A93B] mb-3.5 select-none"
+              >
                 {{ section.label }}
               </p>
 
@@ -127,7 +123,9 @@
                   :key="lIdx"
                   class="border-l-2 border-[#7B6FA0]/40 pl-3.5 py-0.5"
                 >
-                  <p class="text-[15px] leading-[1.65] text-[#F5F0EB]/95 font-serif tracking-[0.01em]">
+                  <p
+                    class="text-[15px] leading-[1.65] text-[#F5F0EB]/95 font-serif tracking-[0.01em]"
+                  >
                     {{ line.original }}
                   </p>
                   <p
@@ -164,11 +162,17 @@
                 class="bg-deep-card rounded-2xl border border-deep-border p-5 text-left hover:bg-deep-card-hover hover:border-[#F59E0B]/20 transition-all duration-200 group"
                 @click="startMode('fill-blank')"
               >
-                <div class="w-10 h-10 rounded-full bg-[#F59E0B]/20 flex items-center justify-center mb-3 group-hover:bg-[#F59E0B]/30 transition-colors">
+                <div
+                  class="w-10 h-10 rounded-full bg-[#F59E0B]/20 flex items-center justify-center mb-3 group-hover:bg-[#F59E0B]/30 transition-colors"
+                >
                   <PenLine :size="18" class="text-[#F59E0B]" />
                 </div>
-                <p class="text-[14px] font-bold text-[#F5F0EB] mb-1">{{ $t('songDetail.fillBlank') }}</p>
-                <p class="text-[11px] text-[#8A82A0] leading-snug">{{ $t('songDetail.fillBlankDesc', 'Completez les paroles manquantes') }}</p>
+                <p class="text-[14px] font-bold text-[#F5F0EB] mb-1">
+                  {{ $t('songDetail.fillBlank') }}
+                </p>
+                <p class="text-[11px] text-[#8A82A0] leading-snug">
+                  {{ $t('songDetail.fillBlankDesc', 'Completez les paroles manquantes') }}
+                </p>
               </button>
 
               <!-- First letter / Premiere lettre -->
@@ -176,11 +180,15 @@
                 class="bg-deep-card rounded-2xl border border-deep-border p-5 text-left hover:bg-deep-card-hover hover:border-[#10B981]/20 transition-all duration-200 group"
                 @click="startMode('mcq')"
               >
-                <div class="w-10 h-10 rounded-full bg-[#10B981]/20 flex items-center justify-center mb-3 group-hover:bg-[#10B981]/30 transition-colors">
+                <div
+                  class="w-10 h-10 rounded-full bg-[#10B981]/20 flex items-center justify-center mb-3 group-hover:bg-[#10B981]/30 transition-colors"
+                >
                   <List :size="18" class="text-[#10B981]" />
                 </div>
                 <p class="text-[14px] font-bold text-[#F5F0EB] mb-1">{{ $t('songDetail.mcq') }}</p>
-                <p class="text-[11px] text-[#8A82A0] leading-snug">{{ $t('songDetail.mcqDesc', 'Choisissez la bonne reponse') }}</p>
+                <p class="text-[11px] text-[#8A82A0] leading-snug">
+                  {{ $t('songDetail.mcqDesc', 'Choisissez la bonne reponse') }}
+                </p>
               </button>
 
               <!-- Karaoke -->
@@ -188,11 +196,17 @@
                 class="bg-deep-card rounded-2xl border border-deep-border p-5 text-left hover:bg-deep-card-hover hover:border-[#EC4899]/20 transition-all duration-200 group"
                 @click="startMode('karaoke')"
               >
-                <div class="w-10 h-10 rounded-full bg-[#EC4899]/20 flex items-center justify-center mb-3 group-hover:bg-[#EC4899]/30 transition-colors">
+                <div
+                  class="w-10 h-10 rounded-full bg-[#EC4899]/20 flex items-center justify-center mb-3 group-hover:bg-[#EC4899]/30 transition-colors"
+                >
                   <PlayCircle :size="18" class="text-[#EC4899]" />
                 </div>
-                <p class="text-[14px] font-bold text-[#F5F0EB] mb-1">{{ $t('songDetail.karaokeMode') }}</p>
-                <p class="text-[11px] text-[#8A82A0] leading-snug">{{ $t('songDetail.karaokeDesc', 'Chantez en suivant les paroles') }}</p>
+                <p class="text-[14px] font-bold text-[#F5F0EB] mb-1">
+                  {{ $t('songDetail.karaokeMode') }}
+                </p>
+                <p class="text-[11px] text-[#8A82A0] leading-snug">
+                  {{ $t('songDetail.karaokeDesc', 'Chantez en suivant les paroles') }}
+                </p>
               </button>
 
               <!-- Flashcards -->
@@ -200,11 +214,17 @@
                 class="bg-deep-card rounded-2xl border border-deep-border p-5 text-left hover:bg-deep-card-hover hover:border-[#6366F1]/20 transition-all duration-200 group"
                 @click="startMode('oral')"
               >
-                <div class="w-10 h-10 rounded-full bg-[#6366F1]/20 flex items-center justify-center mb-3 group-hover:bg-[#6366F1]/30 transition-colors">
+                <div
+                  class="w-10 h-10 rounded-full bg-[#6366F1]/20 flex items-center justify-center mb-3 group-hover:bg-[#6366F1]/30 transition-colors"
+                >
                   <Mic :size="18" class="text-[#6366F1]" />
                 </div>
-                <p class="text-[14px] font-bold text-[#F5F0EB] mb-1">{{ $t('songDetail.oralPractice') }}</p>
-                <p class="text-[11px] text-[#8A82A0] leading-snug">{{ $t('songDetail.oralDesc', 'Pratiquez a l\'oral') }}</p>
+                <p class="text-[14px] font-bold text-[#F5F0EB] mb-1">
+                  {{ $t('songDetail.oralPractice') }}
+                </p>
+                <p class="text-[11px] text-[#8A82A0] leading-snug">
+                  {{ $t('songDetail.oralDesc', "Pratiquez a l'oral") }}
+                </p>
               </button>
             </div>
           </div>
@@ -292,9 +312,10 @@ const lyricSections = computed<LyricSection[]>(() => {
   if (!song.value) return [];
   const lyrics = song.value.lyrics;
   const phonetics = song.value.phonetic_lyrics ?? null;
-  const translations = selectedTranslation.value && song.value.translations
-    ? song.value.translations[selectedTranslation.value] || null
-    : null;
+  const translations =
+    selectedTranslation.value && song.value.translations
+      ? song.value.translations[selectedTranslation.value] || null
+      : null;
 
   const sections: LyricSection[] = [];
   let currentLines: LyricLine[] = [];

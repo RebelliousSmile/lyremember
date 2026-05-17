@@ -11,7 +11,7 @@
       </div>
 
       <Card>
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <form class="space-y-6" @submit.prevent="handleSubmit">
           <Alert v-model="showError" type="error" closable>
             {{ error }}
           </Alert>
@@ -23,11 +23,8 @@
             <input
               type="file"
               accept=".txt,.json,.lrc"
+              class="block w-full text-sm text-[#B8B0D0] file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-gold file:text-black file:font-medium file:cursor-pointer hover:file:bg-gold/90"
               @change="handleFileImport"
-              class="block w-full text-sm text-[#B8B0D0]
-                     file:mr-3 file:px-3 file:py-1.5 file:rounded-lg
-                     file:border-0 file:bg-gold file:text-black file:font-medium
-                     file:cursor-pointer hover:file:bg-gold/90"
             />
             <p class="mt-1 text-xs text-[#8A82A0]">{{ $t('addSong.importFileHint') }}</p>
           </div>
@@ -87,7 +84,12 @@
           />
 
           <div class="flex items-center gap-2">
-            <input v-model="form.autoTranslate" type="checkbox" id="autoTranslate" class="rounded" />
+            <input
+              id="autoTranslate"
+              v-model="form.autoTranslate"
+              type="checkbox"
+              class="rounded"
+            />
             <label for="autoTranslate" class="text-sm text-[#B8B0D0]">
               {{ $t('addSong.autoTranslate') }}
             </label>
@@ -97,7 +99,9 @@
             <p class="text-sm text-blue-800 dark:text-blue-300">
               <strong>Note:</strong> {{ $t('addSong.autoTranslateNote') }}
             </p>
-            <ul class="mt-2 text-sm text-blue-700 dark:text-blue-400 list-disc list-inside space-y-1">
+            <ul
+              class="mt-2 text-sm text-blue-700 dark:text-blue-400 list-disc list-inside space-y-1"
+            >
               <li>{{ $t('addSong.autoTranslatePhonetic') }}</li>
               <li>{{ $t('addSong.autoTranslateTranslation') }}</li>
               <li>{{ $t('addSong.autoTranslateOffline') }}</li>
@@ -105,10 +109,10 @@
           </div>
 
           <div class="flex gap-4">
-            <Button type="button" variant="ghost" @click="$router.back()" className="flex-1">
+            <Button type="button" variant="ghost" class-name="flex-1" @click="$router.back()">
               {{ $t('addSong.cancel') }}
             </Button>
-            <Button type="submit" variant="primary" :loading="loading" className="flex-1">
+            <Button type="submit" variant="primary" :loading="loading" class-name="flex-1">
               <Plus :size="20" />
               {{ $t('addSong.createSong') }}
             </Button>
@@ -164,9 +168,8 @@ async function handleFileImport(event: Event) {
     if (parsed.language) form.value.language = parsed.language;
     form.value.lyrics = parsed.lyrics.join('\n');
   } catch (e) {
-    error.value = e instanceof FileImportError
-      ? e.message
-      : `Failed to import file: ${(e as Error).message}`;
+    error.value =
+      e instanceof FileImportError ? e.message : `Failed to import file: ${(e as Error).message}`;
     showError.value = true;
   } finally {
     input.value = '';
@@ -187,8 +190,8 @@ async function handleSubmit() {
   try {
     const lyricsArray = form.value.lyrics
       .split('\n')
-      .map(line => line.trim())
-      .filter(line => line.length > 0);
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
 
     if (lyricsArray.length === 0) {
       throw new Error(t('addSong.enterOneLine'));

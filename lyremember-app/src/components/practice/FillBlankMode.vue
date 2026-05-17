@@ -31,20 +31,27 @@
             <span
               v-else-if="token.revealed"
               class="font-bold"
-              :class="token.correct ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'"
+              :class="
+                token.correct
+                  ? 'text-green-600 dark:text-green-400'
+                  : 'text-red-500 dark:text-red-400'
+              "
             >
               {{ token.correct ? token.text : `${userInputs[token.blankIndex]}→${token.text}` }}
               {{ ' ' }}
             </span>
             <span v-else class="inline-block mx-1">
               <input
-                :ref="el => { if (token.blankIndex === currentBlankIndex) activeInput = el as HTMLInputElement }"
-                type="text"
+                :ref="
+                  (el) => {
+                    if (token.blankIndex === currentBlankIndex)
+                      activeInput = el as HTMLInputElement;
+                  }
+                "
                 v-model="userInputs[token.blankIndex]"
+                type="text"
                 :placeholder="'_'.repeat(Math.max(3, token.text.length))"
-                class="w-32 px-2 py-1 border-b-2 border-gold bg-transparent text-center
-                       text-lg font-medium focus:outline-none focus:border-gold-dark
-                       text-[#F5F0EB]"
+                class="w-32 px-2 py-1 border-b-2 border-gold bg-transparent text-center text-lg font-medium focus:outline-none focus:border-gold-dark text-[#F5F0EB]"
                 @keydown.enter="checkBlank(token.blankIndex)"
               />
               {{ ' ' }}
@@ -61,7 +68,7 @@
       <!-- Actions -->
       <div class="flex items-center justify-between">
         <div class="flex gap-2">
-          <Button variant="primary" @click="checkAllBlanks" :disabled="!hasUnrevealedBlanks">
+          <Button variant="primary" :disabled="!hasUnrevealedBlanks" @click="checkAllBlanks">
             <Check :size="18" />
             Check
           </Button>
@@ -70,7 +77,7 @@
             Hint
           </Button>
         </div>
-        <Button variant="secondary" @click="nextLine" :disabled="hasUnrevealedBlanks">
+        <Button variant="secondary" :disabled="hasUnrevealedBlanks" @click="nextLine">
           Next
           <ChevronRight :size="18" />
         </Button>
@@ -80,20 +87,14 @@
     <!-- End screen -->
     <div v-else class="text-center py-6 space-y-4">
       <div class="text-6xl mb-2">{{ scoreMedal }}</div>
-      <p class="text-xl font-semibold text-[#F5F0EB]">
-        Score: {{ Math.round(scorePercent) }}%
-      </p>
-      <p class="text-[#8A82A0]">
-        {{ correctCount }} correct out of {{ answeredCount }} blanks
-      </p>
+      <p class="text-xl font-semibold text-[#F5F0EB]">Score: {{ Math.round(scorePercent) }}%</p>
+      <p class="text-[#8A82A0]">{{ correctCount }} correct out of {{ answeredCount }} blanks</p>
       <div class="flex justify-center gap-3">
         <Button variant="primary" @click="restart">
           <RotateCcw :size="18" />
           Retry
         </Button>
-        <Button variant="secondary" @click="$emit('finish', sessionData)">
-          Done
-        </Button>
+        <Button variant="secondary" @click="$emit('finish', sessionData)"> Done </Button>
       </div>
     </div>
   </div>
@@ -115,7 +116,9 @@ interface Token {
 
 const props = defineProps<{ song: Song }>();
 defineEmits<{
-  finish: [data: { score: number; linesPracticed: number; linesCorrect: number; durationSeconds: number }];
+  finish: [
+    data: { score: number; linesPracticed: number; linesCorrect: number; durationSeconds: number },
+  ];
 }>();
 
 const currentIndex = ref(0);
@@ -157,7 +160,7 @@ const currentTokens = ref<Token[]>(tokenizeLine(props.song.lyrics[0]));
 
 function initLine() {
   currentTokens.value = tokenizeLine(props.song.lyrics[currentIndex.value]);
-  const blanksCount = currentTokens.value.filter(t => t.hidden).length;
+  const blanksCount = currentTokens.value.filter((t) => t.hidden).length;
   userInputs.value = Array(blanksCount).fill('');
   currentBlankIndex.value = 0;
   showHint.value = false;
@@ -165,15 +168,15 @@ function initLine() {
 }
 
 const hasUnrevealedBlanks = computed(() =>
-  currentTokens.value.some(t => t.hidden && !t.revealed)
+  currentTokens.value.some((t) => t.hidden && !t.revealed),
 );
 
 const progress = computed(() =>
-  Math.round(((currentIndex.value + (finished.value ? 1 : 0)) / props.song.lyrics.length) * 100)
+  Math.round(((currentIndex.value + (finished.value ? 1 : 0)) / props.song.lyrics.length) * 100),
 );
 
 const scorePercent = computed(() =>
-  answeredCount.value === 0 ? 0 : (correctCount.value / answeredCount.value) * 100
+  answeredCount.value === 0 ? 0 : (correctCount.value / answeredCount.value) * 100,
 );
 
 const scoreColor = computed(() => {
@@ -200,11 +203,14 @@ const sessionData = computed(() => ({
 }));
 
 function normalize(str: string): string {
-  return str.toLowerCase().trim().replace(/[^\w\s]/g, '');
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s]/g, '');
 }
 
 function checkBlank(blankIndex: number) {
-  const token = currentTokens.value.find(t => t.blankIndex === blankIndex);
+  const token = currentTokens.value.find((t) => t.blankIndex === blankIndex);
   if (!token || token.revealed) return;
 
   const userAnswer = normalize(userInputs.value[blankIndex]);
@@ -217,7 +223,7 @@ function checkBlank(blankIndex: number) {
   if (isCorrect) correctCount.value++;
 
   // Move focus to next unrevealed blank
-  const nextBlank = currentTokens.value.find(t => t.hidden && !t.revealed);
+  const nextBlank = currentTokens.value.find((t) => t.hidden && !t.revealed);
   if (nextBlank) {
     currentBlankIndex.value = nextBlank.blankIndex;
     nextTick(() => activeInput.value?.focus());
@@ -226,8 +232,8 @@ function checkBlank(blankIndex: number) {
 
 function checkAllBlanks() {
   currentTokens.value
-    .filter(t => t.hidden && !t.revealed)
-    .forEach(t => checkBlank(t.blankIndex));
+    .filter((t) => t.hidden && !t.revealed)
+    .forEach((t) => checkBlank(t.blankIndex));
 }
 
 function nextLine() {

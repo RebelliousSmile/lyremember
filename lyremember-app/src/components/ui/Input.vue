@@ -44,7 +44,7 @@ defineEmits<{
 
 .input-label {
   @apply block text-sm font-medium mb-1;
-  color: #B8B0D0;
+  color: #b8b0d0;
 }
 
 .input {

@@ -36,14 +36,14 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const authToken = await api.login(username, password);
       token.value = authToken;
-      
+
       // Verify token and get user
       const authenticatedUser = await api.verifyToken(authToken);
       user.value = authenticatedUser;
-      
+
       // Save token to localStorage
       localStorage.setItem('auth_token', authToken);
-      
+
       return authenticatedUser;
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Login failed';

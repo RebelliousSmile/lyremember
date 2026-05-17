@@ -33,7 +33,7 @@ describe('songs store', () => {
       makeSong({ id: 'c', title: 'Hello', artist: 'Adele' }),
     ];
     store.searchQuery = 'beat';
-    expect(store.filteredSongs.map(s => s.id)).toEqual(['b']);
+    expect(store.filteredSongs.map((s) => s.id)).toEqual(['b']);
   });
 
   it('filters by language when selectedLanguage is not "all"', () => {
@@ -44,7 +44,7 @@ describe('songs store', () => {
       makeSong({ id: 'c', language: 'fr' }),
     ];
     store.selectedLanguage = 'fr';
-    expect(store.filteredSongs.map(s => s.id).sort()).toEqual(['b', 'c']);
+    expect(store.filteredSongs.map((s) => s.id).sort()).toEqual(['b', 'c']);
   });
 
   it('groups songs by language', () => {

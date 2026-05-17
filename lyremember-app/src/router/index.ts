@@ -93,7 +93,7 @@ router.beforeEach(async (to, _from, next) => {
   if (requiresAuth && !authStore.isAuthenticated) {
     // Check if we have a saved token
     const hasAuth = await authStore.checkAuth();
-    
+
     if (!hasAuth) {
       // Redirect to login
       next({ name: 'login', query: { redirect: to.fullPath } });

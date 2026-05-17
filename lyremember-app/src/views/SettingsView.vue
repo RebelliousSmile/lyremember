@@ -19,9 +19,9 @@
               <p class="text-sm text-[#8A82A0]">{{ $t('settings.darkModeDesc') }}</p>
             </div>
             <button
-              @click="uiStore.toggleDarkMode()"
               class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
               :class="uiStore.darkMode ? 'bg-gold' : 'bg-gray-300'"
+              @click="uiStore.toggleDarkMode()"
             >
               <span
                 class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
@@ -38,9 +38,8 @@
             </div>
             <select
               :value="locale"
+              class="rounded-lg border border-deep-border bg-deep-card-hover px-3 py-2 text-sm text-[#F5F0EB]"
               @change="changeLocale(($event.target as HTMLSelectElement).value)"
-              class="rounded-lg border border-deep-border bg-deep-card-hover
-                     px-3 py-2 text-sm text-[#F5F0EB]"
             >
               <option v-for="lang in supportedLocales" :key="lang.code" :value="lang.code">
                 {{ lang.label }}
@@ -49,7 +48,6 @@
           </div>
         </div>
       </Card>
-
     </div>
   </MainLayout>
 </template>
@@ -65,7 +63,7 @@ const { locale } = useI18n();
 const uiStore = useUiStore();
 
 function changeLocale(code: string) {
-  if (!supportedLocales.some(l => l.code === code)) return;
+  if (!supportedLocales.some((l) => l.code === code)) return;
   locale.value = code as SupportedLocale;
   localStorage.setItem('locale', code);
 }

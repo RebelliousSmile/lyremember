@@ -4,24 +4,24 @@
 
 /* Custom styles - LyRemember dark gold theme */
 :root {
-  --primary: #F2A93B;
-  --primary-dark: #D4911F;
-  --secondary: #7B6FA0;
-  --success: #30A46C;
+  --primary: #f2a93b;
+  --primary-dark: #d4911f;
+  --secondary: #7b6fa0;
+  --success: #30a46c;
   --danger: #ef4444;
-  --warning: #F2A93B;
-  --background: #0D0B1A;
-  --surface: #1A1528;
-  --text: #F5F0EB;
-  --text-secondary: #B8B0D0;
-  --text-muted: #8A82A0;
-  --border: #2A2440;
+  --warning: #f2a93b;
+  --background: #0d0b1a;
+  --surface: #1a1528;
+  --text: #f5f0eb;
+  --text-secondary: #b8b0d0;
+  --text-muted: #8a82a0;
+  --border: #2a2440;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

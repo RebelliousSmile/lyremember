@@ -31,10 +31,10 @@ describe('Authentication', () => {
     await submitBtn.click();
 
     // Should redirect to dashboard
-    await browser.waitUntil(
-      async () => (await browser.getUrl()).includes('dashboard'),
-      { timeout: 10000, timeoutMsg: 'Expected to navigate to dashboard' }
-    );
+    await browser.waitUntil(async () => (await browser.getUrl()).includes('dashboard'), {
+      timeout: 10000,
+      timeoutMsg: 'Expected to navigate to dashboard',
+    });
   });
 
   it('should login as guest', async () => {
@@ -55,9 +55,9 @@ describe('Authentication', () => {
     await guestBtn!.click();
 
     // Should redirect to dashboard
-    await browser.waitUntil(
-      async () => (await browser.getUrl()).includes('dashboard'),
-      { timeout: 10000, timeoutMsg: 'Expected to navigate to dashboard' }
-    );
+    await browser.waitUntil(async () => (await browser.getUrl()).includes('dashboard'), {
+      timeout: 10000,
+      timeoutMsg: 'Expected to navigate to dashboard',
+    });
   });
 });

@@ -8,14 +8,13 @@ export const config = {
   runner: 'local',
   specs: ['./tests/e2e/**/*.spec.ts'],
   maxInstances: 1,
-  capabilities: [{
-    'tauri:options': {
-      application: path.resolve(
-        __dirname,
-        'src-tauri/target/release/lyremember-app'
-      ),
+  capabilities: [
+    {
+      'tauri:options': {
+        application: path.resolve(__dirname, 'src-tauri/target/release/lyremember-app'),
+      },
     },
-  }],
+  ],
   logLevel: 'warn',
   bail: 0,
   waitforTimeout: 10000,
@@ -31,11 +30,9 @@ export const config = {
   // Start tauri-driver before tests
   onPrepare: function () {
     const { spawn } = require('child_process');
-    const tauriDriver = spawn(
-      path.resolve(__dirname, 'node_modules/.bin/tauri-driver'),
-      [],
-      { stdio: ['ignore', 'pipe', 'pipe'] }
-    );
+    const tauriDriver = spawn(path.resolve(__dirname, 'node_modules/.bin/tauri-driver'), [], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
     (global as any).__tauriDriver = tauriDriver;
   },
 

@@ -21,7 +21,11 @@
       <!-- Prompt: show translation or phonetic, ask for original line -->
       <div class="p-6 bg-deep-card rounded-xl text-center space-y-2">
         <p class="text-sm text-[#8A82A0] uppercase tracking-wide">
-          {{ questionType === 'translation' ? 'What is the original lyric for:' : 'Which lyric matches this phonetic:' }}
+          {{
+            questionType === 'translation'
+              ? 'What is the original lyric for:'
+              : 'Which lyric matches this phonetic:'
+          }}
         </p>
         <p class="text-xl font-semibold text-[#F5F0EB]">
           {{ questionText }}
@@ -33,13 +37,14 @@
         <button
           v-for="(choice, i) in choices"
           :key="`q${currentIndex}-${i}`"
-          @click="selectAnswer(i)"
           :disabled="answered"
           class="p-4 rounded-lg border-2 text-left transition-all duration-200"
           :class="choiceClass(i)"
+          @click="selectAnswer(i)"
         >
           <span class="inline-flex items-center gap-3">
-            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+            <span
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
               :class="choiceBadgeClass(i)"
             >
               {{ ['A', 'B', 'C', 'D'][i] }}
@@ -51,8 +56,15 @@
 
       <!-- Feedback + Next -->
       <div v-if="answered" class="flex items-center justify-between">
-        <p class="font-medium" :class="selectedIndex === correctChoiceIndex ? 'text-green-600' : 'text-red-500'">
-          {{ selectedIndex === correctChoiceIndex ? '✓ Correct!' : `✗ The answer was: ${choices[correctChoiceIndex]}` }}
+        <p
+          class="font-medium"
+          :class="selectedIndex === correctChoiceIndex ? 'text-green-600' : 'text-red-500'"
+        >
+          {{
+            selectedIndex === correctChoiceIndex
+              ? '✓ Correct!'
+              : `✗ The answer was: ${choices[correctChoiceIndex]}`
+          }}
         </p>
         <Button variant="primary" @click="nextQuestion">
           Next
@@ -64,20 +76,14 @@
     <!-- End screen -->
     <div v-else class="text-center py-6 space-y-4">
       <div class="text-6xl mb-2">{{ scoreMedal }}</div>
-      <p class="text-xl font-semibold text-[#F5F0EB]">
-        Score: {{ Math.round(scorePercent) }}%
-      </p>
-      <p class="text-[#8A82A0]">
-        {{ correctCount }} correct out of {{ song.lyrics.length }}
-      </p>
+      <p class="text-xl font-semibold text-[#F5F0EB]">Score: {{ Math.round(scorePercent) }}%</p>
+      <p class="text-[#8A82A0]">{{ correctCount }} correct out of {{ song.lyrics.length }}</p>
       <div class="flex justify-center gap-3">
         <Button variant="primary" @click="restart">
           <RotateCcw :size="18" />
           Retry
         </Button>
-        <Button variant="secondary" @click="$emit('finish', sessionData)">
-          Done
-        </Button>
+        <Button variant="secondary" @click="$emit('finish', sessionData)"> Done </Button>
       </div>
     </div>
   </div>
@@ -91,7 +97,9 @@ import type { Song } from '../../types';
 
 const props = defineProps<{ song: Song }>();
 defineEmits<{
-  finish: [data: { score: number; linesPracticed: number; linesCorrect: number; durationSeconds: number }];
+  finish: [
+    data: { score: number; linesPracticed: number; linesCorrect: number; durationSeconds: number },
+  ];
 }>();
 
 const currentIndex = ref(0);
@@ -119,18 +127,20 @@ function generateChoices(): { choices: string[]; correctIndex: number } {
   const correctLen = correctLine.length;
 
   // Deduplicate other lines, drop empties and exact matches with the answer.
-  const otherLines = [...new Set(props.song.lyrics.filter((_, i) => i !== currentIndex.value))]
-    .filter(line => line.trim() !== '' && line !== correctLine);
+  const otherLines = [
+    ...new Set(props.song.lyrics.filter((_, i) => i !== currentIndex.value)),
+  ].filter((line) => line.trim() !== '' && line !== correctLine);
 
   // Score each line by how close its length is to the answer's. Pick the
   // closest as distractors — harder to eliminate visually than random.
   const ranked = otherLines
-    .map(line => ({ line, score: Math.abs(line.length - correctLen) }))
+    .map((line) => ({ line, score: Math.abs(line.length - correctLen) }))
     .sort((a, b) => a.score - b.score);
   // Take a pool slightly larger than needed, then shuffle to avoid being
   // deterministic across questions.
-  const pool = ranked.slice(0, Math.max(6, ranked.length))
-    .map(r => r.line)
+  const pool = ranked
+    .slice(0, Math.max(6, ranked.length))
+    .map((r) => r.line)
     .sort(() => Math.random() - 0.5);
 
   const distractors: string[] = pool.slice(0, 3);
@@ -143,9 +153,10 @@ function generateChoices(): { choices: string[]; correctIndex: number } {
     while (distractors.length < 3 && attempts < 20) {
       const src = sourceLines[attempts % sourceLines.length];
       const words = src.split(/\s+/);
-      const scrambled = words.length > 1
-        ? [...words].sort(() => Math.random() - 0.5).join(' ')
-        : `${src} ${attempts}`;
+      const scrambled =
+        words.length > 1
+          ? [...words].sort(() => Math.random() - 0.5).join(' ')
+          : `${src} ${attempts}`;
       if (scrambled !== correctLine && !distractors.includes(scrambled)) {
         distractors.push(scrambled);
       }
@@ -166,7 +177,7 @@ const choices = ref(generated.choices);
 const correctChoiceIndex = ref(generated.correctIndex);
 
 const progress = computed(() =>
-  Math.round(((currentIndex.value + (finished.value ? 1 : 0)) / props.song.lyrics.length) * 100)
+  Math.round(((currentIndex.value + (finished.value ? 1 : 0)) / props.song.lyrics.length) * 100),
 );
 
 const scorePercent = computed(() => {

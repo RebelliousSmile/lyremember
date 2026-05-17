@@ -19,11 +19,7 @@
 const PUNCT_RE = /[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g;
 
 export function normalize(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(PUNCT_RE, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return text.toLowerCase().replace(PUNCT_RE, ' ').replace(/\s+/g, ' ').trim();
 }
 
 export function tokenize(text: string): string[] {

@@ -9,10 +9,9 @@ describe('Practice - Mémoriser', () => {
         break;
       }
     }
-    await browser.waitUntil(
-      async () => (await browser.getUrl()).includes('dashboard'),
-      { timeout: 10000 }
-    );
+    await browser.waitUntil(async () => (await browser.getUrl()).includes('dashboard'), {
+      timeout: 10000,
+    });
   });
 
   it('should navigate to practice page', async () => {
@@ -54,13 +53,14 @@ describe('Practice - Mémoriser', () => {
         const url = await browser.getUrl();
         return url.includes('songs/') && !url.includes('add');
       },
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
 
     // Check that practice mode buttons are visible
     const body = await $('body');
     const text = await body.getText();
-    const hasPractice = text.includes('Karaoké') || text.includes('Karaoke') || text.includes('trous');
+    const hasPractice =
+      text.includes('Karaoké') || text.includes('Karaoke') || text.includes('trous');
     expect(hasPractice).toBe(true);
   });
 });

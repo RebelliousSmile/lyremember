@@ -1,10 +1,5 @@
 <template>
-  <aside
-    :class="[
-      'sidebar',
-      { 'sidebar-open': uiStore.sidebarOpen },
-    ]"
-  >
+  <aside :class="['sidebar', { 'sidebar-open': uiStore.sidebarOpen }]">
     <nav class="sidebar-nav" aria-label="Main navigation">
       <router-link
         v-for="item in navItems"
@@ -55,14 +50,14 @@ const navItems = computed(() => [
 
 .nav-item {
   @apply flex items-center gap-3 px-4 py-3 rounded-lg;
-  color: #B8B0D0;
+  color: #b8b0d0;
   @apply hover:bg-deep-card-hover;
   @apply transition-colors duration-200;
 }
 
 .nav-item-active {
   background: rgba(242, 169, 59, 0.1);
-  color: #F2A93B;
+  color: #f2a93b;
   @apply font-medium;
 }
 </style>

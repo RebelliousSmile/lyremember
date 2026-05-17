@@ -59,12 +59,17 @@
         </template>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Button variant="primary" size="lg" className="w-full" @click="$router.push('/songs/add')">
+          <Button
+            variant="primary"
+            size="lg"
+            class-name="w-full"
+            @click="$router.push('/songs/add')"
+          >
             <Plus :size="20" />
             {{ $t('dashboard.addNewSong') }}
           </Button>
 
-          <Button variant="secondary" size="lg" className="w-full" @click="$router.push('/songs')">
+          <Button variant="secondary" size="lg" class-name="w-full" @click="$router.push('/songs')">
             <Music :size="20" />
             {{ $t('dashboard.browseSongs') }}
           </Button>

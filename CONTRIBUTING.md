@@ -45,10 +45,20 @@ npm run test:e2e          # WebDriverIO (parcours utilisateur)
 ## Style & conventions
 
 - **Python** : respecter les patterns existants (Click, pyyaml, type hints quand utile). Pas d'`except Exception` nu.
-- **Rust** : `cargo fmt`, `cargo clippy --all-targets -- -D warnings` avant push.
-- **TypeScript/Vue** : ESLint et conventions Vue 3 `<script setup>`.
+- **Rust** : `cargo fmt --all`, `cargo clippy --all-targets -- -D warnings` avant push (vérifié par CI sur `rust-backend/` et `lyremember-app/src-tauri/`).
+- **TypeScript/Vue** : `cd lyremember-app && npm run lint` (ESLint + Prettier ; vérifié par CI). `npm run lint:fix` pour auto-fix.
 - **Markdown** : pas de duplication entre docs ; un sujet, un fichier canonique, on référence depuis les autres.
 - **Pas de secrets** : jamais de clé API en clair ; utiliser les variables d'environnement / store Tauri.
+
+### Pre-commit hook (optionnel mais recommandé)
+
+Le repo embarque un hook `.husky/pre-commit` qui lance `lint-staged` (ESLint + Prettier) sur les fichiers stagés du dossier `lyremember-app/`. Pour l'activer **une fois** après clone :
+
+```sh
+git config core.hooksPath .husky
+```
+
+Désactivation : `git config --unset core.hooksPath`.
 
 ## Code review
 

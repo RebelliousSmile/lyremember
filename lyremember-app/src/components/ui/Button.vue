@@ -2,13 +2,7 @@
   <button
     :type="type"
     :disabled="disabled || loading"
-    :class="[
-      'btn',
-      `btn-${variant}`,
-      `btn-${size}`,
-      { 'btn-loading': loading },
-      className,
-    ]"
+    :class="['btn', `btn-${variant}`, `btn-${size}`, { 'btn-loading': loading }, className]"
     @click="$emit('click', $event)"
   >
     <span v-if="loading" class="btn-spinner"></span>
@@ -46,7 +40,7 @@ defineEmits<{
 .btn-secondary {
   @apply bg-deep-card-hover border border-deep-border hover:bg-deep-card;
   @apply focus:ring-violet-accent;
-  color: #B8B0D0;
+  color: #b8b0d0;
 }
 
 .btn-danger {
@@ -57,7 +51,7 @@ defineEmits<{
 .btn-ghost {
   @apply bg-transparent hover:bg-deep-card-hover;
   @apply focus:ring-deep-border;
-  color: #B8B0D0;
+  color: #b8b0d0;
 }
 
 .btn-sm {

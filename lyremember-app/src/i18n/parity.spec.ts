@@ -35,10 +35,7 @@ describe('i18n parity', () => {
       const missing = reference.filter((k) => !localeKeys.includes(k));
       const extra = localeKeys.filter((k) => !reference.includes(k));
 
-      expect(
-        missing,
-        `Missing in ${name}.json:\n  ${missing.join('\n  ')}`,
-      ).toEqual([]);
+      expect(missing, `Missing in ${name}.json:\n  ${missing.join('\n  ')}`).toEqual([]);
       expect(
         extra,
         `Extra keys in ${name}.json (not in en.json):\n  ${extra.join('\n  ')}`,

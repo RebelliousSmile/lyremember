@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'rust-backend/**'
+      - 'lyremember-app/src-tauri/**'
       - '.github/workflows/ci-rust.yml'
   pull_request:
     branches: [main]
     paths:
       - 'rust-backend/**'
+      - 'lyremember-app/src-tauri/**'
       - '.github/workflows/ci-rust.yml'
 
 defaults:
@@ -30,7 +32,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          components: clippy
+          components: clippy, rustfmt
 
       - uses: Swatinem/rust-cache@v2
         with:
@@ -41,6 +43,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y python3-dev libsqlite3-dev
 
+      - name: Format check
+        run: cargo fmt --all -- --check
+
       - name: Cargo check
         run: cargo check
 
@@ -49,3 +54,20 @@ jobs:
 
       - name: Tests
         run: cargo test
+
+  fmt-tauri:
+    name: Tauri Rust Format Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lyremember-app/src-tauri
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Format check
+        run: cargo fmt --all -- --check

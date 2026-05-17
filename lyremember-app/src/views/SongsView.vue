@@ -9,12 +9,13 @@
             <span class="text-gold">Lyre</span>
           </h1>
           <p class="text-sm text-[#B8B0D0] mt-1">
-            {{ songsStore.totalSongs }} {{ $t('songs.title').toLowerCase() }} · {{ uniqueLanguages.length }} {{ uniqueLanguages.length === 1 ? 'langue' : 'langues' }}
+            {{ songsStore.totalSongs }} {{ $t('songs.title').toLowerCase() }} ·
+            {{ uniqueLanguages.length }} {{ uniqueLanguages.length === 1 ? 'langue' : 'langues' }}
           </p>
         </div>
         <button
-          @click="showSearch = !showSearch"
           class="w-10 h-10 flex items-center justify-center rounded-full bg-deep-card border border-deep-border text-[#B8B0D0] hover:text-[#F5F0EB] transition-colors"
+          @click="showSearch = !showSearch"
         >
           <Search :size="20" />
         </button>
@@ -26,8 +27,8 @@
           ref="searchInput"
           v-model="songsStore.searchQuery"
           :placeholder="$t('songs.searchPlaceholder')"
-          @input="songsStore.setSearchQuery(($event.target as HTMLInputElement).value)"
           class="w-full px-4 py-2.5 pl-10 rounded-xl bg-deep-card border border-deep-border text-[#F5F0EB] placeholder-[#8A82A0] focus:outline-none focus:border-gold/50 transition-colors"
+          @input="songsStore.setSearchQuery(($event.target as HTMLInputElement).value)"
         />
         <Search :size="18" class="absolute left-3 top-1/2 -translate-y-1/2 text-[#8A82A0]" />
       </div>
@@ -37,13 +38,13 @@
         <button
           v-for="lang in languageFilters"
           :key="lang.value"
-          @click="songsStore.setSelectedLanguage(lang.value)"
           :class="[
             'px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors flex-shrink-0',
             songsStore.selectedLanguage === lang.value
               ? 'bg-gold text-deep'
-              : 'bg-deep-card border border-deep-border text-[#B8B0D0] hover:border-gold/30'
+              : 'bg-deep-card border border-deep-border text-[#B8B0D0] hover:border-gold/30',
           ]"
+          @click="songsStore.setSelectedLanguage(lang.value)"
         >
           {{ lang.label }}
         </button>
@@ -61,12 +62,14 @@
           {{ songsStore.searchQuery ? $t('songs.noSongs') : $t('songs.noSongsYet') }}
         </p>
         <p class="text-[#8A82A0] mb-4">
-          {{ songsStore.searchQuery ? $t('songs.tryDifferentSearch') : $t('songs.addFirstSongHint') }}
+          {{
+            songsStore.searchQuery ? $t('songs.tryDifferentSearch') : $t('songs.addFirstSongHint')
+          }}
         </p>
         <button
           v-if="!songsStore.searchQuery"
-          @click="$router.push('/songs/add')"
           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold text-deep font-medium hover:bg-gold-light transition-colors"
+          @click="$router.push('/songs/add')"
         >
           <Plus :size="20" />
           {{ $t('songs.addFirstSong') }}
@@ -78,11 +81,13 @@
         <div
           v-for="song in songsStore.filteredSongs"
           :key="song.id"
-          @click="$router.push(`/songs/${song.id}`)"
           class="flex items-center gap-3 p-3 rounded-xl bg-deep-card hover:bg-deep-card-hover cursor-pointer transition-colors"
+          @click="$router.push(`/songs/${song.id}`)"
         >
           <!-- Cover: gradient violet bg with first letter -->
-          <div class="w-[50px] h-[50px] flex-shrink-0 rounded-xl bg-gradient-to-br from-violet-accent to-[#5E5480] flex items-center justify-center">
+          <div
+            class="w-[50px] h-[50px] flex-shrink-0 rounded-xl bg-gradient-to-br from-violet-accent to-[#5E5480] flex items-center justify-center"
+          >
             <span class="text-xl font-bold text-[#F5F0EB]">
               {{ langEmoji(song.language) || song.title.charAt(0).toUpperCase() }}
             </span>
@@ -92,7 +97,9 @@
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2">
               <span class="font-semibold text-[#F5F0EB] truncate">{{ song.title }}</span>
-              <span class="flex-shrink-0 px-1.5 py-0.5 text-[10px] font-semibold rounded bg-gold/15 text-gold uppercase leading-none">
+              <span
+                class="flex-shrink-0 px-1.5 py-0.5 text-[10px] font-semibold rounded bg-gold/15 text-gold uppercase leading-none"
+              >
                 {{ langFlag(song.language) }} {{ song.language.toUpperCase() }}
               </span>
             </div>

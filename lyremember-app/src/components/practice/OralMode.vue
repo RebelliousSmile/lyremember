@@ -19,12 +19,13 @@
         <p class="text-sm text-[#8A82A0] uppercase tracking-wide">
           Try to say this in {{ song.language.toUpperCase() }}:
         </p>
-        <p v-if="song.translations?.en?.[currentIndex]" class="text-xl font-semibold text-[#F5F0EB]">
+        <p
+          v-if="song.translations?.en?.[currentIndex]"
+          class="text-xl font-semibold text-[#F5F0EB]"
+        >
           {{ song.translations.en[currentIndex] }}
         </p>
-        <p v-else class="text-lg text-[#B8B0D0] italic">
-          Read line {{ currentIndex + 1 }} aloud
-        </p>
+        <p v-else class="text-lg text-[#B8B0D0] italic">Read line {{ currentIndex + 1 }} aloud</p>
       </div>
 
       <!-- Reveal stages -->
@@ -108,20 +109,12 @@
 
       <!-- Controls -->
       <div class="flex items-center justify-between">
-        <Button
-          v-if="revealStage < 3"
-          variant="secondary"
-          @click="revealStage++"
-        >
+        <Button v-if="revealStage < 3" variant="secondary" @click="revealStage++">
           <Eye :size="18" />
           Reveal {{ ['phonetic', 'hint', 'answer'][revealStage] }}
         </Button>
         <div v-else></div>
-        <Button
-          variant="primary"
-          @click="nextLine"
-          :disabled="revealStage < 3 || !selfAssessed"
-        >
+        <Button variant="primary" :disabled="revealStage < 3 || !selfAssessed" @click="nextLine">
           Next
           <ChevronRight :size="18" />
         </Button>
@@ -131,9 +124,7 @@
     <!-- End screen -->
     <div v-else class="text-center py-6 space-y-4">
       <Mic :size="48" class="mx-auto text-orange-500" />
-      <p class="text-xl font-semibold text-[#F5F0EB]">
-        Practice Complete!
-      </p>
+      <p class="text-xl font-semibold text-[#F5F0EB]">Practice Complete!</p>
       <p class="text-[#8A82A0]">
         {{ correctCount }} / {{ song.lyrics.length }} lines self-assessed as correct
       </p>
@@ -142,9 +133,7 @@
           <RotateCcw :size="18" />
           Retry
         </Button>
-        <Button variant="secondary" @click="$emit('finish', sessionData)">
-          Done
-        </Button>
+        <Button variant="secondary" @click="$emit('finish', sessionData)"> Done </Button>
       </div>
     </div>
   </div>
@@ -159,7 +148,9 @@ import { hasSpeechRecognition, scoreSpoken } from '../../lib/oral-scoring';
 
 const props = defineProps<{ song: Song }>();
 defineEmits<{
-  finish: [data: { score: number; linesPracticed: number; linesCorrect: number; durationSeconds: number }];
+  finish: [
+    data: { score: number; linesPracticed: number; linesCorrect: number; durationSeconds: number },
+  ];
 }>();
 
 const currentIndex = ref(0);
@@ -237,14 +228,14 @@ onUnmounted(() => {
 });
 
 const progress = computed(() =>
-  Math.round(((currentIndex.value + (finished.value ? 1 : 0)) / props.song.lyrics.length) * 100)
+  Math.round(((currentIndex.value + (finished.value ? 1 : 0)) / props.song.lyrics.length) * 100),
 );
 
 const firstCharsHint = computed(() => {
   const line = props.song.lyrics[currentIndex.value];
   return line
     .split(/\s+/)
-    .map(word => word.charAt(0) + '_'.repeat(Math.max(1, word.length - 1)))
+    .map((word) => word.charAt(0) + '_'.repeat(Math.max(1, word.length - 1)))
     .join(' ');
 });
 

@@ -14,11 +14,15 @@
     </div>
 
     <!-- Lyrics display -->
-    <div class="space-y-1 max-h-[60vh] overflow-y-auto scroll-smooth" ref="lyricsContainer">
+    <div ref="lyricsContainer" class="space-y-1 max-h-[60vh] overflow-y-auto scroll-smooth">
       <div
         v-for="(line, index) in song.lyrics"
         :key="index"
-        :ref="el => { if (index === currentIndex) activeLine = el as HTMLElement }"
+        :ref="
+          (el) => {
+            if (index === currentIndex) activeLine = el as HTMLElement;
+          }
+        "
         class="flex gap-4 p-3 rounded-lg transition-all duration-300"
         :class="{
           'bg-gold/10 scale-[1.02]': index === currentIndex,
@@ -58,19 +62,27 @@
           <component :is="playing ? Pause : Play" :size="20" />
           {{ playing ? 'Pause' : 'Play' }}
         </Button>
-        <Button variant="ghost" size="sm" :disabled="currentIndex >= song.lyrics.length - 1" @click="next">
+        <Button
+          variant="ghost"
+          size="sm"
+          :disabled="currentIndex >= song.lyrics.length - 1"
+          @click="next"
+        >
           <SkipForward :size="18" />
         </Button>
       </div>
 
       <div class="flex items-center gap-4">
         <label class="flex items-center gap-2 text-sm text-[#8A82A0] cursor-pointer">
-          <input type="checkbox" v-model="showTranslation" class="rounded" />
+          <input v-model="showTranslation" type="checkbox" class="rounded" />
           Translation
         </label>
         <div class="flex items-center gap-2">
           <span class="text-xs text-[#8A82A0]">Speed</span>
-          <select v-model.number="speed" class="text-sm rounded border-deep-border bg-deep-card-hover px-2 py-1">
+          <select
+            v-model.number="speed"
+            class="text-sm rounded border-deep-border bg-deep-card-hover px-2 py-1"
+          >
             <option :value="4000">Slow</option>
             <option :value="2500">Normal</option>
             <option :value="1500">Fast</option>
@@ -88,9 +100,7 @@
           <RotateCcw :size="18" />
           Restart
         </Button>
-        <Button variant="secondary" @click="$emit('finish', sessionData)">
-          Done
-        </Button>
+        <Button variant="secondary" @click="$emit('finish', sessionData)"> Done </Button>
       </div>
     </div>
   </div>
@@ -104,7 +114,9 @@ import type { Song } from '../../types';
 
 const props = defineProps<{ song: Song }>();
 defineEmits<{
-  finish: [data: { score: number; linesPracticed: number; linesCorrect: number; durationSeconds: number }];
+  finish: [
+    data: { score: number; linesPracticed: number; linesCorrect: number; durationSeconds: number },
+  ];
 }>();
 
 const currentIndex = ref(0);
@@ -119,7 +131,7 @@ let startTime = Date.now();
 let timer: ReturnType<typeof setInterval> | null = null;
 
 const progress = computed(() =>
-  Math.round(((currentIndex.value + (finished.value ? 1 : 0)) / props.song.lyrics.length) * 100)
+  Math.round(((currentIndex.value + (finished.value ? 1 : 0)) / props.song.lyrics.length) * 100),
 );
 
 const sessionData = computed(() => ({
@@ -170,7 +182,11 @@ function togglePlay() {
     restart();
     return;
   }
-  playing.value ? stopPlay() : startPlay();
+  if (playing.value) {
+    stopPlay();
+  } else {
+    startPlay();
+  }
 }
 
 function restart() {

@@ -22,8 +22,7 @@ export const useSongsStore = defineStore('songs', () => {
       const query = searchQuery.value.toLowerCase();
       filtered = filtered.filter(
         (song) =>
-          song.title.toLowerCase().includes(query) ||
-          song.artist.toLowerCase().includes(query)
+          song.title.toLowerCase().includes(query) || song.artist.toLowerCase().includes(query),
       );
     }
 
@@ -132,12 +131,7 @@ export const useSongsStore = defineStore('songs', () => {
     }
   }
 
-  async function updateSong(
-    songId: string,
-    title?: string,
-    artist?: string,
-    lyrics?: string[]
-  ) {
+  async function updateSong(songId: string, title?: string, artist?: string, lyrics?: string[]) {
     loading.value = true;
     error.value = null;
     try {

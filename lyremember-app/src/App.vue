@@ -23,8 +23,8 @@ onMounted(() => {
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
-  color: #F5F0EB;
-  background-color: #0D0B1A;
+  color: #f5f0eb;
+  background-color: #0d0b1a;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

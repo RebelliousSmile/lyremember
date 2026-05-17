@@ -52,11 +52,7 @@ export interface SongMastery {
 
 // ==================== AUTH API ====================
 
-export async function register(
-  username: string,
-  email: string,
-  password: string
-): Promise<User> {
+export async function register(username: string, email: string, password: string): Promise<User> {
   return await invoke('cmd_register', { username, email, password });
 }
 
@@ -141,7 +137,7 @@ export async function createPracticeSession(
   score: number,
   linesPracticed: number,
   linesCorrect: number,
-  durationSeconds: number
+  durationSeconds: number,
 ): Promise<PracticeSession> {
   return await invoke('cmd_create_practice_session', {
     userId,
@@ -154,10 +150,7 @@ export async function createPracticeSession(
   });
 }
 
-export async function getUserSessions(
-  userId: string,
-  limit?: number
-): Promise<PracticeSession[]> {
+export async function getUserSessions(userId: string, limit?: number): Promise<PracticeSession[]> {
   return await invoke('cmd_get_user_sessions', { userId, limit });
 }
 
@@ -165,10 +158,7 @@ export async function getUserStats(userId: string): Promise<UserStats> {
   return await invoke('cmd_get_user_stats', { userId });
 }
 
-export async function getSongMastery(
-  userId: string,
-  songId: string
-): Promise<SongMastery> {
+export async function getSongMastery(userId: string, songId: string): Promise<SongMastery> {
   return await invoke('cmd_get_song_mastery', { userId, songId });
 }
 
@@ -177,15 +167,12 @@ export async function getSongMastery(
 export async function translateText(
   text: string,
   sourceLang: string,
-  targetLang: string
+  targetLang: string,
 ): Promise<string> {
   return await invoke('cmd_translate_text', { text, sourceLang, targetLang });
 }
 
-export async function generatePhonetic(
-  text: string[],
-  language: string
-): Promise<string[]> {
+export async function generatePhonetic(text: string[], language: string): Promise<string[]> {
   return await invoke('cmd_generate_phonetic', { text, language });
 }
 

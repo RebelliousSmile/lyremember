@@ -12,18 +12,24 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-const props = withDefaults(defineProps<{
-  size?: 'sm' | 'md' | 'lg';
-  label?: string;
-}>(), {
-  size: 'md',
-});
+const props = withDefaults(
+  defineProps<{
+    size?: 'sm' | 'md' | 'lg';
+    label?: string;
+  }>(),
+  {
+    size: 'md',
+  },
+);
 
-const sizeClass = computed(() => ({
-  sm: 'w-5 h-5 border-2',
-  md: 'w-8 h-8 border-4',
-  lg: 'w-12 h-12 border-4',
-}[props.size]));
+const sizeClass = computed(
+  () =>
+    ({
+      sm: 'w-5 h-5 border-2',
+      md: 'w-8 h-8 border-4',
+      lg: 'w-12 h-12 border-4',
+    })[props.size],
+);
 
 const colorClass = 'border-t-gold';
 </script>

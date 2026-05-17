@@ -66,7 +66,11 @@
 
           <div class="text-center p-4 bg-deep-card-hover rounded-lg">
             <p class="text-3xl font-bold text-purple-600 dark:text-purple-400">
-              {{ userStats && userStats.total_sessions > 0 ? Math.round(userStats.average_score) + '%' : '-' }}
+              {{
+                userStats && userStats.total_sessions > 0
+                  ? Math.round(userStats.average_score) + '%'
+                  : '-'
+              }}
             </p>
             <p class="text-sm text-[#8A82A0] mt-1">
               {{ $t('profile.averageScore') }}

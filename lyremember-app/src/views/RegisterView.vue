@@ -1,35 +1,20 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-deep p-4">
-    <Card className="w-full max-w-md">
+    <Card class-name="w-full max-w-md">
       <template #header>
         <h2 class="text-2xl font-bold text-center">{{ $t('auth.registerTitle') }}</h2>
       </template>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="handleSubmit">
         <Alert v-model="showError" type="error" closable>
           {{ error }}
         </Alert>
 
-        <Input
-          v-model="form.username"
-          :label="$t('auth.username')"
-          type="text"
-          required
-        />
+        <Input v-model="form.username" :label="$t('auth.username')" type="text" required />
 
-        <Input
-          v-model="form.email"
-          :label="$t('auth.email')"
-          type="email"
-          required
-        />
+        <Input v-model="form.email" :label="$t('auth.email')" type="email" required />
 
-        <Input
-          v-model="form.password"
-          :label="$t('auth.password')"
-          type="password"
-          required
-        />
+        <Input v-model="form.password" :label="$t('auth.password')" type="password" required />
 
         <Input
           v-model="form.confirmPassword"
@@ -39,7 +24,14 @@
           :error="passwordError"
         />
 
-        <Button type="submit" variant="primary" size="lg" className="w-full" :loading="authStore.loading" :disabled="!!passwordError">
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          class-name="w-full"
+          :loading="authStore.loading"
+          :disabled="!!passwordError"
+        >
           {{ $t('auth.register') }}
         </Button>
 
@@ -87,10 +79,13 @@ const passwordError = computed(() => {
   return '';
 });
 
-watch(() => authStore.error, (err) => {
-  error.value = err || '';
-  showError.value = !!err;
-});
+watch(
+  () => authStore.error,
+  (err) => {
+    error.value = err || '';
+    showError.value = !!err;
+  },
+);
 
 async function handleSubmit() {
   if (passwordError.value) {
