@@ -110,6 +110,7 @@
 import { ref, computed, watch, nextTick, onUnmounted } from 'vue';
 import { Play, Pause, SkipBack, SkipForward, CheckCircle, RotateCcw } from 'lucide-vue-next';
 import Button from '../ui/Button.vue';
+import { useShortcuts } from '../../composables/useShortcuts';
 import type { Song } from '../../types';
 
 const props = defineProps<{ song: Song }>();
@@ -202,6 +203,12 @@ watch(speed, () => {
     stopPlay();
     startPlay();
   }
+});
+
+useShortcuts({
+  ' ': togglePlay,
+  ArrowRight: next,
+  ArrowLeft: prev,
 });
 
 onUnmounted(() => stopPlay());

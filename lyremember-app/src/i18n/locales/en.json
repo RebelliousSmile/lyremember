@@ -170,7 +170,12 @@
     "goToSongs": "Go to Songs",
     "goToPractice": "Go to Practice",
     "goToSettings": "Go to Settings",
-    "close": "Close"
+    "close": "Close",
+    "exitPractice": "Exit practice mode",
+    "karaokeTogglePlay": "Karaoke: play / pause",
+    "karaokeNavigate": "Karaoke: previous / next line",
+    "mcqAnswer": "MCQ: select answer",
+    "mcqNext": "MCQ: next question"
   },
   "notFound": {
     "title": "Page not found",

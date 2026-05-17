@@ -170,7 +170,12 @@
     "goToSongs": "曲へ",
     "goToPractice": "練習へ",
     "goToSettings": "設定へ",
-    "close": "閉じる"
+    "close": "閉じる",
+    "exitPractice": "練習モードを終了",
+    "karaokeTogglePlay": "カラオケ：再生 / 一時停止",
+    "karaokeNavigate": "カラオケ：前の行 / 次の行",
+    "mcqAnswer": "選択問題：回答を選ぶ",
+    "mcqNext": "選択問題：次の問題"
   },
   "notFound": {
     "title": "ページが見つかりません",

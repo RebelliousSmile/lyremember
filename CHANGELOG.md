@@ -5,6 +5,12 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 ## [Unreleased]
 
 ### Added
+- Raccourcis clavier dans les modes pratique (#37) :
+  - Karaoké : `Space` toggle play/pause, `←` `→` ligne précédente/suivante.
+  - QCM : `1`-`4` sélectionne la réponse, `Enter` passe à la question suivante.
+  - Pratique : `Esc` quitte le mode actif (retour à la song detail).
+  - Nouveau composable `useShortcuts(bindings)` partagé, ignore les `INPUT`/`TEXTAREA`/`SELECT`.
+  - Overlay help (`?`) étendu avec les nouvelles entrées, traductions en/fr/ja/ko.
 - Génération automatique de release notes via `git-cliff` (#40) : `cliff.toml` à la racine + job `changelog` dans `.github/workflows/release.yml` qui exécute `orhun/git-cliff-action` et injecte les commits Conventional groupés (Added/Fixed/Changed/…) dans le body de la GitHub Release. CONTRIBUTING.md liste les préfixes acceptés.
 - Suite complète lint & formatage (#36) :
   - `cargo fmt --all -- --check` ajouté à la CI Rust (rust-backend) + nouveau job `fmt-tauri` pour `lyremember-app/src-tauri`.

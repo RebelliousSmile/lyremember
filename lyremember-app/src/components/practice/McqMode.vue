@@ -93,6 +93,7 @@
 import { ref, computed } from 'vue';
 import { ChevronRight, RotateCcw } from 'lucide-vue-next';
 import Button from '../ui/Button.vue';
+import { useShortcuts } from '../../composables/useShortcuts';
 import type { Song } from '../../types';
 
 const props = defineProps<{ song: Song }>();
@@ -267,4 +268,12 @@ function restart() {
   choices.value = gen.choices;
   correctChoiceIndex.value = gen.correctIndex;
 }
+
+useShortcuts({
+  '1': () => !answered.value && selectAnswer(0),
+  '2': () => !answered.value && selectAnswer(1),
+  '3': () => !answered.value && selectAnswer(2),
+  '4': () => !answered.value && selectAnswer(3),
+  Enter: () => answered.value && !finished.value && nextQuestion(),
+});
 </script>

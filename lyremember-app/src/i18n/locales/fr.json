@@ -170,7 +170,12 @@
     "goToSongs": "Aller aux chansons",
     "goToPractice": "Aller à la pratique",
     "goToSettings": "Aller aux paramètres",
-    "close": "Fermer"
+    "close": "Fermer",
+    "exitPractice": "Quitter le mode pratique",
+    "karaokeTogglePlay": "Karaoké : lecture / pause",
+    "karaokeNavigate": "Karaoké : ligne précédente / suivante",
+    "mcqAnswer": "QCM : sélectionner une réponse",
+    "mcqNext": "QCM : question suivante"
   },
   "notFound": {
     "title": "Page introuvable",

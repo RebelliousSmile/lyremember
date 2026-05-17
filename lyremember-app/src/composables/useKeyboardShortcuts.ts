@@ -86,5 +86,9 @@ export const shortcuts = [
   { keys: 'g s', description: 'shortcuts.goToSongs' },
   { keys: 'g p', description: 'shortcuts.goToPractice' },
   { keys: 'g t', description: 'shortcuts.goToSettings' },
-  { keys: 'Esc', description: 'shortcuts.close' },
+  { keys: 'Esc', description: 'shortcuts.exitPractice' },
+  { keys: 'Space', description: 'shortcuts.karaokeTogglePlay' },
+  { keys: '← →', description: 'shortcuts.karaokeNavigate' },
+  { keys: '1-4', description: 'shortcuts.mcqAnswer' },
+  { keys: 'Enter', description: 'shortcuts.mcqNext' },
 ];
