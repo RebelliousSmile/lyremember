@@ -492,11 +492,15 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for technical architecture and 
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, tooling and conventions.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for the list of notable changes.
 
 ## License
 
-MIT License - See LICENSE file for details
+MIT License — see [LICENSE](LICENSE) for the full text.
 
 ## Roadmap
 
