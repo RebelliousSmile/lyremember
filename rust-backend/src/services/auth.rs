@@ -7,8 +7,43 @@ use rusqlite::Connection;
 use bcrypt::{hash, verify, DEFAULT_COST};
 use jsonwebtoken::{encode, decode, Header, Validation, EncodingKey, DecodingKey, Algorithm};
 use serde::{Deserialize, Serialize};
+use std::sync::OnceLock;
 
-const JWT_SECRET: &[u8] = b"your-secret-key-change-this-in-production"; // TODO: Use env var
+const JWT_SECRET_ENV: &str = "LYREMEMBER_JWT_SECRET";
+
+/// Resolves the JWT signing secret from a provided env value (typically
+/// `std::env::var(JWT_SECRET_ENV).ok()`). If the value is `None` or empty,
+/// returns a 32-byte random ephemeral secret and logs a warning — sessions
+/// will not survive a process restart in that case.
+///
+/// Split from `jwt_secret()` so it can be unit-tested without mutating the
+/// process environment.
+fn jwt_secret_from_env(env_value: Option<String>) -> Vec<u8> {
+    match env_value {
+        Some(s) if !s.is_empty() => s.into_bytes(),
+        _ => {
+            eprintln!(
+                "[WARN] {} is not set — generating an ephemeral JWT secret. \
+                 JWT tokens will become invalid on process restart. \
+                 Set {} in production.",
+                JWT_SECRET_ENV, JWT_SECRET_ENV
+            );
+            let mut s = Vec::with_capacity(32);
+            s.extend_from_slice(uuid::Uuid::new_v4().as_bytes());
+            s.extend_from_slice(uuid::Uuid::new_v4().as_bytes());
+            s
+        }
+    }
+}
+
+/// Returns the JWT signing secret, resolved once per process from the
+/// `LYREMEMBER_JWT_SECRET` env var with an ephemeral fallback.
+fn jwt_secret() -> &'static [u8] {
+    static SECRET: OnceLock<Vec<u8>> = OnceLock::new();
+    SECRET
+        .get_or_init(|| jwt_secret_from_env(std::env::var(JWT_SECRET_ENV).ok()))
+        .as_slice()
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Claims {
@@ -116,7 +151,7 @@ fn generate_token(user: &User) -> Result<String> {
     let token = encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret(JWT_SECRET),
+        &EncodingKey::from_secret(jwt_secret()),
     ).map_err(|e| Error::Auth(format!("Failed to generate token: {}", e)))?;
     
     Ok(token)
@@ -128,7 +163,7 @@ pub fn verify_token(token: &str) -> Result<String> {
     
     let token_data = decode::<Claims>(
         token,
-        &DecodingKey::from_secret(JWT_SECRET),
+        &DecodingKey::from_secret(jwt_secret()),
         &validation,
     ).map_err(|e| Error::Auth(format!("Invalid token: {}", e)))?;
     
@@ -483,7 +518,7 @@ mod tests {
         let validation = Validation::new(Algorithm::HS256);
         let token_data = decode::<Claims>(
             &token,
-            &DecodingKey::from_secret(JWT_SECRET),
+            &DecodingKey::from_secret(jwt_secret()),
             &validation,
         ).unwrap();
 
@@ -528,5 +563,32 @@ mod tests {
 
         assert_ne!(guest.username, "testuser");
         assert_eq!(guest.username, "guest");
+    }
+
+    #[test]
+    fn test_jwt_secret_from_env_uses_provided_value() {
+        let secret = jwt_secret_from_env(Some("my-strong-secret".to_string()));
+        assert_eq!(secret.as_slice(), b"my-strong-secret");
+    }
+
+    #[test]
+    fn test_jwt_secret_from_env_falls_back_when_none() {
+        let secret = jwt_secret_from_env(None);
+        assert!(!secret.is_empty(), "ephemeral fallback must not be empty");
+        assert!(secret.len() >= 32, "ephemeral fallback must be at least 32 bytes");
+    }
+
+    #[test]
+    fn test_jwt_secret_from_env_falls_back_when_empty_string() {
+        let secret = jwt_secret_from_env(Some(String::new()));
+        assert!(!secret.is_empty(), "empty env value should trigger fallback");
+        assert!(secret.len() >= 32);
+    }
+
+    #[test]
+    fn test_jwt_secret_from_env_two_fallbacks_are_distinct() {
+        let s1 = jwt_secret_from_env(None);
+        let s2 = jwt_secret_from_env(None);
+        assert_ne!(s1, s2, "each fallback call must generate a fresh random secret");
     }
 }

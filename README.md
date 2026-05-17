@@ -31,6 +31,10 @@ npm run tauri dev
 # Cliquer sur "Run Integration Test" dans l'interface
 ```
 
+> **Note prod** : définir `LYREMEMBER_JWT_SECRET` (voir [`.env.example`](.env.example))
+> avant tout déploiement. À défaut, un secret éphémère est généré au démarrage
+> et un avertissement est loggué — les JWT deviendront invalides à chaque restart.
+
 ### Architecture
 
 ```

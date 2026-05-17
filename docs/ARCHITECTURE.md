@@ -13,6 +13,13 @@ LyRemember is a lyrics memorization application supporting multiple languages. T
 >   (4 tables : `users`, `songs`, `user_songs`, `practice_sessions`).
 > - Storage POC legacy : **JSON** via `legacy/python-cli/lyremember/storage.py`.
 >
+> **Variables d'environnement (prod)** :
+> - `LYREMEMBER_JWT_SECRET` : secret HS256 utilisé pour signer les JWT.
+>   Fortement recommandée en prod (ex. `openssl rand -hex 32`). Si
+>   absente, un secret éphémère aléatoire est généré au démarrage et un
+>   avertissement est loggué — les tokens deviendront invalides après
+>   chaque redémarrage. Voir `.env.example`.
+>
 > **Build flags Tauri** : la feature `python` (PyO3 bridge phonétique
 > JP/KR/FR/EN via pykakasi / hangul-romanize / epitran) est activée
 > **par défaut sur desktop**. Les builds Android passent
