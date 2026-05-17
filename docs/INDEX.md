@@ -9,7 +9,6 @@ Documentation organisée par thème. Le README à la racine en référence les p
 ## Planning & Décisions produit
 - [FINAL_DECISIONS.md](FINAL_DECISIONS.md) — synthèse de toutes les décisions techniques
 - [TECH_CHOICES.md](TECH_CHOICES.md) — comparatif des stacks envisagées
-- [TECH_STACK_FINAL.md](TECH_STACK_FINAL.md) — stack retenue
 - [USER_STORIES.md](USER_STORIES.md) — user stories initiales
 - [USER_STORIES_V2.md](USER_STORIES_V2.md) — 29 user stories (8 epics, 105 SP)
 

@@ -15,6 +15,9 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 - Refonte UI : thème dark gold aligné sur le site, navigation mobile en bas.
 - Modes de pratique : Karaoke, Fill-blank, MCQ, Oral (UI Phase 4).
 
+### Removed
+- `docs/TECH_STACK_FINAL.md` (#7) : doublait `docs/FINAL_DECISIONS.md` et décrivait une stack (PWA/React/FastAPI) abandonnée. La source canonique est désormais `docs/FINAL_DECISIONS.md`.
+
 ### Changed
 - Réorganisation de la documentation : les 15 fichiers `.md` de design sont passés de la racine à `docs/` ; seul `README.md` reste à la racine.
 - Le CLI Python (proof of concept) est archivé dans `legacy/python-cli/` (#6) : `lyremember/`, `tests/`, `data/`, `demo.py`, `setup.py`, `requirements.txt` y vivent désormais. La stack canonique est Rust + Tauri + Vue 3. Le workflow `ci-python` cible ce nouveau chemin.
