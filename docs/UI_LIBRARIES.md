@@ -1,5 +1,12 @@
 # Meilleures Bibliothèques UI Multi-OS pour LyRemember
 
+> **Note (mai 2026)** : ce document est un **comparatif historique** réalisé
+> lors du choix de stack. La décision retenue (Vue 3 + composants UI maison
+> dans `lyremember-app/src/components/ui/`) est consignée dans
+> [FINAL_DECISIONS.md](FINAL_DECISIONS.md). Les sections ci-dessous évoquent
+> notamment React + Shadcn/ui — ce n'est **pas** la stack adoptée, gardé pour
+> traçabilité.
+
 ## Contexte
 Besoin : Interface utilisateur fonctionnant sur Desktop (Windows, macOS, Linux) ET Mobile (Android, iOS)
 

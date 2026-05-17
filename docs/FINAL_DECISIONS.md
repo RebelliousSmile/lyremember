@@ -18,7 +18,7 @@
 - Framework : Vue 3 (Composition API)
 - Language : TypeScript
 - Build Tool : Vite
-- UI Library : Shadcn-vue
+- UI Library : composants maison dans `lyremember-app/src/components/ui/` (Button, Card, Input, Alert, Spinner, …). Choix retenu pour contrôler la surface API, éviter une dépendance externe sur l'UI critique et garder l'alignement avec le thème dark gold.
 - Styling : Tailwind CSS
 - Icons : Lucide Vue
 - State : Pinia
@@ -113,7 +113,7 @@ CREATE TABLE songs (
 │  Frontend Vue                          │
 │  - Pages (Login, Songs, Practice)      │
 │  - Components (SongCard, Karaoke)      │
-│  - Shadcn-vue UI                       │
+│  - components/ui (maison) + Tailwind   │
 └──────────────┬─────────────────────────┘
                │ IPC (invoke)
 ┌──────────────▼─────────────────────────┐
@@ -344,7 +344,6 @@ LIBRETRANSLATE_API_URL=https://libretranslate.com/translate
 ### Documentation
 - Tauri : https://tauri.app
 - Vue 3 : https://vuejs.org
-- Shadcn-vue : https://www.shadcn-vue.com
 - PyO3 : https://pyo3.rs
 - LibreTranslate : https://libretranslate.com
 
