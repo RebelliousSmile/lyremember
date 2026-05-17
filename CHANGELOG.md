@@ -40,6 +40,7 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 
 ### Improved
 - `PracticeView.vue` accepte désormais un query param `?songId=<id>` qui pré-sélectionne (déplie) la chanson dans la liste. `SongDetailView.vue` expose un raccourci "Ouvrir dans Practice →" à côté de la section Modes qui route vers `/practice?songId=...`. Confirme la séparation des rôles : Practice = hub d'apprentissage, SongDetail = gestion lyrics + raccourcis directs vers les modes (#19).
+- i18n : locales `ja.json` (日本語) et `ko.json` (한국어) ajoutées ; sélecteur de langue dans Settings (4 langues). Couverture 100% des 151 clés UI. Détection automatique de `navigator.language` étendue aux 4 codes (#20).
 - Le CLI Python (proof of concept) est archivé dans `legacy/python-cli/` (#6) : `lyremember/`, `tests/`, `data/`, `demo.py`, `setup.py`, `requirements.txt` y vivent désormais. La stack canonique est Rust + Tauri + Vue 3. Le workflow `ci-python` cible ce nouveau chemin.
 - Polish `SongDetailView` : layout des paroles et états hover affinés.
 - PyO3 rendu optionnel pour faciliter les builds cross-platform.
