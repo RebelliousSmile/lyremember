@@ -16,6 +16,22 @@
             {{ error }}
           </Alert>
 
+          <div>
+            <label class="block text-sm font-medium text-[#B8B0D0] mb-1">
+              {{ $t('addSong.importFile') }}
+            </label>
+            <input
+              type="file"
+              accept=".txt,.json,.lrc"
+              @change="handleFileImport"
+              class="block w-full text-sm text-[#B8B0D0]
+                     file:mr-3 file:px-3 file:py-1.5 file:rounded-lg
+                     file:border-0 file:bg-gold file:text-black file:font-medium
+                     file:cursor-pointer hover:file:bg-gold/90"
+            />
+            <p class="mt-1 text-xs text-[#8A82A0]">{{ $t('addSong.importFileHint') }}</p>
+          </div>
+
           <Input
             v-model="form.title"
             :label="$t('addSong.songTitle')"
@@ -116,6 +132,7 @@ import Alert from '../components/ui/Alert.vue';
 import { useSongsStore } from '../stores/songs';
 import { useAuthStore } from '../stores/auth';
 import type { CreateSongForm } from '../types';
+import { parseByExtension, FileImportError } from '../lib/file-parsers';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -134,6 +151,27 @@ const form = ref<CreateSongForm>({
 const loading = ref(false);
 const error = ref('');
 const showError = ref(false);
+
+async function handleFileImport(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+  try {
+    const content = await file.text();
+    const parsed = parseByExtension(file.name, content);
+    if (parsed.title) form.value.title = parsed.title;
+    if (parsed.artist) form.value.artist = parsed.artist;
+    if (parsed.language) form.value.language = parsed.language;
+    form.value.lyrics = parsed.lyrics.join('\n');
+  } catch (e) {
+    error.value = e instanceof FileImportError
+      ? e.message
+      : `Failed to import file: ${(e as Error).message}`;
+    showError.value = true;
+  } finally {
+    input.value = '';
+  }
+}
 
 async function handleSubmit() {
   if (!form.value.lyrics.trim()) {

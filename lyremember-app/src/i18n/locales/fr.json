@@ -101,7 +101,9 @@
     "createSong": "Créer la chanson",
     "creating": "Création...",
     "enterLyrics": "Veuillez entrer les paroles",
-    "enterOneLine": "Veuillez entrer au moins une ligne de paroles"
+    "enterOneLine": "Veuillez entrer au moins une ligne de paroles",
+    "importFile": "Importer depuis un fichier (optionnel)",
+    "importFileHint": "Formats : .txt (une ligne par parole), .json, .lrc (karaoké)."
   },
   "practice": {
     "title": "Pratique",

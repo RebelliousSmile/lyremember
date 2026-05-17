@@ -101,7 +101,9 @@
     "createSong": "노래 만들기",
     "creating": "만드는 중...",
     "enterLyrics": "가사를 입력하세요",
-    "enterOneLine": "최소 한 줄의 가사를 입력하세요"
+    "enterOneLine": "최소 한 줄의 가사를 입력하세요",
+    "importFile": "파일에서 가져오기 (선택)",
+    "importFileHint": "지원 형식: .txt (한 줄에 하나), .json, .lrc (노래방)."
   },
   "practice": {
     "title": "연습",

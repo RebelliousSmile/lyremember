@@ -101,7 +101,9 @@
     "createSong": "Create Song",
     "creating": "Creating...",
     "enterLyrics": "Please enter song lyrics",
-    "enterOneLine": "Please enter at least one line of lyrics"
+    "enterOneLine": "Please enter at least one line of lyrics",
+    "importFile": "Import from a file (optional)",
+    "importFileHint": "Supported: .txt (one line per lyric), .json, .lrc (karaoke)."
   },
   "practice": {
     "title": "Practice",

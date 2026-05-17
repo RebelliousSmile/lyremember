@@ -101,7 +101,9 @@
     "createSong": "曲を作成",
     "creating": "作成中...",
     "enterLyrics": "歌詞を入力してください",
-    "enterOneLine": "少なくとも1行の歌詞を入力してください"
+    "enterOneLine": "少なくとも1行の歌詞を入力してください",
+    "importFile": "ファイルからインポート (任意)",
+    "importFileHint": "対応形式: .txt (1行1歌詞), .json, .lrc (カラオケ)。"
   },
   "practice": {
     "title": "練習",
