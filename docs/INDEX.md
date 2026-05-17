@@ -29,3 +29,7 @@ Documentation organisée par thème. Le README à la racine en référence les p
 ## Implémentation
 - [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) — guide step-by-step
 - [../rust-backend/IMPLEMENTATION_SUMMARY.md](../rust-backend/IMPLEMENTATION_SUMMARY.md) — résumé d'implémentation du backend Rust
+
+## Spikes R&D
+- [spikes/2026-05-genius-api.md](spikes/2026-05-genius-api.md) — exploration API métadonnées Genius (NO-GO court terme)
+- [spikes/2026-05-song-detection.md](spikes/2026-05-song-detection.md) — détection de chanson Shazam-like (NO-GO MVP)
