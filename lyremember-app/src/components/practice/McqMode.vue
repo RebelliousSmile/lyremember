@@ -116,28 +116,44 @@ const questionText = computed(() => {
 
 function generateChoices(): { choices: string[]; correctIndex: number } {
   const correctLine = props.song.lyrics[currentIndex.value];
-  // Deduplicate other lines to avoid identical choices
+  const correctLen = correctLine.length;
+
+  // Deduplicate other lines, drop empties and exact matches with the answer.
   const otherLines = [...new Set(props.song.lyrics.filter((_, i) => i !== currentIndex.value))]
-    .filter(line => line !== correctLine);
+    .filter(line => line.trim() !== '' && line !== correctLine);
 
-  // Pick up to 3 random distractors
-  const shuffled = [...otherLines].sort(() => Math.random() - 0.5);
-  const distractors = shuffled.slice(0, 3);
+  // Score each line by how close its length is to the answer's. Pick the
+  // closest as distractors — harder to eliminate visually than random.
+  const ranked = otherLines
+    .map(line => ({ line, score: Math.abs(line.length - correctLen) }))
+    .sort((a, b) => a.score - b.score);
+  // Take a pool slightly larger than needed, then shuffle to avoid being
+  // deterministic across questions.
+  const pool = ranked.slice(0, Math.max(6, ranked.length))
+    .map(r => r.line)
+    .sort(() => Math.random() - 0.5);
 
-  // If not enough unique lines, generate word-scrambled variants
-  const words = correctLine.split(/\s+/);
-  let variantIdx = 0;
-  while (distractors.length < 3) {
-    const scrambled = [...words].sort(() => Math.random() - 0.5).join(' ');
-    const variant = scrambled !== correctLine ? scrambled : `${correctLine} (${++variantIdx})`;
-    if (!distractors.includes(variant)) {
-      distractors.push(variant);
+  const distractors: string[] = pool.slice(0, 3);
+
+  // If the song is too short for 3 unique distractors, fall back to
+  // word-scrambled variants of OTHER lines (or the answer as last resort).
+  if (distractors.length < 3) {
+    const sourceLines = otherLines.length > 0 ? otherLines : [correctLine];
+    let attempts = 0;
+    while (distractors.length < 3 && attempts < 20) {
+      const src = sourceLines[attempts % sourceLines.length];
+      const words = src.split(/\s+/);
+      const scrambled = words.length > 1
+        ? [...words].sort(() => Math.random() - 0.5).join(' ')
+        : `${src} ${attempts}`;
+      if (scrambled !== correctLine && !distractors.includes(scrambled)) {
+        distractors.push(scrambled);
+      }
+      attempts++;
     }
-    variantIdx++;
-    if (variantIdx > 10) break; // Safety valve
   }
 
-  // Place correct answer at a random position using explicit index tracking
+  // Place correct answer at a random position.
   const correctIdx = Math.floor(Math.random() * (distractors.length + 1));
   const all = [...distractors];
   all.splice(correctIdx, 0, correctLine);
