@@ -13,6 +13,14 @@ LyRemember is a lyrics memorization application supporting multiple languages. T
 >   (4 tables : `users`, `songs`, `user_songs`, `practice_sessions`).
 > - Storage POC legacy : **JSON** via `legacy/python-cli/lyremember/storage.py`.
 >
+> **Build flags Tauri** : la feature `python` (PyO3 bridge phonétique
+> JP/KR/FR/EN via pykakasi / hangul-romanize / epitran) est activée
+> **par défaut sur desktop**. Les builds Android passent
+> `--no-default-features` (voir `.github/workflows/release.yml`) car
+> PyO3 ne se cross-compile pas vers Android — la phonétique renvoie
+> alors un stub d'erreur sur APK jusqu'à ce qu'une alternative Rust
+> pure soit fournie.
+>
 > Pour les décisions techniques actuelles : voir
 > [`FINAL_DECISIONS.md`](FINAL_DECISIONS.md).
 

@@ -15,7 +15,11 @@ name = "lyremember_app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [features]
-default = []
+# `python` (PyO3 bridge pour la phonétique) est activé par défaut sur les
+# cibles desktop. Les builds Android passent `--no-default-features` pour
+# l'exclure (PyO3 n'est pas cross-compilable vers Android — voir
+# rust-backend/Cargo.toml).
+default = ["python"]
 python = ["lyremember_backend/python"]
 
 [build-dependencies]
@@ -27,7 +31,11 @@ tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
-# Backend integration
+# Backend integration.
+# default-features = false : la feature `python` est apportee
+# explicitement par la feature locale `python = ["lyremember_backend/python"]`,
+# activee par defaut sur desktop et desactivee pour Android via
+# `--no-default-features` au build mobile.
 lyremember_backend = { path = "../../rust-backend", default-features = false }
 tokio = { version = "1", features = ["full"] }
 

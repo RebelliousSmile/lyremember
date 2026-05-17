@@ -27,6 +27,7 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 - `docs/USER_STORIES_V2.md` : Epic 5 (Mode oral) descendu en CouldHave, scope MVP = self-assessment manuel, mode micro live → post-MVP avec pointeur vers #28 (#12).
 - `docs/USER_STORIES_V2.md` : Epics 4-7 préfacés par une note de navigation expliquant les rôles distincts `PracticeView` (apprendre) vs `SongDetailView` (lyrics), pointeur vers #19 (#13).
 - `docs/USER_STORIES_V2.md` : US-1.3 (Genius) refondue — import de lyrics interdit (ToS + API), remplacée par champ `genius_url` optionnel (#17) + spike API métadonnées (#26) + cleanup UI (#18). US-2.1 ajustée en conséquence (#14).
+- Build Tauri : feature `python` (PyO3 → phonétique JP/KR/FR/EN) **activée par défaut** sur desktop dans `lyremember-app/src-tauri/Cargo.toml`. Le build Android passe `--no-default-features` (PyO3 non cross-compilable vers Android). `docs/ARCHITECTURE.md` documente le flag (#15).
 - Le CLI Python (proof of concept) est archivé dans `legacy/python-cli/` (#6) : `lyremember/`, `tests/`, `data/`, `demo.py`, `setup.py`, `requirements.txt` y vivent désormais. La stack canonique est Rust + Tauri + Vue 3. Le workflow `ci-python` cible ce nouveau chemin.
 - Polish `SongDetailView` : layout des paroles et états hover affinés.
 - PyO3 rendu optionnel pour faciliter les builds cross-platform.
