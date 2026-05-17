@@ -50,142 +50,23 @@
         </div>
       </Card>
 
-      <!-- Genius API -->
-      <Card>
-        <template #header>
-          <h2 class="text-xl font-semibold">{{ $t('settings.integrations') }}</h2>
-        </template>
-
-        <div class="space-y-4">
-          <div>
-            <h3 class="font-medium text-[#F5F0EB]">{{ $t('settings.geniusApi') }}</h3>
-            <p class="text-sm text-[#8A82A0] mt-1">
-              {{ $t('settings.geniusDesc') }}
-            </p>
-          </div>
-
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-[#B8B0D0]">
-              {{ $t('settings.geniusToken') }}
-            </label>
-            <div class="flex gap-2">
-              <input
-                v-model="geniusToken"
-                type="password"
-                :placeholder="$t('settings.geniusTokenPlaceholder')"
-                class="flex-1 rounded-lg border border-deep-border bg-deep-card-hover
-                       px-3 py-2 text-sm text-[#F5F0EB]
-                       focus:outline-none focus:ring-2 focus:ring-gold"
-              />
-              <Button variant="primary" @click="saveGeniusToken">
-                {{ $t('common.save') }}
-              </Button>
-            </div>
-            <p v-if="tokenSaved" class="text-sm text-green-600 dark:text-green-400">
-              {{ $t('settings.tokenSaved') }}
-            </p>
-            <p class="text-xs text-[#8A82A0]">
-              {{ $t('settings.geniusHelp') }}
-            </p>
-          </div>
-
-          <!-- Genius Search -->
-          <div v-if="geniusToken" class="pt-4 border-t border-deep-border space-y-3">
-            <h3 class="font-medium text-[#F5F0EB]">{{ $t('settings.searchSongs') }}</h3>
-            <div class="flex gap-2">
-              <input
-                v-model="searchQuery"
-                :placeholder="$t('settings.searchPlaceholder')"
-                class="flex-1 rounded-lg border border-deep-border bg-deep-card-hover
-                       px-3 py-2 text-sm text-[#F5F0EB]
-                       focus:outline-none focus:ring-2 focus:ring-gold"
-                @keydown.enter="searchGenius"
-              />
-              <Button variant="primary" @click="searchGenius" :loading="searching">
-                {{ $t('settings.search') }}
-              </Button>
-            </div>
-
-            <div v-if="searchResults.length > 0" class="space-y-2">
-              <div
-                v-for="result in searchResults"
-                :key="result.id"
-                class="flex items-center justify-between p-3 rounded-lg border
-                       border-deep-border hover:border-gold transition-colors"
-              >
-                <div>
-                  <p class="font-medium text-[#F5F0EB]">{{ result.title }}</p>
-                  <p class="text-sm text-[#8A82A0]">{{ result.artist }}</p>
-                </div>
-                <Button variant="secondary" size="sm" @click="importSong(result)">
-                  {{ $t('settings.import') }}
-                </Button>
-              </div>
-            </div>
-
-            <p v-else-if="searchDone && searchResults.length === 0" class="text-sm text-[#8A82A0]">
-              {{ $t('settings.noResults') }}
-            </p>
-          </div>
-        </div>
-      </Card>
     </div>
   </MainLayout>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
 import MainLayout from '../components/layout/MainLayout.vue';
 import Card from '../components/ui/Card.vue';
-import Button from '../components/ui/Button.vue';
 import { useUiStore } from '../stores/ui';
 import { supportedLocales, type SupportedLocale } from '../i18n';
 
 const { locale } = useI18n();
 const uiStore = useUiStore();
-const router = useRouter();
-
-// Genius API
-const geniusToken = ref(localStorage.getItem('geniusToken') ?? '');
-const tokenSaved = ref(false);
-const searchQuery = ref('');
-const searching = ref(false);
-const searchDone = ref(false);
-const searchResults = ref<{ id: string; title: string; artist: string }[]>([]);
 
 function changeLocale(code: string) {
   if (!supportedLocales.some(l => l.code === code)) return;
   locale.value = code as SupportedLocale;
   localStorage.setItem('locale', code);
-}
-
-function saveGeniusToken() {
-  localStorage.setItem('geniusToken', geniusToken.value);
-  tokenSaved.value = true;
-  setTimeout(() => { tokenSaved.value = false; }, 2000);
-}
-
-async function searchGenius() {
-  if (!searchQuery.value.trim()) return;
-  searching.value = true;
-  searchDone.value = false;
-  try {
-    // Call Tauri backend when available; for now use a placeholder
-    // const results = await searchGeniusSongs(searchQuery.value, geniusToken.value);
-    // searchResults.value = results;
-    searchResults.value = [];
-    searchDone.value = true;
-  } catch (err) {
-    console.error('Genius search failed:', err);
-  } finally {
-    searching.value = false;
-  }
-}
-
-async function importSong(result: { id: string; title: string; artist: string }) {
-  // Will be connected when Genius backend commands are available
-  router.push({ path: '/songs/add', query: { title: result.title, artist: result.artist } });
 }
 </script>

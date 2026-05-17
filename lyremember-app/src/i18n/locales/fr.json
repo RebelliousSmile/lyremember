@@ -156,19 +156,7 @@
     "darkMode": "Mode sombre",
     "darkModeDesc": "Basculer entre le thème clair et sombre",
     "language": "Langue",
-    "languageDesc": "Choisir la langue de l'interface",
-    "integrations": "Intégrations",
-    "geniusApi": "API Genius",
-    "geniusToken": "Jeton API Genius",
-    "geniusTokenPlaceholder": "Entrez votre jeton API Genius",
-    "geniusDesc": "Connectez votre compte Genius pour rechercher et importer des paroles automatiquement.",
-    "geniusHelp": "Obtenez votre jeton sur genius.com/api-clients",
-    "tokenSaved": "Jeton enregistré",
-    "searchSongs": "Rechercher des chansons",
-    "searchPlaceholder": "Rechercher une chanson sur Genius...",
-    "search": "Rechercher",
-    "import": "Importer",
-    "noResults": "Aucun résultat"
+    "languageDesc": "Choisir la langue de l'interface"
   },
   "shortcuts": {
     "title": "Raccourcis clavier",

@@ -156,19 +156,7 @@
     "darkMode": "Dark Mode",
     "darkModeDesc": "Switch between light and dark theme",
     "language": "Language",
-    "languageDesc": "Choose the interface language",
-    "integrations": "Integrations",
-    "geniusApi": "Genius API",
-    "geniusToken": "Genius API Token",
-    "geniusTokenPlaceholder": "Enter your Genius API token",
-    "geniusDesc": "Connect your Genius account to search and import song lyrics automatically.",
-    "geniusHelp": "Get your token at genius.com/api-clients",
-    "tokenSaved": "Token saved",
-    "searchSongs": "Search Songs",
-    "searchPlaceholder": "Search for a song on Genius...",
-    "search": "Search",
-    "import": "Import",
-    "noResults": "No results found"
+    "languageDesc": "Choose the interface language"
   },
   "shortcuts": {
     "title": "Keyboard Shortcuts",

@@ -34,6 +34,9 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 
 ### Added
 - Champ optionnel `genius_url` sur les chansons : exposé via `CreateSongData` / `UpdateSongData` côté Rust, transmis par `cmd_create_song` et `cmd_update_song`, saisi dans `AddSongView` et affiché en lien sortant (`target="_blank" rel="noopener noreferrer"`) sur `SongDetailView`. La colonne SQL existait déjà — seul le wiring service/commands/UI manquait. Sémantique update : `None` = ne pas toucher, `Some("")` = clear, `Some(url)` = écrase. i18n FR/EN ajoutés. **Aucune extraction de paroles** depuis Genius (interdit par ToS) — c'est un simple lien (#17).
+
+### Removed
+- `SettingsView.vue` : section "Genius API" supprimée (token, sauvegarde localStorage, recherche, import). L'interface laissait croire à un import de paroles alors que ce n'est pas légalement faisable. Clés i18n `settings.integrations`, `settings.geniusApi`, `settings.geniusToken*`, `settings.geniusDesc`, `settings.geniusHelp`, `settings.tokenSaved`, `settings.searchSongs`, `settings.searchPlaceholder`, `settings.search`, `settings.import`, `settings.noResults` retirées de FR/EN (#18).
 - Le CLI Python (proof of concept) est archivé dans `legacy/python-cli/` (#6) : `lyremember/`, `tests/`, `data/`, `demo.py`, `setup.py`, `requirements.txt` y vivent désormais. La stack canonique est Rust + Tauri + Vue 3. Le workflow `ci-python` cible ce nouveau chemin.
 - Polish `SongDetailView` : layout des paroles et états hover affinés.
 - PyO3 rendu optionnel pour faciliter les builds cross-platform.
