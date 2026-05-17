@@ -1,25 +1,24 @@
-name: CI Python
+name: CI Python (legacy POC)
 
 on:
   push:
     branches: [main]
     paths:
-      - 'lyremember/**'
-      - 'tests/**'
-      - 'requirements.txt'
+      - 'legacy/python-cli/**'
       - '.github/workflows/ci-python.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'lyremember/**'
-      - 'tests/**'
-      - 'requirements.txt'
+      - 'legacy/python-cli/**'
       - '.github/workflows/ci-python.yml'
 
 jobs:
   test:
-    name: Python Tests
+    name: Python Tests (legacy)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: legacy/python-cli
 
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +27,7 @@ jobs:
         with:
           python-version: '3.11'
           cache: pip
+          cache-dependency-path: legacy/python-cli/requirements.txt
 
       - name: Install dependencies
         run: pip install -r requirements.txt pytest

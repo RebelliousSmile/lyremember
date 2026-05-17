@@ -17,6 +17,7 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 
 ### Changed
 - Réorganisation de la documentation : les 15 fichiers `.md` de design sont passés de la racine à `docs/` ; seul `README.md` reste à la racine.
+- Le CLI Python (proof of concept) est archivé dans `legacy/python-cli/` (#6) : `lyremember/`, `tests/`, `data/`, `demo.py`, `setup.py`, `requirements.txt` y vivent désormais. La stack canonique est Rust + Tauri + Vue 3. Le workflow `ci-python` cible ce nouveau chemin.
 - Polish `SongDetailView` : layout des paroles et états hover affinés.
 - PyO3 rendu optionnel pour faciliter les builds cross-platform.
 - `reqwest` basculé d'OpenSSL vers rustls pour la compatibilité Android.

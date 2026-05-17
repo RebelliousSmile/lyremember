@@ -13,8 +13,8 @@ eggs/
 # Ignore Python lib directories but not TypeScript/JavaScript lib directories
 /lib/
 /lib64/
-lyremember/lib/
-lyremember/lib64/
+legacy/python-cli/lyremember/lib/
+legacy/python-cli/lyremember/lib64/
 parts/
 sdist/
 var/
@@ -37,9 +37,9 @@ ENV/
 *~
 
 # Data files (user data should not be committed)
-data/songs.json
-data/progress.json
-data/config.json
+legacy/python-cli/data/songs.json
+legacy/python-cli/data/progress.json
+legacy/python-cli/data/config.json
 *.db
 *.db-shm
 *.db-wal

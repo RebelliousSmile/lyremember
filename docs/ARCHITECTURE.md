@@ -164,16 +164,16 @@ LyRemember is a lyrics memorization application supporting multiple languages. T
 - Backup and recovery
 - Migration utilities
 
-## Directory Structure
+## Directory Structure (Python POC — legacy)
+
+> Ce document décrit l'architecture du proof of concept Python, désormais
+> archivé dans `legacy/python-cli/`. La stack canonique actuelle est
+> Rust + Tauri + Vue 3 (voir `rust-backend/` et `lyremember-app/`).
 
 ```
-lyremember/
-├── README.md
-├── USER_STORIES.md
-├── ARCHITECTURE.md
+legacy/python-cli/
 ├── requirements.txt
 ├── setup.py
-├── .gitignore
 ├── lyremember/
 │   ├── __init__.py
 │   ├── cli.py              # CLI entry point
@@ -191,12 +191,11 @@ lyremember/
 │       ├── sample_en.json
 │       ├── sample_es.json
 │       └── sample_fr.json
-├── tests/
-│   ├── __init__.py
-│   ├── test_song_manager.py
-│   ├── test_practice_engine.py
-│   └── test_storage.py
-└── docs/
+└── tests/
+    ├── __init__.py
+    ├── test_song_manager.py
+    ├── test_practice_engine.py
+    └── test_storage.py
     └── usage_guide.md
 ```
 

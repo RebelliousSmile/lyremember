@@ -45,16 +45,18 @@ SQLite + PyO3 Python Bridge
 
 ## 📂 Structure du Projet
 
-### 1. Python CLI (Proof of Concept) - LEGACY
+### 1. Python CLI (Proof of Concept) - LEGACY (`legacy/python-cli/`)
 
 ```bash
-cd lyremember/
+cd legacy/python-cli/
 pip install -r requirements.txt
 pip install -e .
 lyremember --help
 ```
 
-Voir README original ci-dessous pour les commandes CLI.
+Le CLI Python n'est plus la stack canonique — il vit comme référence dans
+[`legacy/python-cli/`](legacy/python-cli/). La stack supportée est
+Rust + Tauri + Vue 3.
 
 ### 2. Rust Backend (Production) - ✅ COMPLETE
 
@@ -279,8 +281,11 @@ MIT License - See LICENSE file for details
 
 ## Legacy Python CLI Documentation
 
-> **Note**: Le CLI Python ci-dessous est un proof of concept.
-> **Pour production**, utiliser l'application Tauri (lyremember-app/).
+> **Note**: Le CLI Python ci-dessous est un proof of concept archivé dans
+> [`legacy/python-cli/`](legacy/python-cli/). Toutes les commandes
+> `cd lyremember`, les chemins `requirements.txt`, `data/`, etc. sont
+> à interpréter relativement à `legacy/python-cli/`.
+> **Pour production**, utiliser l'application Tauri (`lyremember-app/`).
 
 ## Features
 
@@ -463,23 +468,24 @@ All your data is stored locally in the `data/` directory:
 ```
 lyremember/
 ├── README.md                   # This file
+├── CONTRIBUTING.md             # Contribution workflow
+├── CHANGELOG.md                # Notable changes (Keep a Changelog)
+├── LICENSE                     # MIT
 ├── docs/                       # All design & strategy docs
 │   ├── INDEX.md                # Documentation index
-│   ├── USER_STORIES.md         # User stories and requirements
-│   ├── ARCHITECTURE.md         # Technical architecture
-│   └── ...                     # see docs/INDEX.md
-├── requirements.txt           # Python dependencies
-├── setup.py                   # Package setup
-├── lyremember/               # Main application package
-│   ├── cli.py                # Command-line interface
-│   ├── models.py             # Data models
-│   ├── storage.py            # Data persistence
-│   ├── song_manager.py       # Song CRUD operations
-│   ├── practice_engine.py    # Practice modes
-│   ├── progress_tracker.py   # Statistics tracking
-│   └── utils.py              # Helper functions
-└── data/                     # User data
-    └── samples/              # Sample songs
+│   ├── USER_STORIES.md
+│   ├── ARCHITECTURE.md
+│   └── …                       # see docs/INDEX.md
+├── rust-backend/               # Backend Rust + SQLite + PyO3
+├── lyremember-app/             # Frontend Vue 3 + TypeScript + Tauri
+└── legacy/
+    └── python-cli/             # Archived Python CLI proof of concept
+        ├── lyremember/         # Application package (Python)
+        ├── tests/              # pytest suite
+        ├── data/samples/       # Sample songs
+        ├── demo.py
+        ├── setup.py
+        └── requirements.txt
 ```
 
 ## User Stories
