@@ -120,7 +120,7 @@
                 {{ section.label }}
               </p>
 
-              <!-- Lyric lines -->
+              <!-- Lyric lines : VO + Phonétique + Traduction -->
               <div class="space-y-3.5">
                 <div
                   v-for="(line, lIdx) in section.lines"
@@ -129,6 +129,12 @@
                 >
                   <p class="text-[15px] leading-[1.65] text-[#F5F0EB]/95 font-serif tracking-[0.01em]">
                     {{ line.original }}
+                  </p>
+                  <p
+                    v-if="line.phonetic"
+                    class="text-[12px] leading-[1.45] text-[#B8B0D0] italic opacity-[0.75] mt-0.5 font-mono"
+                  >
+                    {{ line.phonetic }}
                   </p>
                   <p
                     v-if="line.translation"
@@ -273,6 +279,7 @@ function languageEmoji(lang: string): string {
 
 interface LyricLine {
   original: string;
+  phonetic: string | null;
   translation: string | null;
 }
 
@@ -284,6 +291,7 @@ interface LyricSection {
 const lyricSections = computed<LyricSection[]>(() => {
   if (!song.value) return [];
   const lyrics = song.value.lyrics;
+  const phonetics = song.value.phonetic_lyrics ?? null;
   const translations = selectedTranslation.value && song.value.translations
     ? song.value.translations[selectedTranslation.value] || null
     : null;
@@ -295,38 +303,31 @@ const lyricSections = computed<LyricSection[]>(() => {
   for (let i = 0; i < lyrics.length; i++) {
     const line = lyrics[i];
     if (line.trim() === '') {
-      // Empty line = section break
       if (currentLines.length > 0) {
         sectionCount++;
-        sections.push({
-          label: `Verse ${sectionCount}`,
-          lines: currentLines,
-        });
+        sections.push({ label: `Verse ${sectionCount}`, lines: currentLines });
         currentLines = [];
       }
     } else {
       currentLines.push({
         original: line,
+        phonetic: phonetics && phonetics[i] ? phonetics[i] : null,
         translation: translations && translations[i] ? translations[i] : null,
       });
     }
   }
 
-  // Push remaining lines
   if (currentLines.length > 0) {
     sectionCount++;
-    sections.push({
-      label: `Verse ${sectionCount}`,
-      lines: currentLines,
-    });
+    sections.push({ label: `Verse ${sectionCount}`, lines: currentLines });
   }
 
-  // If no sections were created (no empty lines), just put everything in one section
   if (sections.length === 0 && lyrics.length > 0) {
     sections.push({
       label: 'Verse 1',
       lines: lyrics.map((line: string, i: number) => ({
         original: line,
+        phonetic: phonetics && phonetics[i] ? phonetics[i] : null,
         translation: translations && translations[i] ? translations[i] : null,
       })),
     });
