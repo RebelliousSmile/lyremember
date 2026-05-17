@@ -42,6 +42,7 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 
 ### Fixed
 - CSP Tauri : `lyremember-app/src-tauri/tauri.conf.json` passe de `null` à une politique minimale `default-src 'self' ipc:; connect-src 'self' libretranslate.com/.de/.io; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' data:` (#48).
+- Section "Roadmap → Current Features" du README réécrite : décrivait le CLI Python legacy (flashcard / line-by-line), maintenant reflète l'app Tauri actuelle (4 modes pratique, raccourcis, stats streaks/reco, i18n, dark mode, Android). Section "Planned" pointe désormais vers `docs/MASTER_PLAN.md` et les issues #33-#53 (#53).
 - Documentation Tauri : 19 → **21 commandes** (5 auth + 7 songs + 6 practice + 3 util) dans `README.md` et `docs/TAURI_INTEGRATION_COMPLETE.md` ; section "Practice (4)" corrigée en "Practice (6)" avec ajout de `cmd_get_user_streak` + `cmd_get_recommendations` (#45).
 - `clippy::too_many_arguments` sur `rust-backend/src/services/practice.rs:285` (`insert_session` helper) : `#[allow]` localisé + ordre `impl From<pyo3::PyErr>` déplacé avant `mod tests` pour silencer `clippy::items_after_test_module`. CI Rust passe désormais avec `cargo clippy --all-targets -- -D warnings` (#46).
 

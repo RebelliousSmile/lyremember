@@ -514,22 +514,26 @@ MIT License — see [LICENSE](LICENSE) for the full text.
 
 ## Roadmap
 
-### Current Features (v0.1.0)
-- [x] Add and manage songs
-- [x] Multiple language support
-- [x] Fill-in-the-blank practice
-- [x] Flashcard practice
-- [x] Line-by-line practice
-- [x] Progress tracking
-- [x] Basic statistics
+### Current Features (v0.1.0 — Tauri desktop + Android app)
+- [x] Account auth (register / login / guest mode) — JWT, bcrypt
+- [x] Songs repertoire (CRUD + import .txt / .lrc / .json)
+- [x] Translation via LibreTranslate (public or self-hosted via `LYREMEMBER_LIBRETRANSLATE_URL`)
+- [x] Phonetic transcription JP / KR (via PyO3, desktop only ; Android falls back to stub)
+- [x] Practice modes : **Karaoke** (line-by-line reveal), **Fill-in-the-Blank**, **Multiple Choice**, **Oral self-assessment**
+- [x] Keyboard shortcuts (Space / ← → / 1-4 / Enter / Esc) — see `?` in the app
+- [x] Stats : per-song mastery, daily streaks, recommendations
+- [x] i18n : en / fr / ja / ko
+- [x] Dark mode (auto from OS, override in Settings)
+- [x] Android APK build (debug)
 
-### Planned Features
-- [ ] Web interface
-- [ ] Audio playback integration
-- [ ] Spaced repetition algorithm
-- [ ] Community song database
-- [ ] Mobile app
-- [ ] Advanced analytics
+### Planned Features (post-MVP)
+See [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md) and the [post-MVP issues](https://github.com/RebelliousSmile/lyremember/issues?q=is%3Aopen+label%3Aprio%3Apost-mvp) (#33-#53) for the live roadmap. Highlights :
+- [ ] Desktop bundles (.deb / .AppImage / .dmg / .msi) + multi-OS release pipeline + auto-update (#33, #34)
+- [ ] User profile export / import (JSON backup) (#35)
+- [ ] Accessibility audit + axe-core CI (#39)
+- [ ] Advanced stats : graphs, per-song history, heatmap (#44)
+- [ ] Security & performance audit (#43)
+- [ ] Live oral mode with microphone capture (#28)
 
 ## Support
 
