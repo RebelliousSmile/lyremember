@@ -59,6 +59,34 @@
         </div>
       </div>
 
+      <!-- Live speech (experimental, only if browser supports it) -->
+      <div
+        v-if="liveSupported && !selfAssessed"
+        class="p-4 rounded-xl border border-deep-border bg-deep-card/50 space-y-2"
+      >
+        <div class="flex items-center justify-between gap-3">
+          <p class="text-xs uppercase tracking-wide text-[#8A82A0]">Live (experimental)</p>
+          <Button
+            :variant="listening ? 'danger' : 'secondary'"
+            size="sm"
+            @click="listening ? stopListening() : startListening()"
+          >
+            <Mic :size="16" />
+            {{ listening ? 'Stop' : 'Speak' }}
+          </Button>
+        </div>
+        <p v-if="lastTranscript" class="text-sm text-[#B8B0D0]">
+          You said: <span class="italic">"{{ lastTranscript }}"</span>
+        </p>
+        <p
+          v-if="lastScore !== null"
+          class="text-sm font-semibold"
+          :class="lastScore >= 0.7 ? 'text-green-500' : 'text-orange-400'"
+        >
+          Match: {{ Math.round(lastScore * 100) }}%
+        </p>
+      </div>
+
       <!-- Self assessment -->
       <div v-if="revealStage >= 3 && !selfAssessed" class="space-y-2">
         <p class="text-sm text-[#8A82A0] text-center">How did you do?</p>
@@ -123,10 +151,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onUnmounted } from 'vue';
 import { Eye, ChevronRight, Check, X, Minus, Mic, RotateCcw } from 'lucide-vue-next';
 import Button from '../ui/Button.vue';
 import type { Song } from '../../types';
+import { hasSpeechRecognition, scoreSpoken } from '../../lib/oral-scoring';
 
 const props = defineProps<{ song: Song }>();
 defineEmits<{
@@ -139,6 +168,73 @@ const selfAssessed = ref(false);
 const correctCount = ref(0);
 const finished = ref(false);
 let startTime = Date.now();
+
+// ---- Live speech recognition (experimental, opt-in) ----
+const liveSupported = hasSpeechRecognition();
+const listening = ref(false);
+const lastTranscript = ref('');
+const lastScore = ref<number | null>(null);
+const SCORE_PASS_THRESHOLD = 0.7;
+
+interface MinimalSpeechRecognition {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  start: () => void;
+  stop: () => void;
+  onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onend: (() => void) | null;
+  onerror: ((e: unknown) => void) | null;
+}
+
+let recognition: MinimalSpeechRecognition | null = null;
+
+function langToLocale(lang: string): string {
+  return { fr: 'fr-FR', en: 'en-US', jp: 'ja-JP', kr: 'ko-KR' }[lang] ?? 'en-US';
+}
+
+function startListening() {
+  if (!liveSupported) return;
+  const w = window as unknown as {
+    SpeechRecognition?: new () => MinimalSpeechRecognition;
+    webkitSpeechRecognition?: new () => MinimalSpeechRecognition;
+  };
+  const Ctor = w.SpeechRecognition ?? w.webkitSpeechRecognition;
+  if (!Ctor) return;
+  recognition = new Ctor();
+  recognition.lang = langToLocale(props.song.language);
+  recognition.interimResults = false;
+  recognition.continuous = false;
+  recognition.onresult = (e) => {
+    const transcript = e.results[0]?.[0]?.transcript ?? '';
+    lastTranscript.value = transcript;
+    const expected = props.song.lyrics[currentIndex.value] ?? '';
+    const score = scoreSpoken(expected, transcript);
+    lastScore.value = score;
+    if (score >= SCORE_PASS_THRESHOLD && !selfAssessed.value) {
+      assess(true);
+    }
+  };
+  recognition.onend = () => {
+    listening.value = false;
+  };
+  recognition.onerror = () => {
+    listening.value = false;
+  };
+  listening.value = true;
+  lastTranscript.value = '';
+  lastScore.value = null;
+  recognition.start();
+}
+
+function stopListening() {
+  recognition?.stop();
+  listening.value = false;
+}
+
+onUnmounted(() => {
+  stopListening();
+});
 
 const progress = computed(() =>
   Math.round(((currentIndex.value + (finished.value ? 1 : 0)) / props.song.lyrics.length) * 100)
@@ -169,6 +265,8 @@ function nextLine() {
     currentIndex.value++;
     revealStage.value = 0;
     selfAssessed.value = false;
+    lastTranscript.value = '';
+    lastScore.value = null;
   } else {
     finished.value = true;
   }
