@@ -5,6 +5,12 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 ## [Unreleased]
 
 ### Added
+- Animations de feedback dans les modes pratique (#38) :
+  - Keyframes CSS `pulse-correct` (scale doux sur bonne réponse) et `shake-wrong` (translation latérale sur erreur) ajoutées à `src/styles/main.css`.
+  - McqMode : pulse sur la réponse choisie correcte, shake sur la réponse choisie incorrecte.
+  - FillBlankMode : pulse / shake sur chaque blank révélé selon `token.correct`.
+  - `@media (prefers-reduced-motion: reduce)` global qui désactive toutes les animations + transitions + scroll smooth.
+  - Transition router-view `fade` déjà en place dans `App.vue` (héritage Phase 2).
 - Raccourcis clavier dans les modes pratique (#37) :
   - Karaoké : `Space` toggle play/pause, `←` `→` ligne précédente/suivante.
   - QCM : `1`-`4` sélectionne la réponse, `Enter` passe à la question suivante.

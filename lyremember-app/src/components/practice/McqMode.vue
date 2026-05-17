@@ -223,10 +223,11 @@ function choiceClass(i: number) {
     return 'border-deep-border hover:border-gold cursor-pointer';
   }
   if (i === correctChoiceIndex.value) {
-    return 'border-green-500 bg-green-50 dark:bg-green-900/20';
+    const pulse = i === selectedIndex.value ? ' animate-pulse-correct' : '';
+    return `border-green-500 bg-green-50 dark:bg-green-900/20${pulse}`;
   }
   if (i === selectedIndex.value) {
-    return 'border-red-500 bg-red-50 dark:bg-red-900/20';
+    return 'border-red-500 bg-red-50 dark:bg-red-900/20 animate-shake-wrong';
   }
   return 'border-deep-border opacity-50';
 }

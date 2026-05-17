@@ -30,11 +30,11 @@
             <span v-if="!token.hidden" class="text-[#F5F0EB]">{{ token.text }} </span>
             <span
               v-else-if="token.revealed"
-              class="font-bold"
+              class="font-bold inline-block"
               :class="
                 token.correct
-                  ? 'text-green-600 dark:text-green-400'
-                  : 'text-red-500 dark:text-red-400'
+                  ? 'text-green-600 dark:text-green-400 animate-pulse-correct'
+                  : 'text-red-500 dark:text-red-400 animate-shake-wrong'
               "
             >
               {{ token.correct ? token.text : `${userInputs[token.blankIndex]}→${token.text}` }}
