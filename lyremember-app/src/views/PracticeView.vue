@@ -152,7 +152,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { PlayCircle, Music, PenLine, List, Mic, Plus } from 'lucide-vue-next';
 import MainLayout from '../components/layout/MainLayout.vue';
 import Button from '../components/ui/Button.vue';
@@ -161,6 +161,7 @@ import { useSongsStore } from '../stores/songs';
 import { useUserStats } from '../composables/useUserStats';
 
 const router = useRouter();
+const route = useRoute();
 const songsStore = useSongsStore();
 const { userStats } = useUserStats();
 
@@ -182,6 +183,10 @@ function startPractice(songId: string, mode: string) {
 onMounted(async () => {
   try {
     await songsStore.fetchUserSongs();
+    const songId = route.query.songId;
+    if (typeof songId === 'string' && songsStore.songs.some(s => s.id === songId)) {
+      selectedSongId.value = songId;
+    }
   } catch (err) {
     console.error('Failed to fetch songs:', err);
   }

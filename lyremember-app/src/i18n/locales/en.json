@@ -76,7 +76,8 @@
     "oralPractice": "Oral Practice",
     "songNotFound": "Song not found",
     "loadingSong": "Loading song...",
-    "openOnGenius": "Open on Genius ↗"
+    "openOnGenius": "Open on Genius ↗",
+    "practiceHubShortcut": "Open in Practice hub →"
   },
   "addSong": {
     "title": "Add New Song",

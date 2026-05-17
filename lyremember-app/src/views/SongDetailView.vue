@@ -143,7 +143,15 @@
 
           <!-- Practice Modes 2x2 Grid -->
           <div>
-            <h2 class="text-sm font-bold text-[#F5F0EB] mb-3">{{ $t('songDetail.practiceModes') }}</h2>
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-sm font-bold text-[#F5F0EB]">{{ $t('songDetail.practiceModes') }}</h2>
+              <button
+                class="text-xs text-gold hover:underline"
+                @click="$router.push({ path: '/practice', query: { songId: song.id } })"
+              >
+                {{ $t('songDetail.practiceHubShortcut') }}
+              </button>
+            </div>
             <div class="grid grid-cols-2 gap-3">
               <!-- Fill in the blanks / Texte a trous -->
               <button
