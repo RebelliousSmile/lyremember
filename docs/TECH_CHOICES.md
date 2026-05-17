@@ -321,7 +321,7 @@ Nous devons choisir la stack technique AVANT de créer les user stories détaill
 
 ---
 
-### Option C : LibreTranslate (Open Source)
+### Option C : LibreTranslate (Open Source) — **RETENU**
 **Pour :**
 - ✅ Gratuit
 - ✅ Auto-hébergeable
@@ -331,16 +331,14 @@ Nous devons choisir la stack technique AVANT de créer les user stories détaill
 - ❌ Qualité inférieure
 - ❌ Moins de langues
 
+> Implémenté dans `rust-backend/src/services/translation.rs` (appel HTTP via `reqwest`).
+
 ---
 
-### Option D : deep-translator (Python lib)
-**Pour :**
-- ✅ Gratuit (utilise Google Translate non-officiel)
-- ✅ Facile
+### Option D : wrapper Google Translate non-officiel (lib Python) — *écartée*
 
-**Contre :**
-- ❌ Pas officiel, peut casser
-- ❌ Rate limiting
+Approche écartée car non officielle, sujette au rate limiting et inutile
+dès lors que LibreTranslate suffit pour le scope MVP.
 
 ---
 
@@ -432,7 +430,7 @@ Nous devons choisir la stack technique AVANT de créer les user stories détaill
 - Backend : Python FastAPI (continuer ce qui existe)
 - BDD : SQLite
 - Hébergement : Vercel (front) + Railway (back)
-- Traduction : deep-translator (gratuit)
+- Traduction : LibreTranslate (gratuit)
 - Phonétique : epitran + pykakasi
 - Vocal : Web Speech API (gratuit)
 
@@ -476,7 +474,7 @@ Nous devons choisir la stack technique AVANT de créer les user stories détaill
    - [ ] Grand public → Web/Mobile nécessaire
 
 2. **Quel est le budget ?**
-   - [ ] 0€ → Stack gratuite (deep-translator, Web Speech API, SQLite)
+   - [ ] 0€ → Stack gratuite (LibreTranslate, Web Speech API, SQLite)
    - [ ] ~20€/mois → Services premium (DeepL, Google Speech, PostgreSQL hébergé)
    - [ ] ~100€/mois → Infrastructure scalable
 
@@ -513,7 +511,7 @@ Nous devons choisir la stack technique AVANT de créer les user stories détaill
 - **Backend :** Python FastAPI (continuer existant)
 - **BDD :** PostgreSQL (SQLite pour dev)
 - **Auth :** JWT tokens
-- **Traduction :** deep-translator (gratuit, upgrade DeepL plus tard)
+- **Traduction :** LibreTranslate (gratuit, auto-hébergeable, upgrade DeepL plus tard)
 - **Phonétique :** epitran + pykakasi (JP) + pinyin (CN)
 - **Vocal :** Web Speech API (gratuit)
 - **Hébergement :** Vercel (front) + Railway (back + BDD)

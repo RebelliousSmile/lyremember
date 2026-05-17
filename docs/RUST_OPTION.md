@@ -160,11 +160,9 @@ tokio = { version = "1", features = ["full"] }
 
 **Traduction :**
 ```toml
-# Pas d'équivalent direct de deep-translator en Rust
-# Options:
-# 1. Appeler API Google Translate directement avec reqwest
-# 2. Utiliser Python via PyO3
-# 3. Service externe (DeepL, Google Cloud)
+# Décision retenue : appeler LibreTranslate via reqwest (HTTP).
+# Voir rust-backend/src/services/translation.rs.
+# Alternatives non retenues : PyO3 + lib Python, DeepL, Google Cloud.
 ```
 
 ---
@@ -181,7 +179,7 @@ tokio = { version = "1", features = ["full"] }
 | **Password Hash** | passlib | bcrypt |
 | **Async** | asyncio | tokio |
 | **Genius API** | lyricsgenius | reqwest (manuel) |
-| **Traduction** | deep-translator | reqwest (API) |
+| **Traduction** | libs Python (wrappers Google) | reqwest → LibreTranslate |
 | **Phonétique JP** | pykakasi | ❌ (FFI Python?) |
 | **Phonétique KR** | hangul-romanize | ❌ (implémenter?) |
 | **Phonétique FR/EN** | epitran | ❌ (IPA rules?) |
