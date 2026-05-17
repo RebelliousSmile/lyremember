@@ -45,7 +45,7 @@ npm run test:e2e          # WebDriverIO (parcours utilisateur)
 ## Style & conventions
 
 - **Python** : respecter les patterns existants (Click, pyyaml, type hints quand utile). Pas d'`except Exception` nu.
-- **Rust** : `cargo fmt --all`, `cargo clippy --all-targets -- -D warnings` avant push (vérifié par CI sur `rust-backend/` et `lyremember-app/src-tauri/`).
+- **Rust** : `cargo fmt --all`, `cargo clippy --all-targets -- -D warnings` avant push (vérifié par CI sur `rust-backend/` et `lyremember-app/src-tauri/`). Audit supply-chain local : `cargo install cargo-audit && cargo audit` (vérifié en CI via `rustsec/audit-check`).
 - **TypeScript/Vue** : `cd lyremember-app && npm run lint` (ESLint + Prettier ; vérifié par CI). `npm run lint:fix` pour auto-fix.
 - **Markdown** : pas de duplication entre docs ; un sujet, un fichier canonique, on référence depuis les autres.
 - **Pas de secrets** : jamais de clé API en clair ; utiliser les variables d'environnement / store Tauri.

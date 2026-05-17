@@ -282,6 +282,7 @@ mod tests {
     }
 
     /// Helper to create a session
+    #[allow(clippy::too_many_arguments)]
     fn insert_session(
         conn: &Connection,
         user_id: &str,

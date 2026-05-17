@@ -42,6 +42,13 @@ pub enum Error {
     Other(String),
 }
 
+#[cfg(feature = "python")]
+impl From<pyo3::PyErr> for Error {
+    fn from(err: pyo3::PyErr) -> Self {
+        Error::Python(err.to_string())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -59,12 +66,5 @@ mod tests {
 
         let err = Error::Phonetic("unsupported".to_string());
         assert_eq!(format!("{}", err), "Phonetic generation error: unsupported");
-    }
-}
-
-#[cfg(feature = "python")]
-impl From<pyo3::PyErr> for Error {
-    fn from(err: pyo3::PyErr) -> Self {
-        Error::Python(err.to_string())
     }
 }

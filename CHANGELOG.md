@@ -5,6 +5,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 ## [Unreleased]
 
 ### Added
+- Audit supply-chain Rust : step CI `rustsec/audit-check@v2` dans `ci-rust.yml` ; doc CONTRIBUTING pour audit local `cargo install cargo-audit && cargo audit` (#49).
+- `LYREMEMBER_LIBRETRANSLATE_URL` env var réellement implémentée dans `rust-backend/src/services/translation.rs` (lecture via `std::env::var` avec fallback `https://libretranslate.com/translate`) ; entrée ajoutée dans `.env.example` ; test unitaire `test_libretranslate_url_env_override` (#47).
 - Animations de feedback dans les modes pratique (#38) :
   - Keyframes CSS `pulse-correct` (scale doux sur bonne réponse) et `shake-wrong` (translation latérale sur erreur) ajoutées à `src/styles/main.css`.
   - McqMode : pulse sur la réponse choisie correcte, shake sur la réponse choisie incorrecte.
@@ -36,6 +38,9 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versi
 - Internationalisation (i18n) sur les vues principales, page Settings, intégration UI Genius API.
 - Refonte UI : thème dark gold aligné sur le site, navigation mobile en bas.
 - Modes de pratique : Karaoke, Fill-blank, MCQ, Oral (UI Phase 4).
+
+### Fixed
+- `clippy::too_many_arguments` sur `rust-backend/src/services/practice.rs:285` (`insert_session` helper) : `#[allow]` localisé + ordre `impl From<pyo3::PyErr>` déplacé avant `mod tests` pour silencer `clippy::items_after_test_module`. CI Rust passe désormais avec `cargo clippy --all-targets -- -D warnings` (#46).
 
 ### Removed
 - `docs/TECH_STACK_FINAL.md` (#7) : doublait `docs/FINAL_DECISIONS.md` et décrivait une stack (PWA/React/FastAPI) abandonnée. La source canonique est désormais `docs/FINAL_DECISIONS.md`.

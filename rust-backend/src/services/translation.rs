@@ -4,8 +4,15 @@ use crate::{Error, Result};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
-const LIBRETRANSLATE_URL: &str = "https://libretranslate.com/translate";
+const DEFAULT_LIBRETRANSLATE_URL: &str = "https://libretranslate.com/translate";
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
+
+/// Returns the LibreTranslate endpoint, either from the env var
+/// `LYREMEMBER_LIBRETRANSLATE_URL` or the public default.
+fn libretranslate_url() -> String {
+    std::env::var("LYREMEMBER_LIBRETRANSLATE_URL")
+        .unwrap_or_else(|_| DEFAULT_LIBRETRANSLATE_URL.to_string())
+}
 
 #[derive(Debug, Serialize)]
 struct TranslateRequest {
@@ -35,7 +42,7 @@ pub fn translate_text(
     source_lang: &str,
     target_lang: &str,
 ) -> Result<Vec<String>> {
-    translate_with_libretranslate(text, source_lang, target_lang, LIBRETRANSLATE_URL)
+    translate_with_libretranslate(text, source_lang, target_lang, &libretranslate_url())
 }
 
 /// Translate text using LibreTranslate API (with custom endpoint)
@@ -155,7 +162,7 @@ pub fn translate_batch(
         };
 
         let response = client
-            .post(LIBRETRANSLATE_URL)
+            .post(libretranslate_url())
             .json(&request)
             .send()
             .map_err(|e| Error::Translation(format!("Request failed: {}", e)))?;
@@ -229,5 +236,17 @@ mod tests {
                 eprintln!("Translation failed (may be expected if offline): {}", e);
             }
         }
+    }
+
+    #[test]
+    fn test_libretranslate_url_env_override() {
+        // SAFETY: this test mutates a process-wide env var. Other tests in this
+        // module do not rely on LYREMEMBER_LIBRETRANSLATE_URL, so reading the
+        // env var here is safe under cargo test's default test runner.
+        let custom = "http://127.0.0.1:5000/translate";
+        unsafe { std::env::set_var("LYREMEMBER_LIBRETRANSLATE_URL", custom) };
+        assert_eq!(libretranslate_url(), custom);
+        unsafe { std::env::remove_var("LYREMEMBER_LIBRETRANSLATE_URL") };
+        assert_eq!(libretranslate_url(), DEFAULT_LIBRETRANSLATE_URL);
     }
 }
